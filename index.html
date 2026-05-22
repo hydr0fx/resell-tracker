@@ -998,8 +998,8 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
         spawnExplosion(bird.x, moneyPitY - 20);
         playMoneyExplosion();
       }
-      if (timer > 20 && particles.length < 10) {
-        doneFade -= 0.06;
+      if (timer > 8 && particles.length < 8) {
+        doneFade -= 0.12;
         if (doneFade <= 0) {
           c.style.transition = 'opacity 0.5s';
           c.style.opacity = 0;
