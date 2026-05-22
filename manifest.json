@@ -1,7 +1,7 @@
 {
   "name": "Flippy Bird",
   "short_name": "Flippy Bird",
-  "description": "Resell-Tracker - Käufe, Verkäufe und Marge verwalten",
+  "description": "Flippy Bird - Käufe, Verkäufe und Gewinne im Blick",
   "start_url": "/resell-tracker/",
   "scope": "/resell-tracker/",
   "display": "standalone",

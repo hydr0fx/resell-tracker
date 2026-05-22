@@ -10,50 +10,60 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="apple-icon.png">
 <script>
+var APP_VERSION = '2.0.0';
+
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js').then(reg => {
+  var swReg = null;
+  navigator.serviceWorker.register('sw.js?v=' + APP_VERSION).then(reg => {
+    swReg = reg;
     reg.addEventListener('updatefound', () => {
-      const sw = reg.installing;
+      var sw = reg.installing;
       sw.addEventListener('statechange', () => {
         if (sw.state === 'installed' && navigator.serviceWorker.controller) {
-          const toast = document.getElementById('toast');
+          var toast = document.getElementById('toast');
           toast.textContent = 'Update verfugbar - App neu laden';
           toast.classList.add('show');
           toast.style.cursor = 'pointer';
-          toast.onclick = () => { window.location.reload(); };
-          setTimeout(() => { toast.classList.remove('show'); toast.onclick = null; }, 8000);
+          toast.onclick = function() { window.location.reload(); };
+          setTimeout(function() { toast.classList.remove('show'); toast.onclick = null; }, 8000);
         }
       });
     });
+    if (navigator.onLine) {
+      setInterval(function() { reg.update(); }, 60000);
+    }
   });
-  let refreshing = false;
-  navigator.serviceWorker.addEventListener('controllerchange', () => {
+  var refreshing = false;
+  navigator.serviceWorker.addEventListener('controllerchange', function() {
     if (!refreshing) { refreshing = true; window.location.reload(); }
   });
 }
 </script>
 <style>
 :root {
-  --primary: #5B8C3E;
-  --primary-dark: #3D6B2E;
-  --primary-light: #EDF5E8;
-  --gold: #D4A843;
+  --primary: #00A650;
+  --primary-dark: #00833E;
+  --primary-light: #E8F5E9;
+  --gold: #C8A84E;
   --gold-light: #F5EDD6;
-  --success: #5B8C3E;
+  --gold-glow: #D4A843;
+  --success: #00A650;
   --warning: #C7952B;
   --danger: #B83A2A;
-  --bg: #F5F0E6;
+  --bg: #F3EDE4;
   --card: #FFFCF8;
   --text: #2C1810;
   --text-secondary: #8B7355;
-  --border: #D4C5A9;
-  --shadow: 0 2px 8px rgba(44,24,16,0.08);
-  --shadow-lg: 0 4px 20px rgba(44,24,16,0.12);
-  --radius: 12px;
-  --radius-sm: 8px;
+  --border: #C8B898;
+  --shadow: 0 2px 8px rgba(44,24,16,0.1);
+  --shadow-lg: 0 4px 24px rgba(44,24,16,0.15);
+  --radius: 10px;
+  --radius-sm: 6px;
   --nav-height: 72px;
   --header-height: 56px;
   --pixel: 2px;
+  --zelda-gold: linear-gradient(135deg, #C8A84E, #E8C86E, #C8A84E);
+  --border-pattern: repeating-linear-gradient(90deg, var(--gold) 0px, var(--gold) 4px, transparent 4px, transparent 8px);
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; overflow: hidden; }
@@ -68,11 +78,24 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
 /* Header */
 .header {
   height: var(--header-height); background: var(--card); color: var(--text);
-  display: flex; align-items: center; padding: 0 16px; gap: 8px;
-  flex-shrink: 0; z-index: 10;
-  border-bottom: var(--pixel) solid var(--gold);
+  display: flex; align-items: center; padding: 0 16px; gap: 10px;
+  flex-shrink: 0; z-index: 10; position: relative;
+  border-bottom: 3px solid var(--gold);
+  box-shadow: inset 0 -1px 0 rgba(0,0,0,0.05);
 }
-.header h1 { font-size: 18px; font-weight: 700; flex: 1; color: var(--text); }
+.header::after {
+  content: ''; position: absolute; bottom: -3px; left: 0; right: 0;
+  height: 3px; background: var(--border-pattern); opacity: 0.4;
+}
+.header-logo {
+  width: 32px; height: 32px; border-radius: 6px; flex-shrink: 0;
+  border: 1.5px solid var(--gold); object-fit: cover;
+}
+.header h1 {
+  font-size: 17px; font-weight: 800; flex: 1; color: var(--text);
+  letter-spacing: 0.3px;
+}
+.header h1 .sub { font-weight: 400; font-size: 11px; color: var(--text-secondary); display: block; margin-top: -2px; }
 .header-btn {
   background: none; border: none; color: var(--text-secondary); font-size: 20px;
   width: 36px; height: 36px; border-radius: 50%; cursor: pointer;
@@ -121,8 +144,11 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
 }
 .stat-card::before {
   content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-  background: linear-gradient(90deg, var(--primary), var(--gold));
-  opacity: 0.5;
+  background: var(--zelda-gold);
+}
+.stat-card::after {
+  content: '◆'; position: absolute; top: 6px; right: 10px;
+  font-size: 10px; color: var(--gold); opacity: 0.3;
 }
 .stat-card .label { font-size: 11px; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; }
 .stat-card .value { font-size: 24px; font-weight: 800; margin-top: 6px; transition: all 0.3s; }
@@ -145,14 +171,16 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
 .item-card {
   background: var(--card); border-radius: var(--radius); padding: 16px;
   box-shadow: var(--shadow); margin-bottom: 10px; cursor: pointer;
-  transition: all 0.2s; border: var(--pixel) solid var(--border);
+  transition: all 0.2s; border: 2px solid var(--border);
   position: relative;
 }
+.item-card:hover { border-color: var(--gold); }
 .item-card::after {
-  content: ''; position: absolute; top: 8px; right: 8px;
-  width: 8px; height: 8px; border-top: 2px solid var(--gold);
-  border-right: 2px solid var(--gold); opacity: 0.3;
+  content: '▶'; position: absolute; top: 50%; right: 12px;
+  transform: translateY(-50%); font-size: 10px; color: var(--gold);
+  opacity: 0.4; transition: transform 0.2s;
 }
+.item-card:active::after { transform: translateY(-50%) translateX(4px); }
 .item-card:active { transform: scale(0.98); background: var(--primary-light); }
 .item-card-header { display: flex; justify-content: space-between; align-items: start; gap: 8px; }
 .item-card-name { font-weight: 600; font-size: 15px; }
@@ -165,10 +193,19 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
 .form-card {
   background: var(--card); border-radius: var(--radius); padding: 20px;
   box-shadow: var(--shadow); margin-bottom: 12px;
+  border: 2px solid var(--border); position: relative;
+}
+.form-card::before {
+  content: ''; position: absolute; top: -2px; left: 20px; right: 20px;
+  height: 2px; background: var(--gold); border-radius: 0 0 2px 2px;
 }
 .form-card h3 {
-  font-size: 13px; font-weight: 700; color: var(--text-secondary);
-  margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px;
+  font-size: 12px; font-weight: 800; color: var(--text-secondary);
+  margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1.5px;
+  display: flex; align-items: center; gap: 8px;
+}
+.form-card h3::before {
+  content: '◈'; font-size: 10px; color: var(--gold);
 }
 .form-group { margin-bottom: 16px; }
 .form-group:last-child { margin-bottom: 0; }
@@ -188,42 +225,52 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   padding: 12px 20px; border-radius: var(--radius-sm); font-weight: 700;
-  font-size: 14px; border: none; cursor: pointer; transition: all 0.2s;
+  font-size: 14px; border: 2px solid transparent; cursor: pointer; transition: all 0.2s;
   width: 100%; text-align: center; position: relative; overflow: hidden;
 }
-.btn:active { transform: scale(0.97); }
-.btn-primary { background: var(--primary); color: white; border: var(--pixel) solid var(--primary-dark); }
+.btn:active { transform: scale(0.95); }
+.btn-primary { background: var(--primary); color: white; border-color: var(--primary-dark); }
 .btn-primary:active { background: var(--primary-dark); }
-.btn-gold { background: var(--gold); color: white; border: var(--pixel) solid #B8912E; }
+.btn-gold { background: var(--gold); color: white; border-color: #B8912E; }
 .btn-gold:active { background: #B8912E; }
-.btn-success { background: var(--success); color: white; }
-.btn-danger { background: var(--danger); color: white; border: var(--pixel) solid #962E20; }
-.btn-outline { background: transparent; color: var(--primary); border: var(--pixel) solid var(--primary); }
+.btn-success { background: var(--success); color: white; border-color: var(--primary-dark); }
+.btn-danger { background: var(--danger); color: white; border-color: #962E20; }
+.btn-outline { background: transparent; color: var(--primary); border-color: var(--primary); }
 .btn-outline:active { background: var(--primary-light); }
 .btn-sm { padding: 8px 16px; font-size: 13px; width: auto; font-weight: 600; }
 
 /* Bottom Navigation */
 .bottom-nav {
-  height: var(--nav-height); background: white; border-top: 1px solid var(--border);
+  height: var(--nav-height); background: var(--card); border-top: 3px solid var(--gold);
   display: flex; align-items: center; justify-content: space-around;
   flex-shrink: 0; z-index: 10; position: fixed; bottom: 0; left: 0; right: 0;
   padding: 0 8px;
 }
+.bottom-nav::before {
+  content: ''; position: absolute; top: -3px; left: 0; right: 0;
+  height: 3px; background: var(--border-pattern); opacity: 0.4;
+}
 .nav-item {
   display: flex; flex-direction: column; align-items: center; gap: 2px;
   background: none; border: none; cursor: pointer; padding: 4px 10px;
-  color: var(--text-secondary); transition: color 0.2s; min-width: 48px;
+  color: var(--text-secondary); transition: all 0.2s; min-width: 48px;
+  position: relative;
 }
 .nav-item.active { color: var(--primary); }
+.nav-item.active::after {
+  content: ''; position: absolute; top: -3px; left: 50%; transform: translateX(-50%);
+  width: 24px; height: 3px; background: var(--gold); border-radius: 0 0 2px 2px;
+}
+.nav-item:active { transform: scale(0.92); }
 .nav-item svg { width: 24px; height: 24px; }
 .nav-item span { font-size: 10px; font-weight: 600; letter-spacing: 0.3px; }
 .nav-logo {
   width: 56px; height: 56px; border-radius: 50%;
   overflow: hidden; cursor: pointer; margin-top: -20px;
-  box-shadow: 0 0 0 3px var(--gold), var(--shadow-lg);
+  box-shadow: 0 0 0 3px var(--gold), 0 0 16px rgba(200,168,78,0.3), var(--shadow-lg);
   background: white;
   display: flex; align-items: center; justify-content: center;
-  transition: transform 0.2s;
+  transition: transform 0.2s; border: 2px solid var(--gold);
 }
 .nav-logo:active { transform: scale(0.92); }
 .nav-logo img { width: 100%; height: 100%; object-fit: cover; }
@@ -238,21 +285,41 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
 
 /* Empty state */
 .empty-state {
-  text-align: center; padding: 40px 20px; color: var(--text-secondary);
+  text-align: center; padding: 48px 20px; color: var(--text-secondary);
+  border: 2px dashed var(--border); border-radius: var(--radius);
+  background: var(--card);
 }
-.empty-state h3 { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+.empty-state h3 { font-size: 16px; font-weight: 700; margin-bottom: 4px; color: var(--text); }
 .empty-state p { font-size: 14px; }
+
+.divider {
+  display: flex; align-items: center; gap: 12px; margin: 16px 0;
+  color: var(--text-secondary); font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 1px;
+}
+.divider::before, .divider::after {
+  content: ''; flex: 1; height: 1px;
+  background: repeating-linear-gradient(90deg, var(--gold) 0px, var(--gold) 4px, transparent 4px, transparent 8px);
+  opacity: 0.3;
+}
+
+.retro-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 10px; border-radius: 3px;
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+  border: 1px solid currentColor;
+}
 
 /* Search */
 .search-bar {
   position: relative; margin-bottom: 12px;
 }
 .search-bar input {
-  width: 100%; padding: 12px 14px 12px 40px; border: none;
+  width: 100%; padding: 12px 14px 12px 40px; border: 2px solid var(--border);
   border-radius: var(--radius-sm); font-size: 14px; outline: none;
-  background: white; box-shadow: var(--shadow);
+  background: var(--card); box-shadow: var(--shadow); transition: border-color 0.2s;
 }
-.search-bar input:focus { box-shadow: 0 0 0 3px rgba(0,166,80,0.15); }
+.search-bar input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(200,168,78,0.12); }
 .search-bar svg {
   position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
   width: 18px; height: 18px; color: var(--text-secondary);
@@ -264,12 +331,13 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
   -webkit-overflow-scrolling: touch; padding-bottom: 4px;
 }
 .filter-btn {
-  padding: 8px 16px; border-radius: 20px; border: var(--pixel) solid var(--border);
-  background: var(--card); font-size: 13px; font-weight: 600; cursor: pointer;
+  padding: 8px 16px; border-radius: 20px; border: 2px solid var(--border);
+  background: var(--card); font-size: 12px; font-weight: 700; cursor: pointer;
   white-space: nowrap; transition: all 0.2s; color: var(--text-secondary);
-  flex-shrink: 0;
+  flex-shrink: 0; letter-spacing: 0.3px;
 }
-.filter-btn.active { background: var(--primary); color: white; box-shadow: 0 2px 12px rgba(91,140,62,0.3); border-color: var(--primary-dark); }
+.filter-btn.active { background: var(--primary); color: white; box-shadow: 0 2px 12px rgba(0,166,80,0.3); border-color: var(--primary-dark); }
+.filter-btn:active { transform: scale(0.95); }
 
 /* Modal */
 .modal-overlay {
@@ -281,7 +349,12 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
 .modal {
   background: var(--card); border-radius: var(--radius); padding: 24px;
   max-width: 340px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-  animation: scaleIn 0.2s ease;
+  animation: scaleIn 0.2s ease; border: 2px solid var(--border);
+  position: relative;
+}
+.modal::before {
+  content: ''; position: absolute; top: -2px; left: 20px; right: 20px;
+  height: 2px; background: var(--gold); border-radius: 0 0 2px 2px;
 }
 .modal h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
 .modal p { font-size: 14px; color: var(--text-secondary); margin-bottom: 20px; }
@@ -303,10 +376,10 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
 /* Toast */
 .toast {
   position: fixed; bottom: 88px; left: 50%; transform: translateX(-50%);
-  background: #1A1A2E; color: white; padding: 12px 24px; border-radius: var(--radius-sm);
-  font-size: 14px; font-weight: 600; z-index: 200;
+  background: var(--text); color: var(--gold); padding: 12px 24px; border-radius: var(--radius-sm);
+  font-size: 14px; font-weight: 600; z-index: 200; letter-spacing: 0.3px;
   opacity: 0; transition: opacity 0.3s, transform 0.3s; pointer-events: none;
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-lg); border: 1px solid var(--gold);
 }
 .toast.show { opacity: 1; pointer-events: auto; }
 
@@ -344,6 +417,7 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
 <div class="app" id="app">
   <header class="header">
     <button class="header-btn header-back" id="backBtn" onclick="goBack()">&#8592;</button>
+    <img src="icon-192.png" alt="Flippy Bird" class="header-logo" id="headerLogo">
     <h1 id="pageTitle">Flippy Bird</h1>
     <button class="header-btn" id="deleteBtn" onclick="confirmDelete()" style="display:none">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px;"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
@@ -374,7 +448,7 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
         <h3>Kauf erfassen</h3>
         <div class="form-group">
           <label for="itemName">Produktname</label>
-          <input type="text" id="itemName" placeholder="Verkauf deine Drohne aber vergiss nicht SD-Karte rauszunehmen">
+          <input type="text" id="itemName" placeholder="z.B. Drohne verkaufen aber vergiss SD-Karte nicht du Penner...">
         </div>
         <div class="form-group">
           <label>Fotos</label>
@@ -414,11 +488,11 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
         </div>
       </div>
       <div class="form-card" id="saleSection">
-        <h3>Verkauf (optional)</h3>
+        <h3>Verkauf erfassen</h3>
         <div class="form-row">
           <div class="form-group">
             <label for="salePrice">Verkaufspreis (€)</label>
-            <input type="number" id="salePrice" step="0.01" min="0" placeholder="0.00">
+            <input type="number" id="salePrice" step="0.01" min="0" placeholder="0.00" oninput="autoCalcPayPal()">
           </div>
           <div class="form-group">
             <label for="salePlatform">Plattform</label>
@@ -429,48 +503,40 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
           <div class="form-group">
             <label for="saleFee">Gebühren (€)</label>
             <div style="display:flex;gap:8px;">
-              <input type="number" id="saleFee" step="0.01" min="0" placeholder="0.00" style="flex:1;">
+              <input type="number" id="saleFee" step="0.01" min="0" placeholder="0.00" style="flex:1;" oninput="autoCalcPayPal()">
               <button type="button" class="btn btn-sm btn-outline" onclick="openPayPalCalc()" style="width:auto;">PayPal</button>
             </div>
           </div>
           <div class="form-group">
-            <label for="saleShipping">Versandkosten (€)</label>
-            <div style="display:flex;gap:8px;">
-              <input type="number" id="saleShipping" step="0.01" min="0" placeholder="0.00" style="flex:1;">
-              <select id="shippingPreset" style="width:auto;flex-shrink:0;padding:8px;" onchange="applyShippingPreset()">
-                <option value="">Versand</option>
-                <optgroup label="DHL">
-                  <option value="5.49|DHL Päckchen S">DHL Päckchen S - 5,49 €</option>
-                  <option value="6.49|DHL Päckchen M">DHL Päckchen M - 6,49 €</option>
-                  <option value="8.49|DHL Paket S">DHL Paket S - 8,49 €</option>
-                  <option value="11.49|DHL Paket M">DHL Paket M - 11,49 €</option>
-                  <option value="16.49|DHL Paket L">DHL Paket L - 16,49 €</option>
-                </optgroup>
-                <optgroup label="Hermes">
-                  <option value="4.50|Hermes S">Hermes S - 4,50 €</option>
-                  <option value="5.50|Hermes M">Hermes M - 5,50 €</option>
-                  <option value="6.50|Hermes L">Hermes L - 6,50 €</option>
-                  <option value="14.50|Hermes XL">Hermes XL - 14,50 €</option>
-                </optgroup>
-              </select>
-            </div>
+            <label for="saleDate">Verkaufsdatum</label>
+            <input type="date" id="saleDate">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Versand</label>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <select id="saleCarrier" onchange="updateShippingOptions()" style="flex:1;min-width:120px;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;background:#FAFAFA;">
+              <option value="">Versanddienst</option>
+              <option value="DHL">DHL</option>
+              <option value="Hermes">Hermes</option>
+              <option value="Deutsche Post">Deutsche Post</option>
+            </select>
+            <select id="salePackageType" onchange="applyShippingCost()" style="flex:2;min-width:180px;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;background:#FAFAFA;">
+              <option value="">Paketart wählen</option>
+            </select>
+            <input type="text" id="saleShippingCost" readonly style="width:80px;padding:12px 8px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;background:#F0F0F0;text-align:center;font-weight:700;" placeholder="0,00 €">
           </div>
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label for="saleMethod">Versandart</label>
-            <select id="saleMethod">
-              <option value="">-- wählen --</option>
-              <option value="DHL">DHL</option>
-              <option value="Hermes">Hermes</option>
-              <option value="DPD">DPD</option>
-              <option value="UPS">UPS</option>
-              <option value="Deutsche Post">Deutsche Post</option>
-            </select>
+            <label for="saleTracking">Sendungsnummer</label>
+            <input type="text" id="saleTracking" placeholder="z.B. DHL: 00340434812345678901">
           </div>
           <div class="form-group">
-            <label for="saleDate">Verkaufsdatum</label>
-            <input type="date" id="saleDate">
+            <label>Foto Beleg</label>
+            <div id="trackingPhotoPreview" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px;"></div>
+            <button type="button" class="btn btn-sm btn-outline" onclick="document.getElementById('trackingPhotoInput').click()" style="width:auto;">+ Foto</button>
+            <input type="file" id="trackingPhotoInput" accept="image/*" style="display:none" onchange="handleTrackingPhoto(event)">
           </div>
         </div>
         <div class="form-card" style="box-shadow:none;padding:0;margin-bottom:12px;">
@@ -498,7 +564,7 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
               <input type="text" id="saleFeatures" placeholder="Limited, selten, etc.">
             </div>
             <div class="form-group">
-              <label for="saleExtras">Haltsmaul...</label>
+              <label for="saleExtras">Extras</label>
               <input type="text" id="saleExtras" placeholder="Zubehör, Extras...">
             </div>
           </div>
@@ -559,7 +625,9 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
         <h3>Info</h3>
         <div style="text-align:center;padding:8px 0;color:var(--text-secondary);font-size:13px;">
           <p style="font-weight:700;color:var(--text);margin-bottom:4px;">Flippy Bird v2.0</p>
+          <p style="font-size:10px;color:var(--gold);margin-bottom:4px;">◈ Retro Edition ◈</p>
           <p>Daten werden lokal auf diesem Gerät gespeichert.</p>
+          <p style="font-size:10px;color:var(--text-secondary);margin-top:4px;">Ehemals Resell-Tracker</p>
         </div>
       </div>
     </div>
@@ -575,7 +643,7 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
       <span>Artikel</span>
     </button>
     <button class="nav-logo" onclick="navigate('add')" data-page="add">
-      <img src="icon-192.png" alt="Flippy Bird">
+      <img src="icon-512.png" alt="Flippy Bird">
     </button>
     <button class="nav-item" onclick="navigate('settings')" data-page="settings">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
@@ -703,16 +771,17 @@ function navigate(page, params) {
   const title = document.getElementById('pageTitle');
   const backBtn = document.getElementById('backBtn');
   const deleteBtn = document.getElementById('deleteBtn');
+  const logo = document.getElementById('headerLogo');
 
-  if (page === 'dashboard') { title.textContent = 'Flippy Bird'; backBtn.style.display = 'none'; deleteBtn.style.display = 'none'; renderDashboard(); }
-  else if (page === 'inventory') { title.textContent = 'Artikel'; backBtn.style.display = 'none'; deleteBtn.style.display = 'none'; renderInventory(); }
+  if (page === 'dashboard') { title.textContent = 'Flippy Bird'; backBtn.style.display = 'none'; deleteBtn.style.display = 'none'; logo.style.display = 'block'; renderDashboard(); }
+  else if (page === 'inventory') { title.textContent = 'Artikel'; backBtn.style.display = 'none'; deleteBtn.style.display = 'none'; logo.style.display = 'block'; renderInventory(); }
   else if (page === 'add') {
     if (editingId) { title.textContent = 'Artikel bearbeiten'; backBtn.style.display = 'flex'; deleteBtn.style.display = 'flex'; }
     else { title.textContent = 'Neuer Artikel'; backBtn.style.display = 'none'; deleteBtn.style.display = 'none'; }
-    renderAddForm();
+    logo.style.display = 'block'; renderAddForm();
   }
-  else if (page === 'detail') { title.textContent = 'Artikel-Detail'; backBtn.style.display = 'flex'; deleteBtn.style.display = 'none'; renderDetail(params); }
-  else if (page === 'settings') { title.textContent = 'Einstellungen'; backBtn.style.display = 'none'; deleteBtn.style.display = 'none'; renderCategoryList(); renderPlatformList(); }
+  else if (page === 'detail') { title.textContent = 'Artikel-Detail'; backBtn.style.display = 'flex'; deleteBtn.style.display = 'none'; logo.style.display = 'block'; renderDetail(params); }
+  else if (page === 'settings') { title.textContent = 'Einstellungen'; backBtn.style.display = 'none'; deleteBtn.style.display = 'none'; logo.style.display = 'block'; renderCategoryList(); renderPlatformList(); }
 
   document.getElementById('mainContent').scrollTop = 0;
 }
@@ -735,12 +804,15 @@ function renderDashboard() {
   items.forEach(i => { statusCounts[i.status] = (statusCounts[i.status] || 0) + 1; });
 
   document.getElementById('statsGrid').innerHTML = `
-    <div class="stat-card"><div class="label">Artikel</div><div class="value">${totalItems}</div></div>
-    <div class="stat-card"><div class="label">Einkauf</div><div class="value">${fmt(totalCost)}</div></div>
-    <div class="stat-card"><div class="label">Verkauf</div><div class="value">${fmt(totalRevenue)}</div></div>
-    <div class="stat-card"><div class="label">Marge</div><div class="value ${margin >= 0 ? 'positive' : 'negative'}">${fmtDecimal(margin)}%</div></div>
-    <div class="stat-card full"><div class="label">Gewinn</div><div class="value ${profit >= 0 ? 'positive' : 'negative'}">${fmt(profit)}</div></div>
+    <div class="stat-card"><div class="label">📦 Artikel</div><div class="value">${totalItems}</div></div>
+    <div class="stat-card"><div class="label">💰 Einkauf</div><div class="value">${fmt(totalCost)}</div></div>
+    <div class="stat-card"><div class="label">💵 Verkauf</div><div class="value">${fmt(totalRevenue)}</div></div>
+    <div class="stat-card"><div class="label">📊 Marge</div><div class="value ${margin >= 0 ? 'positive' : 'negative'}">${fmtDecimal(margin)}%</div></div>
+    <div class="stat-card full"><div class="label">🏆 Gewinn</div><div class="value ${profit >= 0 ? 'positive' : 'negative'}">${fmt(profit)}</div></div>
   `;
+
+  // Divider
+  const divider = '<div class="divider">Letzte Aktivitäten</div>';
 
   const statuses = ['alle', 'gekauft', 'gelistet', 'verkauft', 'verschickt', 'abgeschlossen'];
   const statusLabels = { alle: 'Alle', gekauft: 'Gekauft', gelistet: 'Gelistet', verkauft: 'Verkauft', verschickt: 'Verschickt', abgeschlossen: 'Abgeschlossen' };
@@ -772,11 +844,11 @@ function renderRecentItems() {
 
   const container = document.getElementById('recentItems');
   if (filtered.length === 0) {
-    container.innerHTML = '<div class="empty-state"><h3>Keine Artikel</h3><p>Fuge deinen ersten Kauf hinzu!</p></div>';
+    container.innerHTML = '<div class="empty-state"><h3>Keine Artikel</h3><p>Füge deinen ersten Kauf hinzu!</p></div>';
     return;
   }
 
-  container.innerHTML = filtered.map(i => renderItemCard(i)).join('');
+  container.innerHTML = '<div class="divider">Letzte Aktivitäten</div>' + filtered.map(i => renderItemCard(i)).join('');
 }
 
 // Inventory
@@ -861,30 +933,50 @@ function renderAddForm() {
 
   // Sale section
   const saleSection = document.getElementById('saleSection');
+  tempTrackingPhotos = [];
   if (item && item.sale) {
     saleSection.style.display = 'block';
     document.getElementById('salePrice').value = item.sale.price || '';
     document.getElementById('salePlatform').value = item.sale.platform || '';
     document.getElementById('saleFee').value = item.sale.platformFee || '';
-    document.getElementById('saleShipping').value = item.sale.shippingCost || '';
-    document.getElementById('saleMethod').value = item.sale.shippingMethod || '';
+    document.getElementById('saleCarrier').value = item.sale.shippingCarrier || '';
     document.getElementById('saleDate').value = item.sale.saleDate || '';
     document.getElementById('saleCondition').value = item.sale.condition || '';
     document.getElementById('saleModel').value = item.sale.model || '';
     document.getElementById('saleFeatures').value = item.sale.features || '';
     document.getElementById('saleExtras').value = item.sale.extras || '';
+    document.getElementById('saleTracking').value = item.sale.trackingNumber || '';
+    if (item.sale.shippingCarrier) {
+      updateShippingOptions();
+      setTimeout(() => {
+        const sel = document.getElementById('salePackageType');
+        for (let opt of sel.options) {
+          if (opt.textContent.includes(item.sale.shippingLabel || '')) {
+            sel.value = opt.value; break;
+          }
+        }
+        applyShippingCost();
+      }, 50);
+    }
+    if (item.sale.trackingPhotos) {
+      tempTrackingPhotos = [...item.sale.trackingPhotos];
+      renderTrackingPhotoPreview();
+    }
   } else {
     saleSection.style.display = 'block';
     document.getElementById('salePrice').value = '';
     document.getElementById('salePlatform').value = '';
     document.getElementById('saleFee').value = '';
-    document.getElementById('saleShipping').value = '';
-    document.getElementById('saleMethod').value = '';
+    document.getElementById('saleCarrier').value = '';
     document.getElementById('saleDate').value = '';
     document.getElementById('saleCondition').value = '';
     document.getElementById('saleModel').value = '';
     document.getElementById('saleFeatures').value = '';
     document.getElementById('saleExtras').value = '';
+    document.getElementById('saleTracking').value = '';
+    document.getElementById('salePackageType').innerHTML = '<option value="">Paketart wählen</option>';
+    document.getElementById('saleShippingCost').value = '';
+    renderTrackingPhotoPreview();
   }
 
   const saveBtn = document.querySelector('#page-add .btn-primary');
@@ -906,17 +998,22 @@ function handleAddItem() {
   const salePrice = parseFloat(document.getElementById('salePrice').value) || 0;
   const salePlatform = document.getElementById('salePlatform').value;
   const platformFee = parseFloat(document.getElementById('saleFee').value) || 0;
-  const shippingCost = parseFloat(document.getElementById('saleShipping').value) || 0;
-  const shippingMethod = document.getElementById('saleMethod').value;
+  const shippingCarrier = document.getElementById('saleCarrier').value;
+  const shipSel = document.getElementById('salePackageType');
+  const shipParts = shipSel.value ? shipSel.value.split('|') : [];
+  const shippingCost = shipParts.length > 0 ? parseFloat(shipParts[0]) || 0 : 0;
+  const shippingLabel = shipParts.length > 1 ? shipParts[1] : '';
   const saleDate = document.getElementById('saleDate').value || '';
   const saleCondition = document.getElementById('saleCondition').value || '';
   const saleModel = document.getElementById('saleModel').value.trim();
   const saleFeatures = document.getElementById('saleFeatures').value.trim();
   const saleExtras = document.getElementById('saleExtras').value.trim();
+  const trackingNumber = document.getElementById('saleTracking').value.trim();
+  const trackingPhotos = tempTrackingPhotos.length > 0 ? [...tempTrackingPhotos] : [];
 
   let sale = null;
   if (salePrice > 0) {
-    sale = { price: salePrice, platform: salePlatform, platformFee, shippingCost, shippingMethod, saleDate, condition: saleCondition, model: saleModel, features: saleFeatures, extras: saleExtras };
+    sale = { price: salePrice, platform: salePlatform, platformFee, shippingCost, shippingCarrier, shippingLabel, saleDate, condition: saleCondition, model: saleModel, features: saleFeatures, extras: saleExtras, trackingNumber, trackingPhotos };
   }
 
   const photos = tempPhotos.length > 0 ? [...tempPhotos] : [];
@@ -950,17 +1047,21 @@ function clearAddForm() {
   document.getElementById('salePrice').value = '';
   document.getElementById('salePlatform').value = '';
   document.getElementById('saleFee').value = '';
-  document.getElementById('saleShipping').value = '';
-  document.getElementById('saleMethod').value = '';
+  document.getElementById('saleCarrier').value = '';
   document.getElementById('saleDate').value = '';
   document.getElementById('saleCondition').value = '';
   document.getElementById('saleModel').value = '';
   document.getElementById('saleFeatures').value = '';
   document.getElementById('saleExtras').value = '';
+  document.getElementById('saleTracking').value = '';
+  document.getElementById('salePackageType').innerHTML = '<option value="">Paketart wählen</option>';
+  document.getElementById('saleShippingCost').value = '';
   document.getElementById('itemDate').value = new Date().toISOString().split('T')[0];
   document.getElementById('itemStatus').value = 'gekauft';
   tempPhotos = [];
+  tempTrackingPhotos = [];
   renderPhotoPreview();
+  renderTrackingPhotoPreview();
 }
 
 function confirmDelete() {
@@ -1014,12 +1115,14 @@ function renderDetail(id) {
         <div class="detail-row"><span class="label">Plattform</span><span class="value">${item.sale.platform || '-'}</span></div>
         <div class="detail-row"><span class="label">Gebuhren</span><span class="value">${fmt(item.sale.platformFee)}</span></div>
         <div class="detail-row"><span class="label">Versandkosten</span><span class="value">${fmt(item.sale.shippingCost)}</span></div>
-        <div class="detail-row"><span class="label">Versandart</span><span class="value">${item.sale.shippingMethod || '-'}</span></div>
+        <div class="detail-row"><span class="label">Versandart</span><span class="value">${item.sale.shippingCarrier || '-'} ${item.sale.shippingLabel ? '(' + escapeHtml(item.sale.shippingLabel) + ')' : ''}</span></div>
         <div class="detail-row"><span class="label">Verkaufsdatum</span><span class="value">${fmtDate(item.sale.saleDate)}</span></div>
         ${item.sale.condition ? `<div class="detail-row"><span class="label">Zustand</span><span class="value">${escapeHtml(item.sale.condition)}</span></div>` : ''}
         ${item.sale.model ? `<div class="detail-row"><span class="label">Modell</span><span class="value">${escapeHtml(item.sale.model)}</span></div>` : ''}
         ${item.sale.features ? `<div class="detail-row"><span class="label">Besonderheiten</span><span class="value">${escapeHtml(item.sale.features)}</span></div>` : ''}
-        ${item.sale.extras ? `<div class="detail-row"><span class="label">Haltsmaul...</span><span class="value">${escapeHtml(item.sale.extras)}</span></div>` : ''}
+        ${item.sale.extras ? `<div class="detail-row"><span class="label">Extras</span><span class="value">${escapeHtml(item.sale.extras)}</span></div>` : ''}
+        ${item.sale.trackingNumber ? `<div class="detail-row"><span class="label">Sendungsnummer</span><span class="value" style="font-size:12px;">${escapeHtml(item.sale.trackingNumber)}</span></div>` : ''}
+        ${item.sale.trackingPhotos && item.sale.trackingPhotos.length > 0 ? `<div class="detail-row" style="flex-direction:column;gap:6px;"><span class="label">Versandfotos</span><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;">${item.sale.trackingPhotos.map(p => `<div style="width:60px;height:60px;border-radius:6px;overflow:hidden;border:2px solid var(--border);"><img src="${p}" style="width:100%;height:100%;object-fit:cover;"></div>`).join('')}</div></div>` : ''}
       </div>
       <div class="detail-section">
         <h3>Berechnung</h3>
@@ -1226,6 +1329,15 @@ function renderPhotoPreview() {
 }
 
 // PayPal Calculator
+function autoCalcPayPal() {
+  const price = parseFloat(document.getElementById('salePrice').value) || 0;
+  const feeInput = document.getElementById('saleFee');
+  if (price > 0 && !feeInput.value) {
+    const fee = price * 0.0249 + 0.35;
+    feeInput.value = fee.toFixed(2);
+  }
+}
+
 function openPayPalCalc() {
   document.getElementById('paypalCalcPrice').value = document.getElementById('salePrice').value || '';
   document.getElementById('paypalResult').innerHTML = '';
@@ -1250,21 +1362,79 @@ function usePayPalFee() {
   document.getElementById('paypalOverlay').classList.remove('active');
 }
 
-// Shipping Preset
-function applyShippingPreset() {
-  const sel = document.getElementById('shippingPreset');
-  if (!sel.value) return;
-  const parts = sel.value.split('|');
-  document.getElementById('saleShipping').value = parts[0];
-  if (parts[1]) {
-    const methodSel = document.getElementById('saleMethod');
-    for (let opt of methodSel.options) {
-      if (parts[1].startsWith(opt.value) || opt.value.startsWith(parts[1].split(' ')[0])) {
-        methodSel.value = opt.value; break;
-      }
-    }
-  }
-  sel.value = '';
+// Shipping
+const SHIPPING_OPTIONS = {
+  DHL: [
+    { label: 'Päckchen S (bis 2kg)', cost: 5.49 },
+    { label: 'Päckchen M (bis 2kg)', cost: 6.49 },
+    { label: 'Paket S (bis 2kg)', cost: 8.49 },
+    { label: 'Paket M (bis 10kg)', cost: 11.49 },
+    { label: 'Paket L (bis 31,5kg)', cost: 16.49 }
+  ],
+  Hermes: [
+    { label: 'S (bis 1,5kg)', cost: 4.50 },
+    { label: 'M (bis 5kg)', cost: 5.50 },
+    { label: 'L (bis 10kg)', cost: 6.50 },
+    { label: 'XL (bis 25kg)', cost: 14.50 }
+  ],
+  'Deutsche Post': [
+    { label: 'Brief Standard (bis 20g)', cost: 0.85 },
+    { label: 'Brief Kompakt (bis 50g)', cost: 1.00 },
+    { label: 'Brief Groß (bis 500g)', cost: 1.60 },
+    { label: 'Brief Maxi (bis 1000g)', cost: 2.75 },
+    { label: 'Warenpost (bis 50g)', cost: 2.25 },
+    { label: 'Warenpost (bis 500g)', cost: 2.65 },
+    { label: 'Warenpost (bis 1000g)', cost: 3.20 },
+    { label: 'Warenpost (bis 2000g)', cost: 4.00 }
+  ]
+};
+
+function updateShippingOptions() {
+  const carrier = document.getElementById('saleCarrier').value;
+  const sel = document.getElementById('salePackageType');
+  sel.innerHTML = '<option value="">Paketart wählen</option>';
+  document.getElementById('saleShippingCost').value = '';
+  if (!carrier || !SHIPPING_OPTIONS[carrier]) return;
+  SHIPPING_OPTIONS[carrier].forEach((opt, i) => {
+    const o = document.createElement('option');
+    o.value = opt.cost + '|' + opt.label;
+    o.textContent = opt.label + ' - ' + opt.cost.toFixed(2).replace('.', ',') + ' €';
+    sel.appendChild(o);
+  });
+}
+
+function applyShippingCost() {
+  const sel = document.getElementById('salePackageType');
+  if (!sel.value) { document.getElementById('saleShippingCost').value = ''; return; }
+  const cost = sel.value.split('|')[0];
+  document.getElementById('saleShippingCost').value = cost.replace('.', ',') + ' €';
+}
+
+let tempTrackingPhotos = [];
+
+function handleTrackingPhoto(event) {
+  const files = event.target.files; if (!files.length) return;
+  Array.from(files).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      compressImage(e.target.result, 800, 0.7, function(compressed) {
+        tempTrackingPhotos.push(compressed);
+        renderTrackingPhotoPreview();
+      });
+    };
+    reader.readAsDataURL(file);
+  });
+  event.target.value = '';
+}
+
+function removeTrackingPhoto(idx) {
+  tempTrackingPhotos.splice(idx, 1); renderTrackingPhotoPreview();
+}
+
+function renderTrackingPhotoPreview() {
+  const el = document.getElementById('trackingPhotoPreview'); if (!el) return;
+  if (tempTrackingPhotos.length === 0) { el.innerHTML = ''; return; }
+  el.innerHTML = tempTrackingPhotos.map((p, i) => `<div style="position:relative;width:64px;height:64px;border-radius:8px;overflow:hidden;border:2px solid var(--border);flex-shrink:0;"><img src="${p}" style="width:100%;height:100%;object-fit:cover;"><button onclick="removeTrackingPhoto(${i})" style="position:absolute;top:-4px;right:-4px;width:20px;height:20px;border-radius:50%;background:var(--danger);color:white;border:none;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button></div>`).join('');
 }
 
 // Kleinanzeigen
