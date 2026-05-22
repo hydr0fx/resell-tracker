@@ -54,13 +54,10 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.addEventListener('controllerchange', function() {
     if (!refreshing) {
       refreshing = true;
-      try { new Notification('Flippy Bird Update', { body: 'Neue Version ' + APP_VERSION + ' ist da!', icon: 'icon-192.png' }); } catch(e) {}
       location.reload();
     }
   });
-  if ('Notification' in window && Notification.permission === 'default') {
-    Notification.requestPermission();
-  }
+
 }
 </script>
 <style>
@@ -195,7 +192,7 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
   box-shadow: var(--shadow); margin-bottom: 12px;
 }
 .form-card.condition-card {
-  background: var(--bg); border-radius: var(--radius); padding: 14px 16px;
+  background: var(--card); border-radius: var(--radius); padding: 14px 16px;
 }
 .form-card.condition-card h3 { font-size: 11px; color: var(--text-secondary); }
 .form-card h3 {
@@ -208,10 +205,10 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
 .form-group input, .form-group select, .form-group textarea {
   width: 100%; padding: 11px 13px; border: 1.5px solid var(--border);
   border-radius: var(--radius-sm); font-size: 15px; outline: none;
-  transition: border-color 0.2s; background: var(--bg);
+  transition: border-color 0.2s; background: var(--card);
 }
 .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-  border-color: var(--primary); background: var(--card);
+  border-color: var(--primary);
 }
 .form-group textarea { min-height: 60px; resize: vertical; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -369,7 +366,7 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
 
 /* Settings */
 .settings-item {
-  background: white; border-radius: var(--radius); padding: 16px;
+  background: var(--card); border-radius: var(--radius); padding: 16px;
   box-shadow: var(--shadow); margin-bottom: 10px;
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
 }
@@ -400,15 +397,14 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
 .dark-mode .bottom-nav { background: var(--card); }
 .dark-mode .nav-logo { background: #1C1814; }
 .dark-mode .nav-logo img { opacity: 0.9; }
-.dark-mode .search-bar input { background: #1C1814; border-color: var(--border); color: var(--text); }
+.dark-mode .search-bar input { background: var(--card); border-color: var(--border); color: var(--text); }
 .dark-mode .form-group input, .dark-mode .form-group select, .dark-mode .form-group textarea { background: #1C1814; color: var(--text); border-color: var(--border); }
 .dark-mode .settings-item { background: var(--card); }
 .dark-mode .stat-card { background: var(--card); }
 .dark-mode .item-card { background: var(--card); }
 .dark-mode .item-card:active { background: #1C1814; }
-.dark-mode .form-card.condition-card { background: #1C1814; }
+.dark-mode .form-card.condition-card { background: var(--card); }
 .dark-mode .modal { background: var(--card); }
-.dark-mode .form-card .condition-card select { background: #1C1814; }
 .dark-mode .header-logo { border-color: var(--gold); }
 </style>
 </head>
@@ -459,7 +455,7 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
           <div class="form-group">
             <label for="itemCategory">Kategorie</label>
             <div style="display:flex;gap:6px;">
-              <select id="itemCategory" style="flex:1;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;background:#FAFAFA;"></select>
+              <select id="itemCategory" style="flex:1;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;"></select>
               <button type="button" class="btn btn-sm btn-outline" onclick="quickAddCategory()" style="width:auto;padding:8px 10px;" title="Kategorie hinzufügen">+</button>
             </div>
           </div>
@@ -499,7 +495,7 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
           <div class="form-group">
             <label for="salePlatform">Plattform</label>
             <div style="display:flex;gap:6px;">
-              <select id="salePlatform" style="flex:1;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;background:#FAFAFA;"></select>
+              <select id="salePlatform" style="flex:1;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;"></select>
               <button type="button" class="btn btn-sm btn-outline" onclick="quickAddPlatform()" style="width:auto;padding:8px 10px;" title="Plattform hinzufügen">+</button>
             </div>
           </div>
@@ -520,13 +516,13 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
         <div class="form-group">
           <label>Versand</label>
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <select id="saleCarrier" onchange="updateShippingOptions()" style="flex:1;min-width:120px;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;background:#FAFAFA;">
+            <select id="saleCarrier" onchange="updateShippingOptions()" style="flex:1;min-width:120px;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;">
               <option value="">Versanddienst</option>
               <option value="DHL">DHL</option>
               <option value="Hermes">Hermes</option>
               <option value="Deutsche Post">Deutsche Post</option>
             </select>
-            <select id="salePackageType" onchange="applyShippingCost()" style="flex:2;min-width:180px;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;background:#FAFAFA;">
+            <select id="salePackageType" onchange="applyShippingCost()" style="flex:2;min-width:180px;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;">
               <option value="">Paketart wählen</option>
             </select>
             <input type="text" id="saleShippingCost" readonly style="width:80px;padding:12px 8px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;background:#F0F0F0;text-align:center;font-weight:700;" placeholder="0,00 €">
