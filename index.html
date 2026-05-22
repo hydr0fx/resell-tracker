@@ -225,6 +225,18 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
 .modal-actions { display: flex; gap: 8px; }
 .modal-actions .btn { flex: 1; }
 
+/* Listing modal */
+.listing-modal { max-width: 420px; max-height: 90vh; display: flex; flex-direction: column; }
+.listing-modal .listing-content {
+  flex: 1; overflow-y: auto; margin: 12px 0 16px; padding: 12px;
+  background: #f8fafc; border-radius: var(--radius-sm); font-size: 14px;
+  line-height: 1.6; white-space: pre-wrap; word-break: break-word; max-height: 45vh;
+}
+.listing-meta { display: flex; gap: 12px; margin-bottom: 8px; }
+.listing-meta > div { background: #f8fafc; padding: 8px 12px; border-radius: var(--radius-sm); flex: 1; }
+.listing-meta .l-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+.listing-meta .l-value { font-size: 16px; font-weight: 700; }
+
 /* Toast */
 .toast {
   position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
@@ -460,6 +472,22 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
     </div>
   </div>
 
+  <div class="modal-overlay" id="listingOverlay" onclick="if(event.target===this)closeListingModal()">
+    <div class="modal listing-modal">
+      <h3>Kleinanzeigen Inserat</h3>
+      <div class="listing-meta">
+        <div><div class="l-label">Titel</div><div class="l-value" id="listingTitle">-</div></div>
+        <div><div class="l-label">Preis</div><div class="l-value" id="listingPrice">-</div></div>
+      </div>
+      <div class="listing-content" id="listingContent"></div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-outline" style="flex:1;" id="copyListingBtn" onclick="copyListingText()">Kopieren</button>
+        <button class="btn btn-primary" style="flex:1;" onclick="openKleinanzeigen()">Auf Kleinanzeigen offnen</button>
+      </div>
+      <button class="btn btn-outline mt-8" onclick="closeListingModal()">Schließen</button>
+    </div>
+  </div>
+
   <div class="toast" id="toast"></div>
 </div>
 
@@ -469,6 +497,7 @@ let items = [];
 let currentPage = 'dashboard';
 let editingId = null;
 let pendingDeleteId = null;
+let listingItemId = null;
 
 // Load data
 function loadData() {
@@ -855,6 +884,7 @@ function renderDetail(id) {
       <button class="btn btn-outline" style="flex:1;" onclick="editItem('${item.id}')">Bearbeiten</button>
       <button class="btn btn-danger" style="flex:1;" onclick="deleteItem('${item.id}')">Löschen</button>
     </div>
+    <button class="btn btn-outline mt-8" onclick="showKleinanzeigenListing('${item.id}')">Auf Kleinanzeigen inserieren</button>
     <div style="margin-top:8px;">
       <label style="font-size:13px;font-weight:500;color:var(--text-secondary);display:block;margin-bottom:4px;">Status ändern</label>
       <div style="display:flex;flex-wrap:wrap;gap:4px;">
@@ -939,6 +969,80 @@ function confirmClearAll() {
     renderDashboard();
     navigate('dashboard');
   });
+}
+
+// Kleinanzeigen
+function showKleinanzeigenListing(id) {
+  listingItemId = id;
+  const item = items.find(i => i.id === id);
+  if (!item) return;
+
+  const suggestedPrice = item.sale && item.sale.price ? item.sale.price : Math.ceil((item.purchasePrice || 0) * 2);
+  const text = generateListingText(item, suggestedPrice);
+
+  document.getElementById('listingTitle').textContent = item.name;
+  document.getElementById('listingPrice').textContent = suggestedPrice.toFixed(2).replace('.', ',') + ' \u20AC';
+  document.getElementById('listingContent').textContent = text;
+  document.getElementById('listingOverlay').classList.add('active');
+}
+
+function generateListingText(item, price) {
+  const labelMap = { Schuhe: 'Schuhe', Kleidung: 'Kleidung', Elektronik: 'Elektronik', Accessoires: 'Accessoires', Sonstiges: 'Sonstiges' };
+  const lines = [];
+
+  lines.push(item.name.toUpperCase());
+  lines.push('');
+  lines.push('Verkaufe hier ' + item.name + '.');
+  lines.push('');
+  lines.push('Kategorie: ' + (labelMap[item.category] || item.category));
+  lines.push('Preis: ' + price.toFixed(2).replace('.', ',') + ' \u20AC');
+
+  if (item.notes) {
+    lines.push('');
+    lines.push(item.notes);
+  }
+
+  lines.push('');
+  lines.push('Versand: DHL / Hermes moglich');
+  lines.push('Bezahlung: PayPal Freunde oder Uberweisung');
+  lines.push('');
+  lines.push('Bei Fragen einfach melden!');
+  lines.push('Privatverkauf, keine Garantie oder Rucknahme.');
+
+  return lines.join('\n');
+}
+
+function closeListingModal() {
+  document.getElementById('listingOverlay').classList.remove('active');
+  listingItemId = null;
+}
+
+function copyListingText() {
+  const text = document.getElementById('listingContent').textContent;
+  if (!text) return;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => {
+      showToast('Inserat-Text kopiert!');
+    }).catch(() => {
+      fallbackCopy(text);
+    });
+  } else {
+    fallbackCopy(text);
+  }
+}
+
+function fallbackCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed'; ta.style.left = '-9999px';
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand('copy'); showToast('Inserat-Text kopiert!'); } catch {}
+  document.body.removeChild(ta);
+}
+
+function openKleinanzeigen() {
+  window.open('https://www.kleinanzeigen.de/p-anzeige-aufgeben.html', '_blank');
 }
 
 // Init
