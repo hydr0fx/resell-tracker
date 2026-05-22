@@ -15,31 +15,31 @@ var APP_VERSION = '2.0.0';
 if ('serviceWorker' in navigator) {
   var swReg = null;
   var refreshing = false;
-  navigator.serviceWorker.register('sw.js?v=2.2.0').then(function(reg) {
+  navigator.serviceWorker.register('sw.js?v=' + APP_VERSION).then(function(reg) {
     swReg = reg;
-    if (reg.active && !navigator.serviceWorker.controller) {
-      reg.active.postMessage({ action: 'skipWaiting' });
-    }
     reg.addEventListener('updatefound', function() {
       var sw = reg.installing;
       sw.addEventListener('statechange', function() {
         if (sw.state === 'installed' && navigator.serviceWorker.controller) {
           sw.postMessage({ action: 'skipWaiting' });
-          var toast = document.getElementById('toast');
-          toast.textContent = 'Update - neu laden...';
-          toast.classList.add('show');
-          setTimeout(function() { window.location.reload(); }, 500);
         }
       });
     });
     if (navigator.onLine) {
       reg.update();
-      setInterval(function() { reg.update(); }, 30000);
+      setInterval(function() { reg.update(); }, 10000);
     }
   });
   navigator.serviceWorker.addEventListener('controllerchange', function() {
-    if (!refreshing) { refreshing = true; window.location.reload(); }
+    if (!refreshing) {
+      refreshing = true;
+      try { new Notification('Flippy Bird Update', { body: 'Neue Version ' + APP_VERSION + ' ist da!', icon: 'icon-192.png' }); } catch(e) {}
+      location.reload();
+    }
   });
+  if ('Notification' in window && Notification.permission === 'default') {
+    Notification.requestPermission();
+  }
 }
 </script>
 <style>
@@ -1012,6 +1012,28 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
 </script>
 
 <script>
+// Version Check - erzwingt sofortiges Update bei neuer Version
+const APP_VERSION = 'v2.3.0';
+(function() {
+  var lastVer = localStorage.getItem('flippybird_version');
+  if (lastVer && lastVer !== APP_VERSION) {
+    localStorage.setItem('flippybird_version', APP_VERSION);
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(regs) {
+        regs.forEach(function(r) { r.unregister(); });
+      });
+    }
+    if ('caches' in window) {
+      caches.keys().then(function(keys) {
+        return Promise.all(keys.map(function(k) { return caches.delete(k); }));
+      });
+    }
+    location.reload(true);
+    return;
+  }
+  localStorage.setItem('flippybird_version', APP_VERSION);
+})();
+
 // State
 let items = [];
 let currentPage = 'dashboard';
