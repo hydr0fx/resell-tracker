@@ -712,6 +712,71 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
   var shown = sessionStorage.getItem('flippybird_splash');
   if (shown) { document.getElementById('splashCanvas').style.display = 'none'; return; }
   sessionStorage.setItem('flippybird_splash', '1');
+
+  // Audio
+  var audioCtx = null;
+  function initAudio() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  function playJump() {
+    try {
+      initAudio();
+      var o = audioCtx.createOscillator();
+      var g = audioCtx.createGain();
+      o.connect(g); g.connect(audioCtx.destination);
+      o.type = 'sine';
+      o.frequency.setValueAtTime(520, audioCtx.currentTime);
+      o.frequency.exponentialRampToValueAtTime(780, audioCtx.currentTime + 0.08);
+      o.frequency.exponentialRampToValueAtTime(620, audioCtx.currentTime + 0.12);
+      g.gain.setValueAtTime(0.3, audioCtx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+      o.start(); o.stop(audioCtx.currentTime + 0.15);
+      // Wing flap noise
+      var n = audioCtx.createBufferSource();
+      var buf = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.05, audioCtx.sampleRate);
+      var d = buf.getChannelData(0);
+      for (var i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / d.length, 2);
+      n.buffer = buf;
+      var gn = audioCtx.createGain();
+      n.connect(gn); gn.connect(audioCtx.destination);
+      gn.gain.setValueAtTime(0.15, audioCtx.currentTime);
+      gn.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+      n.start();
+    } catch(e) {}
+  }
+  function playMoneyExplosion() {
+    try {
+      initAudio();
+      // Cash register / cha-ching
+      var notes = [1320, 1560, 1760, 1980, 1320, 1760, 2200, 2640];
+      notes.forEach(function(freq, i) {
+        var o = audioCtx.createOscillator();
+        var g = audioCtx.createGain();
+        o.connect(g); g.connect(audioCtx.destination);
+        o.type = 'triangle';
+        o.frequency.setValueAtTime(freq, audioCtx.currentTime + i * 0.05);
+        g.gain.setValueAtTime(0.2, audioCtx.currentTime + i * 0.05);
+        g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + i * 0.05 + 0.2);
+        o.start(audioCtx.currentTime + i * 0.05);
+        o.stop(audioCtx.currentTime + i * 0.05 + 0.2);
+      });
+      // Coins rattling - multiple short high clicks
+      for (var c = 0; c < 20; c++) {
+        (function(delay) {
+          var cOsc = audioCtx.createOscillator();
+          var cG = audioCtx.createGain();
+          cOsc.connect(cG); cG.connect(audioCtx.destination);
+          cOsc.type = 'square';
+          cOsc.frequency.setValueAtTime(2000 + Math.random() * 3000, audioCtx.currentTime + delay);
+          cG.gain.setValueAtTime(0.03, audioCtx.currentTime + delay);
+          cG.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + delay + 0.04);
+          cOsc.start(audioCtx.currentTime + delay);
+          cOsc.stop(audioCtx.currentTime + delay + 0.04);
+        })(0.05 + Math.random() * 0.4);
+      }
+    } catch(e) {}
+  }
+
   var c = document.getElementById('splashCanvas');
   c.style.pointerEvents = 'auto';
   var ctx = c.getContext('2d');
@@ -719,11 +784,12 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
   var H = c.height = window.innerHeight;
   var birdImg = new Image();
   birdImg.src = 'splash-bird.png';
-  var bird = { x: W * 0.4, y: H * 0.25, vy: 0, gravity: 0.8, r: 80 };
+  var bird = { x: -100, y: H * 0.25, vy: 0, gravity: 0.35, r: 90 };
   var particles = [];
-  var moneyPitY = H - 50;
+  var moneyPitY = H - 45;
   var phase = 'fly'; timer = 0; doneFade = 1;
-  var jumpFrames = 0, maxJumpFrames = 30;
+  var hasJumped = false;
+  var flyInComplete = false;
 
   function drawBg() {
     var grad = ctx.createLinearGradient(0, 0, 0, H);
@@ -732,18 +798,30 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
     grad.addColorStop(1, '#3D352B');
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, W, H);
-    ctx.fillStyle = 'rgba(212,168,67,0.06)';
-    ctx.font = 'bold 48px sans-serif';
+    ctx.fillStyle = 'rgba(212,168,67,0.07)';
+    ctx.font = 'bold 40px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('FLIPPY BIRD', W / 2, 70);
+    ctx.fillText('FLIPPY BIRD', W / 2, 60);
+    ctx.font = '14px sans-serif';
+    ctx.fillStyle = 'rgba(212,168,67,0.15)';
+    ctx.fillText('Resell-Tracker', W / 2, 82);
   }
 
   function drawMoneyPit() {
-    var pitW = W * 0.6, pitH = 50;
+    var pitW = Math.min(W * 0.7, 320), pitH = 55;
+    // Glow
+    var glow = ctx.createRadialGradient(W / 2, moneyPitY, 0, W / 2, moneyPitY, pitW * 0.8);
+    glow.addColorStop(0, 'rgba(255,215,0,0.2)');
+    glow.addColorStop(1, 'rgba(255,215,0,0)');
+    ctx.beginPath();
+    ctx.ellipse(W / 2, moneyPitY, pitW * 0.8, pitH * 0.8, 0, 0, Math.PI * 2);
+    ctx.fillStyle = glow;
+    ctx.fill();
+    // Pit
     var grad = ctx.createRadialGradient(W / 2, moneyPitY, 0, W / 2, moneyPitY, pitW / 2);
     grad.addColorStop(0, '#FFD700');
-    grad.addColorStop(0.4, '#D4A843');
-    grad.addColorStop(0.7, '#B8860B');
+    grad.addColorStop(0.3, '#DAA520');
+    grad.addColorStop(0.6, '#B8860B');
     grad.addColorStop(1, '#5C3A00');
     ctx.beginPath();
     ctx.ellipse(W / 2, moneyPitY, pitW / 2, pitH / 2, 0, 0, Math.PI * 2);
@@ -752,41 +830,59 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
     ctx.strokeStyle = '#FFD700';
     ctx.lineWidth = 3;
     ctx.stroke();
-    ctx.font = 'bold 28px sans-serif';
+    // €€€ text
+    ctx.font = 'bold 24px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillStyle = '#FFD700';
+    ctx.fillStyle = '#FFF8DC';
     ctx.shadowColor = '#FFD700';
-    ctx.shadowBlur = 20;
-    ctx.fillText('€ € € € €', W / 2, moneyPitY + 10);
+    ctx.shadowBlur = 30;
+    ctx.fillText('€ € € €', W / 2, moneyPitY + 9);
     ctx.shadowBlur = 0;
   }
 
-  function spawnExplosion(x, y, count) {
-    for (var i = 0; i < count; i++) {
+  function spawnExplosion(x, y) {
+    for (var i = 0; i < 60; i++) {
       var angle = Math.random() * Math.PI * 2;
-      var speed = 3 + Math.random() * 10;
+      var speed = 2 + Math.random() * 14;
+      var colors = ['#FFD700', '#FFA500', '#FF6347', '#FFF44F', '#FF4500', '#FFD700', '#FFD700', '#ADFF2F'];
       particles.push({
         x: x, y: y,
         vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed - 3,
+        vy: Math.sin(angle) * speed - 6,
         life: 1,
-        decay: 0.01 + Math.random() * 0.025,
-        size: 6 + Math.random() * 14,
-        color: ['#FFD700', '#FFA500', '#FF6347', '#FFD700', '#FFF44F', '#FF4500'][Math.floor(Math.random() * 6)]
+        decay: 0.008 + Math.random() * 0.02,
+        size: 4 + Math.random() * 16,
+        color: colors[Math.floor(Math.random() * colors.length)]
       });
     }
-    for (var j = 0; j < count / 3; j++) {
+    for (var j = 0; j < 25; j++) {
       var a = Math.random() * Math.PI * 2;
-      var s = 2 + Math.random() * 6;
+      var s = 1 + Math.random() * 7;
       particles.push({
         x: x, y: y,
         vx: Math.cos(a) * s,
-        vy: Math.sin(a) * s - 2,
+        vy: Math.sin(a) * s - 4,
         life: 0.8 + Math.random() * 0.2,
-        decay: 0.015 + Math.random() * 0.02,
-        size: 14 + Math.random() * 10,
-        text: '€'
+        decay: 0.012 + Math.random() * 0.015,
+        size: 16 + Math.random() * 18,
+        text: ['€', '$', '₿', '💰', '🪙'][Math.floor(Math.random() * 5)]
       });
+    }
+    // Ring burst
+    for (var r = 0; r < 2; r++) {
+      for (var k = 0; k < 24; k++) {
+        var ra = (k / 24) * Math.PI * 2 + r * 0.2;
+        var rs = 5 + r * 3;
+        particles.push({
+          x: x + Math.cos(ra) * 10, y: y + Math.sin(ra) * 10,
+          vx: Math.cos(ra) * rs,
+          vy: Math.sin(ra) * rs - 2,
+          life: 0.6 + Math.random() * 0.3,
+          decay: 0.015 + Math.random() * 0.01,
+          size: 3 + r * 4,
+          color: r === 0 ? '#FFD700' : '#FFA500'
+        });
+      }
     }
   }
 
@@ -795,7 +891,7 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
       var p = particles[i];
       p.x += p.vx;
       p.y += p.vy;
-      p.vy += 0.15;
+      p.vy += 0.12;
       p.life -= p.decay;
       if (p.life <= 0) { particles.splice(i, 1); }
     }
@@ -808,17 +904,18 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
       if (p.text) {
         ctx.font = 'bold ' + p.size + 'px sans-serif';
         ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
         ctx.fillStyle = '#FFD700';
         ctx.shadowColor = '#FFD700';
-        ctx.shadowBlur = 15;
+        ctx.shadowBlur = 20;
         ctx.fillText(p.text, p.x, p.y);
         ctx.shadowBlur = 0;
       } else {
+        ctx.shadowColor = p.color;
+        ctx.shadowBlur = 12;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
         ctx.fillStyle = p.color;
-        ctx.shadowColor = p.color;
-        ctx.shadowBlur = 10;
         ctx.fill();
         ctx.shadowBlur = 0;
       }
@@ -826,43 +923,67 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
     ctx.globalAlpha = 1;
   }
 
+  var triggered = false;
+
   function animate() {
     timer++;
     ctx.clearRect(0, 0, W, H);
     drawBg();
     drawMoneyPit();
 
-    // Bird flies in from left, then falls into pit
     if (phase === 'fly') {
-      if (bird.x < W * 0.5) bird.x += 8;
-      else {
-        bird.vy += bird.gravity;
-        bird.vy = Math.min(bird.vy, 12);
-        bird.y += bird.vy;
+      // Fly in from left
+      if (!flyInComplete) {
+        bird.x += 6;
+        if (bird.x >= W * 0.45) {
+          flyInComplete = true;
+          bird.x = W * 0.45;
+        }
+      } else {
+        // Hover then drop
+        if (!hasJumped) {
+          bird.y += Math.sin(timer * 0.08) * 1.2;
+          if (timer > 20) {
+            hasJumped = true;
+            bird.vy = -9;
+            playJump();
+          }
+        } else {
+          bird.vy += bird.gravity;
+          bird.vy = Math.min(bird.vy, 10);
+          bird.y += bird.vy;
+        }
       }
-      // Draw bird image
+      // Draw bird
       if (birdImg.complete && birdImg.naturalWidth > 0) {
         ctx.save();
         ctx.translate(bird.x, bird.y);
-        var angle = Math.min(Math.max(bird.vy * 0.03, -0.3), 0.5);
-        ctx.rotate(angle);
+        var angle = hasJumped ? Math.min(Math.max(bird.vy * 0.03, -0.3), 0.5) : Math.sin(timer * 0.1) * 0.08;
+        if (!hasJumped && angle !== 0) ctx.rotate(angle);
+        if (hasJumped && bird.vy > 2) ctx.rotate(0.4);
         ctx.drawImage(birdImg, -bird.r / 2, -bird.r / 2, bird.r, bird.r);
         ctx.restore();
       }
-      if (bird.y > moneyPitY - 40) {
-        spawnExplosion(bird.x, moneyPitY - 30, 50);
+      // Check if bird hit money pit
+      if (bird.y > moneyPitY - 45 && flyInComplete) {
+        spawnExplosion(bird.x, moneyPitY - 20);
+        playMoneyExplosion();
         phase = 'explode';
         timer = 0;
       }
     } else if (phase === 'explode') {
-      drawMoneyPit();
-      if (timer > 30) {
-        doneFade -= 0.06;
+      if (!triggered) {
+        triggered = true;
+        spawnExplosion(bird.x, moneyPitY - 20);
+        playMoneyExplosion();
+      }
+      if (timer > 40 && particles.length < 10) {
+        doneFade -= 0.04;
         if (doneFade <= 0) {
+          c.style.transition = 'opacity 0.5s';
           c.style.opacity = 0;
           c.style.pointerEvents = 'none';
-          c.style.transition = 'opacity 0.4s';
-          setTimeout(function() { c.style.display = 'none'; }, 400);
+          setTimeout(function() { c.style.display = 'none'; }, 500);
           return;
         }
       }
@@ -882,12 +1003,11 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
   window.addEventListener('resize', function() {
     W = c.width = window.innerWidth;
     H = c.height = window.innerHeight;
-    moneyPitY = H - 50;
+    moneyPitY = H - 45;
   });
 
-  // Wait for image then start
   birdImg.onload = function() { animate(); };
-  setTimeout(function() { if (phase === 'fly') animate(); }, 500);
+  setTimeout(function() { if (!birdImg.complete) animate(); }, 800);
 })();
 </script>
 
