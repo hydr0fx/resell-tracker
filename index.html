@@ -192,7 +192,8 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
   box-shadow: var(--shadow); margin-bottom: 12px;
 }
 .form-card.condition-card {
-  background: var(--card); border-radius: var(--radius); padding: 14px 16px;
+  background: var(--bg); border-radius: var(--radius); padding: 14px 16px;
+  border: 1.5px solid var(--border);
 }
 .form-card.condition-card h3 { font-size: 11px; color: var(--text-secondary); }
 .form-card h3 {
@@ -205,10 +206,11 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
 .form-group input, .form-group select, .form-group textarea {
   width: 100%; padding: 11px 13px; border: 1.5px solid var(--border);
   border-radius: var(--radius-sm); font-size: 15px; outline: none;
-  transition: border-color 0.2s; background: var(--card);
+  transition: border-color 0.2s; background: transparent;
 }
 .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
   border-color: var(--primary);
+  background: var(--card);
 }
 .form-group textarea { min-height: 60px; resize: vertical; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -290,9 +292,9 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
 .search-bar input {
   width: 100%; padding: 12px 14px 12px 40px; border: 2px solid var(--border);
   border-radius: var(--radius-sm); font-size: 14px; outline: none;
-  background: var(--card); box-shadow: var(--shadow); transition: border-color 0.2s;
+  background: transparent; box-shadow: var(--shadow); transition: border-color 0.2s;
 }
-.search-bar input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(200,168,78,0.12); }
+.search-bar input:focus { border-color: var(--gold); background: var(--card); }
 .search-bar svg {
   position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
   width: 18px; height: 18px; color: var(--text-secondary);
@@ -397,13 +399,15 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
 .dark-mode .bottom-nav { background: var(--card); }
 .dark-mode .nav-logo { background: #1C1814; }
 .dark-mode .nav-logo img { opacity: 0.9; }
-.dark-mode .search-bar input { background: var(--card); border-color: var(--border); color: var(--text); }
-.dark-mode .form-group input, .dark-mode .form-group select, .dark-mode .form-group textarea { background: #1C1814; color: var(--text); border-color: var(--border); }
+.dark-mode .search-bar input { background: transparent; border-color: var(--border); color: var(--text); }
+.dark-mode .search-bar input:focus { background: var(--card); }
+.dark-mode .form-group input, .dark-mode .form-group select, .dark-mode .form-group textarea { background: transparent; color: var(--text); border-color: var(--border); }
+.dark-mode .form-group input:focus, .dark-mode .form-group select:focus, .dark-mode .form-group textarea:focus { background: var(--card); }
 .dark-mode .settings-item { background: var(--card); }
 .dark-mode .stat-card { background: var(--card); }
 .dark-mode .item-card { background: var(--card); }
 .dark-mode .item-card:active { background: #1C1814; }
-.dark-mode .form-card.condition-card { background: var(--card); }
+.dark-mode .form-card.condition-card { background: var(--bg); }
 .dark-mode .modal { background: var(--card); }
 .dark-mode .header-logo { border-color: var(--gold); }
 </style>
