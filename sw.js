@@ -6,6 +6,7 @@ const URLS = [
   '/resell-tracker/icon-192.png',
   '/resell-tracker/icon-512.png',
   '/resell-tracker/apple-icon.png',
+  '/resell-tracker/splash-bird.png',
   '/resell-tracker/sw.js'
 ];
 
