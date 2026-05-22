@@ -11,14 +11,20 @@ const URLS = [
 
 self.addEventListener('install', e => {
   e.waitUntil(
-    caches.open(CACHE).then(cache => cache.addAll(URLS).catch(() => {})).then(() => self.skipWaiting())
+    caches.open(CACHE).then(cache => cache.addAll(URLS).catch(function(){})).then(function(){ return self.skipWaiting(); })
   );
 });
 
 self.addEventListener('activate', e => {
   e.waitUntil(
-    caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())
+    caches.keys().then(function(keys) { return Promise.all(keys.filter(function(k) { return k !== CACHE; }).map(function(k) { return caches.delete(k); })); }).then(function(){ return self.clients.claim(); })
   );
+});
+
+self.addEventListener('message', function(e) {
+  if (e.data && e.data.action === 'skipWaiting') {
+    self.skipWaiting();
+  }
 });
 
 self.addEventListener('fetch', e => {

@@ -14,26 +14,29 @@ var APP_VERSION = '2.0.0';
 
 if ('serviceWorker' in navigator) {
   var swReg = null;
-  navigator.serviceWorker.register('sw.js?v=' + APP_VERSION).then(reg => {
+  var refreshing = false;
+  navigator.serviceWorker.register('sw.js').then(function(reg) {
     swReg = reg;
-    reg.addEventListener('updatefound', () => {
+    if (reg.active && !navigator.serviceWorker.controller) {
+      reg.active.postMessage({ action: 'skipWaiting' });
+    }
+    reg.addEventListener('updatefound', function() {
       var sw = reg.installing;
-      sw.addEventListener('statechange', () => {
+      sw.addEventListener('statechange', function() {
         if (sw.state === 'installed' && navigator.serviceWorker.controller) {
+          sw.postMessage({ action: 'skipWaiting' });
           var toast = document.getElementById('toast');
-          toast.textContent = 'Update verfugbar - App neu laden';
+          toast.textContent = 'Update - neu laden...';
           toast.classList.add('show');
-          toast.style.cursor = 'pointer';
-          toast.onclick = function() { window.location.reload(); };
-          setTimeout(function() { toast.classList.remove('show'); toast.onclick = null; }, 8000);
+          setTimeout(function() { window.location.reload(); }, 500);
         }
       });
     });
     if (navigator.onLine) {
-      setInterval(function() { reg.update(); }, 60000);
+      reg.update();
+      setInterval(function() { reg.update(); }, 30000);
     }
   });
-  var refreshing = false;
   navigator.serviceWorker.addEventListener('controllerchange', function() {
     if (!refreshing) { refreshing = true; window.location.reload(); }
   });
