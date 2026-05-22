@@ -1,4 +1,4 @@
-const CACHE = 'reselltracker-v2';
+const CACHE = 'flippybird-v1';
 const URLS = [
   '/resell-tracker/',
   '/resell-tracker/index.html',

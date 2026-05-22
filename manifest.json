@@ -1,12 +1,12 @@
 {
-  "name": "ResellTracker",
-  "short_name": "ResellTracker",
-  "description": "Tracker für Resell-Verkäufe - Käufe, Verkäufe und Marge verwalten",
+  "name": "Flippy Bird",
+  "short_name": "Flippy Bird",
+  "description": "Resell-Tracker - Käufe, Verkäufe und Marge verwalten",
   "start_url": "/resell-tracker/",
-"scope": "/resell-tracker/",
+  "scope": "/resell-tracker/",
   "display": "standalone",
-  "background_color": "#f1f5f9",
-  "theme_color": "#2563eb",
+  "background_color": "#ffffff",
+  "theme_color": "#00A650",
   "orientation": "portrait",
   "icons": [
     {
