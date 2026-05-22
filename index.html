@@ -88,8 +88,9 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
   height: 3px; background: var(--border-pattern); opacity: 0.4;
 }
 .header-logo {
-  width: 32px; height: 32px; border-radius: 6px; flex-shrink: 0;
-  border: 1.5px solid var(--gold); object-fit: cover;
+  width: 40px; height: 40px; border-radius: 8px; flex-shrink: 0;
+  border: 2px solid var(--gold); object-fit: cover;
+  box-shadow: 0 0 8px rgba(200,168,78,0.2);
 }
 .header h1 {
   font-size: 17px; font-weight: 800; flex: 1; color: var(--text);
@@ -182,6 +183,9 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
 }
 .item-card:active::after { transform: translateY(-50%) translateX(4px); }
 .item-card:active { transform: scale(0.98); background: var(--primary-light); }
+.item-card[draggable="true"] { cursor: grab; }
+.item-card[draggable="true"]:active { cursor: grabbing; }
+.item-card.drag-over { border-color: var(--gold); box-shadow: 0 0 12px rgba(200,168,78,0.3); }
 .item-card-header { display: flex; justify-content: space-between; align-items: start; gap: 8px; }
 .item-card-name { font-weight: 600; font-size: 15px; }
 .item-card-status { flex-shrink: 0; }
@@ -199,6 +203,13 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
   content: ''; position: absolute; top: -2px; left: 20px; right: 20px;
   height: 2px; background: var(--gold); border-radius: 0 0 2px 2px;
 }
+.form-card.condition-card {
+  background: var(--bg); border: 2px solid var(--border);
+  padding: 16px 20px; margin-left: 4px; margin-right: 4px;
+}
+.form-card.condition-card::before { display: none; }
+.form-card.condition-card h3 { font-size: 11px; color: var(--text-secondary); }
+.form-card.condition-card h3::before { content: '◈ '; }
 .form-card h3 {
   font-size: 12px; font-weight: 800; color: var(--text-secondary);
   margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1.5px;
@@ -265,15 +276,25 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
 .nav-item svg { width: 24px; height: 24px; }
 .nav-item span { font-size: 10px; font-weight: 600; letter-spacing: 0.3px; }
 .nav-logo {
-  width: 56px; height: 56px; border-radius: 50%;
-  overflow: hidden; cursor: pointer; margin-top: -20px;
-  box-shadow: 0 0 0 3px var(--gold), 0 0 16px rgba(200,168,78,0.3), var(--shadow-lg);
+  width: 64px; height: 64px; border-radius: 50%;
+  overflow: hidden; cursor: pointer; margin-top: -24px;
+  box-shadow: 0 0 0 3px var(--gold), 0 0 20px rgba(200,168,78,0.35), var(--shadow-lg);
   background: white;
   display: flex; align-items: center; justify-content: center;
-  transition: transform 0.2s; border: 2px solid var(--gold);
+  transition: transform 0.2s; border: 3px solid var(--gold);
+  position: relative;
 }
 .nav-logo:active { transform: scale(0.92); }
 .nav-logo img { width: 100%; height: 100%; object-fit: cover; }
+.nav-logo .plus-badge {
+  position: absolute; bottom: -2px; right: -2px;
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--primary); color: white;
+  border: 2px solid var(--card);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 800; line-height: 1;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
 
 /* Item detail page */
 .detail-section { margin-bottom: 16px; }
@@ -411,6 +432,29 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
   .content { max-width: 480px; margin: 0 auto; }
   .bottom-nav { max-width: 480px; left: 50%; transform: translateX(-50%); }
 }
+
+/* Dark Mode */
+.dark-mode {
+  --bg: #1A1A2E;
+  --card: #232340;
+  --text: #E8E0D8;
+  --text-secondary: #9A8A7A;
+  --border: #3A3A5A;
+  --shadow: 0 2px 8px rgba(0,0,0,0.3);
+  --shadow-lg: 0 4px 24px rgba(0,0,0,0.4);
+  --primary-light: #1A3A2A;
+}
+.dark-mode .header { background: var(--card); }
+.dark-mode .bottom-nav { background: var(--card); }
+.dark-mode .nav-logo { background: var(--card); }
+.dark-mode .nav-logo img { opacity: 0.9; }
+.dark-mode .search-bar input { background: var(--card); }
+.dark-mode .form-group input, .dark-mode .form-group select, .dark-mode .form-group textarea { background: #1A1A2E; color: var(--text); }
+.dark-mode .settings-item { background: var(--card); }
+.dark-mode .stat-card { background: var(--card); }
+.dark-mode .item-card { background: var(--card); }
+.dark-mode .form-card.condition-card { background: #1A1A2E; }
+.dark-mode .modal { background: var(--card); }
 </style>
 </head>
 <body>
@@ -459,7 +503,10 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
         <div class="form-row">
           <div class="form-group">
             <label for="itemCategory">Kategorie</label>
-            <select id="itemCategory"></select>
+            <div style="display:flex;gap:6px;">
+              <select id="itemCategory" style="flex:1;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;background:#FAFAFA;"></select>
+              <button type="button" class="btn btn-sm btn-outline" onclick="quickAddCategory()" style="width:auto;padding:8px 10px;" title="Kategorie hinzufügen">+</button>
+            </div>
           </div>
           <div class="form-group">
             <label for="itemPrice">Kaufpreis (€)</label>
@@ -496,7 +543,10 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
           </div>
           <div class="form-group">
             <label for="salePlatform">Plattform</label>
-            <select id="salePlatform"></select>
+            <div style="display:flex;gap:6px;">
+              <select id="salePlatform" style="flex:1;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;background:#FAFAFA;"></select>
+              <button type="button" class="btn btn-sm btn-outline" onclick="quickAddPlatform()" style="width:auto;padding:8px 10px;" title="Plattform hinzufügen">+</button>
+            </div>
           </div>
         </div>
         <div class="form-row">
@@ -539,8 +589,8 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
             <input type="file" id="trackingPhotoInput" accept="image/*" style="display:none" onchange="handleTrackingPhoto(event)">
           </div>
         </div>
-        <div class="form-card" style="box-shadow:none;padding:0;margin-bottom:12px;">
-          <h3 style="margin-bottom:10px;">Artikelzustand</h3>
+        <div class="form-card condition-card">
+          <h3>Artikelzustand</h3>
           <div class="form-row">
             <div class="form-group">
               <label for="saleCondition">Zustand</label>
@@ -597,6 +647,20 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
         </div>
       </div>
       <div class="form-card">
+        <h3>Darstellung</h3>
+        <div class="settings-item">
+          <div class="left">
+            <h4>Dark Mode</h4>
+            <p>Dunkles Farbschema aktivieren</p>
+          </div>
+          <label style="position:relative;display:inline-block;width:48px;height:26px;flex-shrink:0;">
+            <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode(this.checked)" style="opacity:0;width:0;height:0;">
+            <span style="position:absolute;cursor:pointer;inset:0;background:var(--border);border-radius:26px;transition:0.3s;"></span>
+            <span id="darkModeKnob" style="position:absolute;cursor:pointer;width:20px;height:20px;left:3px;bottom:3px;background:white;border-radius:50%;transition:0.3s;"></span>
+          </label>
+        </div>
+      </div>
+      <div class="form-card">
         <h3>Daten</h3>
         <div class="settings-item">
           <div class="left">
@@ -642,8 +706,9 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
       <span>Artikel</span>
     </button>
-    <button class="nav-logo" onclick="navigate('add')" data-page="add">
+    <button class="nav-logo" onclick="navigate('add')" data-page="add" title="Neuen Artikel inserieren">
       <img src="icon-512.png" alt="Flippy Bird">
+      <span class="plus-badge">+</span>
     </button>
     <button class="nav-item" onclick="navigate('settings')" data-page="settings">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
@@ -848,7 +913,7 @@ function renderRecentItems() {
     return;
   }
 
-  container.innerHTML = '<div class="divider">Letzte Aktivitäten</div>' + filtered.map(i => renderItemCard(i)).join('');
+  container.innerHTML = '<div class="divider">Letzte Aktivitäten</div>' + filtered.map(function(i) { return renderItemCard(i, false); }).join('');
 }
 
 // Inventory
@@ -880,7 +945,8 @@ function renderInventory() {
     container.innerHTML = '<div class="empty-state"><h3>Keine Artikel gefunden</h3><p>Anderen Filter oder Suchbegriff probieren.</p></div>';
     return;
   }
-  container.innerHTML = filtered.map(i => renderItemCard(i)).join('');
+  container.innerHTML = filtered.map(function(i) { return renderItemCard(i, true); }).join('');
+  container._items = filtered;
 }
 
 function setInventoryFilter(filter) {
@@ -888,17 +954,19 @@ function setInventoryFilter(filter) {
   renderInventory();
 }
 
-function renderItemCard(item) {
+function renderItemCard(item, draggable) {
   const cost = (item.purchasePrice || 0) + (item.sale ? (item.sale.platformFee || 0) + (item.sale.shippingCost || 0) : 0);
   const revenue = item.sale ? (item.sale.price || 0) : 0;
   const profit = revenue - cost;
   const statusLabel = { gekauft: 'Gekauft', gelistet: 'Gelistet', verkauft: 'Verkauft', verschickt: 'Verschickt', abgeschlossen: 'Abgeschlossen' };
+  var dragAttr = draggable ? 'draggable="true" ondragstart="dragStart(event)" ondragend="dragEnd(event)" ontouchstart="touchStart(event)" ontouchmove="touchMove(event)" ontouchend="touchEnd(event)"' : '';
 
-  return `<div class="item-card" onclick="navigate('detail','${item.id}')">
+  return `<div class="item-card" ${dragAttr} onclick="navigate('detail','${item.id}')" data-id="${item.id}">
     <div class="item-card-header">
       <div class="item-card-name">${escapeHtml(item.name)}</div>
       <span class="status-badge status-${item.status}">${statusLabel[item.status] || item.status}</span>
     </div>
+    ${item.photos && item.photos.length > 0 ? `<div style="display:flex;gap:6px;margin:8px 0 4px;">${item.photos.slice(0, 3).map(p => `<div style="width:48px;height:48px;border-radius:6px;overflow:hidden;border:1.5px solid var(--border);flex-shrink:0;"><img src="${p}" style="width:100%;height:100%;object-fit:cover;"></div>`).join('')}${item.photos.length > 3 ? `<div style="width:48px;height:48px;border-radius:6px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--text-secondary);border:1.5px solid var(--border);">+${item.photos.length - 3}</div>` : ''}</div>` : ''}
     <div class="item-card-details">
       <span>Kauf: ${fmt(item.purchasePrice)}</span>
       ${item.sale ? `<span>Verkauf: ${fmt(item.sale.price)}</span>` : ''}
@@ -1097,7 +1165,7 @@ function renderDetail(id) {
         <h2 style="font-size:18px;font-weight:700;">${escapeHtml(item.name)}</h2>
         <span class="status-badge status-${item.status}">${statusLabel[item.status] || item.status}</span>
       </div>
-      ${item.photos && item.photos.length > 0 ? `<div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:12px;">${item.photos.map(p => `<div style="width:80px;height:80px;border-radius:8px;overflow:hidden;border:2px solid var(--border);flex-shrink:0;"><img src="${p}" style="width:100%;height:100%;object-fit:cover;"></div>`).join('')}</div>` : ''}
+      ${item.photos && item.photos.length > 0 ? `<div style="display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;margin-bottom:12px;">${item.photos.map(p => `<div style="min-width:120px;height:120px;border-radius:10px;overflow:hidden;border:2px solid var(--gold);flex-shrink:0;box-shadow:var(--shadow);"><img src="${p}" style="width:100%;height:100%;object-fit:cover;"></div>`).join('')}</div>` : ''}
       <div class="detail-section">
         <h3>Kaufdetails</h3>
         <div class="detail-row"><span class="label">Kategorie</span><span class="value">${item.category}</span></div>
@@ -1511,10 +1579,127 @@ function openKleinanzeigen() {
   window.open('https://www.kleinanzeigen.de/p-anzeige-aufgeben.html', '_blank');
 }
 
+// Drag & Reorder
+var dragSrcId = null;
+var touchStartY = 0;
+var touchItemId = null;
+
+function dragStart(e) {
+  dragSrcId = e.target.closest('.item-card').dataset.id;
+  e.dataTransfer.effectAllowed = 'move';
+  e.target.closest('.item-card').style.opacity = '0.4';
+}
+
+function dragEnd(e) {
+  e.target.closest('.item-card').style.opacity = '1';
+  dragSrcId = null;
+}
+
+function touchStart(e) {
+  var card = e.target.closest('.item-card');
+  if (!card || e.target.closest('button, input, select, textarea')) return;
+  touchStartY = e.touches[0].clientY;
+  touchItemId = card.dataset.id;
+}
+
+function touchMove(e) {
+  if (!touchItemId) return;
+  var touchY = e.touches[0].clientY;
+  var cards = document.querySelectorAll('#inventoryList .item-card');
+  var currentCard = document.querySelector('.item-card[data-id="' + touchItemId + '"]');
+  if (!currentCard) return;
+  cards.forEach(function(c) {
+    if (c === currentCard) return;
+    var rect = c.getBoundingClientRect();
+    if (touchY > rect.top && touchY < rect.bottom) {
+      if (touchY < rect.top + rect.height / 2) {
+        c.parentNode.insertBefore(currentCard, c);
+      } else {
+        c.parentNode.insertBefore(currentCard, c.nextSibling);
+      }
+    }
+  });
+}
+
+function touchEnd(e) {
+  if (!touchItemId) return;
+  touchItemId = null;
+  saveItemOrder();
+}
+
+document.addEventListener('dragover', function(e) {
+  e.preventDefault();
+  var card = e.target.closest('.item-card');
+  if (!card || !dragSrcId || card.dataset.id === dragSrcId) return;
+  var src = document.querySelector('.item-card[data-id="' + dragSrcId + '"]');
+  if (!src) return;
+  var rect = card.getBoundingClientRect();
+  if (e.clientY < rect.top + rect.height / 2) {
+    card.parentNode.insertBefore(src, card);
+  } else {
+    card.parentNode.insertBefore(src, card.nextSibling);
+  }
+});
+
+document.addEventListener('drop', function(e) {
+  e.preventDefault();
+  saveItemOrder();
+});
+
+function saveItemOrder() {
+  var cards = document.querySelectorAll('#inventoryList .item-card');
+  var ordered = [];
+  cards.forEach(function(c) {
+    var id = c.dataset.id;
+    var item = items.find(function(i) { return i.id === id; });
+    if (item) ordered.push(item);
+  });
+  if (ordered.length > 0) {
+    items = ordered;
+    saveData();
+  }
+}
+
+// Quick add category/platform
+function quickAddCategory() {
+  var val = prompt('Neue Kategorie:');
+  if (!val || !val.trim()) return;
+  var cats = loadCategories();
+  if (cats.indexOf(val.trim()) === -1) { cats.push(val.trim()); saveCategories(cats); populateCategorySelect(); showToast('Kategorie hinzugefügt'); }
+  else showToast('Gibt es bereits');
+}
+
+function quickAddPlatform() {
+  var val = prompt('Neue Plattform:');
+  if (!val || !val.trim()) return;
+  var plats = loadPlatforms();
+  if (plats.indexOf(val.trim()) === -1) { plats.push(val.trim()); savePlatforms(plats); populatePlatformSelect(); showToast('Plattform hinzugefügt'); }
+  else showToast('Gibt es bereits');
+}
+
+// Dark Mode
+function toggleDarkMode(enabled) {
+  document.body.classList.toggle('dark-mode', enabled);
+  localStorage.setItem('flippybird_darkmode', enabled ? '1' : '');
+  var knob = document.getElementById('darkModeKnob');
+  if (knob) {
+    knob.style.transform = enabled ? 'translateX(22px)' : '';
+    knob.style.background = enabled ? 'var(--gold)' : 'white';
+  }
+}
+
+function loadDarkMode() {
+  var enabled = localStorage.getItem('flippybird_darkmode') === '1';
+  var toggle = document.getElementById('darkModeToggle');
+  if (toggle) toggle.checked = enabled;
+  toggleDarkMode(enabled);
+}
+
 // Init
 loadData();
 loadCategories();
 loadPlatforms();
+loadDarkMode();
 renderDashboard();
 
 // Set today's date for date inputs
