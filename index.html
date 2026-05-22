@@ -10,7 +10,28 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="apple-icon.png">
 <script>
-var APP_VERSION = '2.0.0';
+const APP_VERSION = 'v2.3.0';
+
+// Version Check - erzwingt sofortiges Update bei neuer Version
+(function() {
+  var lastVer = localStorage.getItem('flippybird_version');
+  if (lastVer && lastVer !== APP_VERSION) {
+    localStorage.setItem('flippybird_version', APP_VERSION);
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(regs) {
+        regs.forEach(function(r) { r.unregister(); });
+      });
+    }
+    if ('caches' in window) {
+      caches.keys().then(function(keys) {
+        return Promise.all(keys.map(function(k) { return caches.delete(k); }));
+      });
+    }
+    location.reload(true);
+    return;
+  }
+  localStorage.setItem('flippybird_version', APP_VERSION);
+})();
 
 if ('serviceWorker' in navigator) {
   var swReg = null;
@@ -1012,28 +1033,6 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
 </script>
 
 <script>
-// Version Check - erzwingt sofortiges Update bei neuer Version
-const APP_VERSION = 'v2.3.0';
-(function() {
-  var lastVer = localStorage.getItem('flippybird_version');
-  if (lastVer && lastVer !== APP_VERSION) {
-    localStorage.setItem('flippybird_version', APP_VERSION);
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.getRegistrations().then(function(regs) {
-        regs.forEach(function(r) { r.unregister(); });
-      });
-    }
-    if ('caches' in window) {
-      caches.keys().then(function(keys) {
-        return Promise.all(keys.map(function(k) { return caches.delete(k); }));
-      });
-    }
-    location.reload(true);
-    return;
-  }
-  localStorage.setItem('flippybird_version', APP_VERSION);
-})();
-
 // State
 let items = [];
 let currentPage = 'dashboard';
