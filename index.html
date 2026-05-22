@@ -783,8 +783,8 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
   var W = c.width = window.innerWidth;
   var H = c.height = window.innerHeight;
   var birdImg = new Image();
-  birdImg.src = 'splash-bird.png';
-  var bird = { x: -100, y: H * 0.25, vy: 0, gravity: 0.35, r: 90 };
+  birdImg.src = 'splash-bird.png?v=2.3.0';
+  var bird = { x: -100, y: H * 0.25, vy: 0, gravity: 0.5, r: 90 };
   var particles = [];
   var moneyPitY = H - 45;
   var phase = 'fly'; timer = 0; doneFade = 1;
@@ -932,9 +932,9 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
     drawMoneyPit();
 
     if (phase === 'fly') {
-      // Fly in from left - faster
+      // Fly in fast
       if (!flyInComplete) {
-        bird.x += 12;
+        bird.x += 18;
         if (bird.x >= W * 0.45) {
           flyInComplete = true;
           bird.x = W * 0.45;
@@ -942,15 +942,15 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
       } else {
         // Quick hover then drop
         if (!hasJumped) {
-          bird.y += Math.sin(timer * 0.12) * 1.5;
-          if (timer > 10) {
+          bird.y += Math.sin(timer * 0.18) * 2;
+          if (timer > 6) {
             hasJumped = true;
-            bird.vy = -10;
+            bird.vy = -12;
             playJump();
           }
         } else {
-          bird.vy += bird.gravity + 0.3;
-          bird.vy = Math.min(bird.vy, 14);
+          bird.vy += bird.gravity + 0.5;
+          bird.vy = Math.min(bird.vy, 16);
           bird.y += bird.vy;
         }
       }
