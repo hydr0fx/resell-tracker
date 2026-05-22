@@ -932,25 +932,25 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
     drawMoneyPit();
 
     if (phase === 'fly') {
-      // Fly in from left
+      // Fly in from left - faster
       if (!flyInComplete) {
-        bird.x += 6;
+        bird.x += 12;
         if (bird.x >= W * 0.45) {
           flyInComplete = true;
           bird.x = W * 0.45;
         }
       } else {
-        // Hover then drop
+        // Quick hover then drop
         if (!hasJumped) {
-          bird.y += Math.sin(timer * 0.08) * 1.2;
-          if (timer > 20) {
+          bird.y += Math.sin(timer * 0.12) * 1.5;
+          if (timer > 10) {
             hasJumped = true;
-            bird.vy = -9;
+            bird.vy = -10;
             playJump();
           }
         } else {
-          bird.vy += bird.gravity;
-          bird.vy = Math.min(bird.vy, 10);
+          bird.vy += bird.gravity + 0.3;
+          bird.vy = Math.min(bird.vy, 14);
           bird.y += bird.vy;
         }
       }
@@ -977,8 +977,8 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
         spawnExplosion(bird.x, moneyPitY - 20);
         playMoneyExplosion();
       }
-      if (timer > 40 && particles.length < 10) {
-        doneFade -= 0.04;
+      if (timer > 20 && particles.length < 10) {
+        doneFade -= 0.06;
         if (doneFade <= 0) {
           c.style.transition = 'opacity 0.5s';
           c.style.opacity = 0;
