@@ -1,9 +1,17 @@
-const CACHE = 'reselltracker-v1';
-const URLS = ['index.html', 'manifest.json'];
+const CACHE = 'reselltracker-v2';
+const URLS = [
+  '/resell-tracker/',
+  '/resell-tracker/index.html',
+  '/resell-tracker/manifest.json',
+  '/resell-tracker/icon-192.png',
+  '/resell-tracker/icon-512.png',
+  '/resell-tracker/apple-icon.png',
+  '/resell-tracker/sw.js'
+];
 
 self.addEventListener('install', e => {
   e.waitUntil(
-    caches.open(CACHE).then(cache => cache.addAll(URLS)).then(() => self.skipWaiting())
+    caches.open(CACHE).then(cache => cache.addAll(URLS).catch(() => {})).then(() => self.skipWaiting())
   );
 });
 
@@ -15,6 +23,6 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   e.respondWith(
-    caches.match(e.request).then(r => r || fetch(e.request).catch(() => new Response('Offline', { status: 503 })))
+    caches.match(e.request).then(r => r || fetch(e.request))
   );
 });

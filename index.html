@@ -11,7 +11,25 @@
 <link rel="apple-touch-icon" href="apple-icon.png">
 <script>
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js');
+  navigator.serviceWorker.register('sw.js').then(reg => {
+    reg.addEventListener('updatefound', () => {
+      const sw = reg.installing;
+      sw.addEventListener('statechange', () => {
+        if (sw.state === 'installed' && navigator.serviceWorker.controller) {
+          const toast = document.getElementById('toast');
+          toast.textContent = 'Update verfugbar - App neu laden';
+          toast.classList.add('show');
+          toast.style.cursor = 'pointer';
+          toast.onclick = () => { window.location.reload(); };
+          setTimeout(() => { toast.classList.remove('show'); toast.onclick = null; }, 8000);
+        }
+      });
+    });
+  });
+  let refreshing = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!refreshing) { refreshing = true; window.location.reload(); }
+  });
 }
 </script>
 <style>
