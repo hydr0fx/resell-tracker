@@ -41,14 +41,23 @@
 - `fSalePrice` statt `fSelling` (Formularfeld)
 - `sellDate` für Verkaufsdatum
 
+### Header & Dark Mode (Session 2)
+- Vogel-Emoji 🐦 aus Header entfernt → App-Logo (icon-192.png) stattdessen
+- Dark-Mode-Toggle (🌙/☀️) direkt im Header – sofort an/aus, kein Settings-Speichern
+- Dark Mode aus Settings-Seite entfernt
+- `manifest.json` theme-color auf `#1A1A2E` korrigiert
+- Empty-State-Icon von 🐦 auf 📦 geändert
+- `applyDarkMode()` setzt jetzt alle CSS-Variablen (`--bg`, `--card`, `--text`, `--border`)
+
 ## Status
 - **Live:** https://hydr0fx.github.io/flippy-bird/ (GitHub Pages)
 - **SW Cache:** v3.1.0
 - **Kein Backend mehr** – reine Client-PWA
 - **Keine automatische Kleinanzeigen-Postings** – nur Export + Copy
 
-## Letzter Commit
+## Letzte Commits
 ```
+245ad74 Remove bird emoji, add app icon in header, instant dark mode toggle in header
 de96e35 Add .gitignore
 8111f2b v3.1: Photo viewer, PayPal calculator, shipping cost selector, sales month grid, select mode
 ```
