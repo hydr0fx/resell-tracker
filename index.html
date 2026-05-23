@@ -2061,16 +2061,29 @@ function loadDarkMode() {
 }
 
 // ===== Kleinanzeigen API =====
-const KA_API = localStorage.getItem('ka_api_url') || 'http://localhost:3001/api';
+const KA_DEFAULT = 'https://dc7daeb31e0006.lhr.life/api';
+const KA_API = localStorage.getItem('ka_api_url') || KA_DEFAULT;
 let kaSession = JSON.parse(localStorage.getItem('ka_session') || 'null');
 
 async function kaFetch(path, opts) {
-  const res = await fetch(KA_API + path, {
-    headers: { 'Content-Type': 'application/json' },
-    ...opts,
-  });
-  if (!res.ok) throw new Error((await res.json()).error || 'Fehler');
-  return res.json();
+  try {
+    const res = await fetch(KA_API + path, {
+      headers: { 'Content-Type': 'application/json' },
+      mode: 'cors',
+      ...opts,
+    });
+    if (!res.ok) {
+      var errMsg = 'Fehler ' + res.status;
+      try { var errJson = await res.json(); errMsg = errJson.error || errMsg; } catch {}
+      throw new Error(errMsg);
+    }
+    return res.json();
+  } catch (e) {
+    if (e.name === 'TypeError' && e.message.includes('fetch')) {
+      throw new Error('Verbindung fehlgeschlagen – Backend nicht erreichbar unter:\n' + KA_API + '\n\nAPI-URL in Einstellungen prüfen!');
+    }
+    throw e;
+  }
 }
 
 // ===== Kleinanzeigen Render =====
@@ -2105,7 +2118,10 @@ function renderKleinanzeigen() {
             Gib deine Kleinanzeigen-Zugangsdaten ein, um Chats zu verwalten und Anzeigen zu erstellen.
           </p>
           <input type="email" id="kaEmail" placeholder="E-Mail" style="width:100%;margin-bottom:8px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;">
-          <input type="password" id="kaPassword" placeholder="Passwort" style="width:100%;margin-bottom:16px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;">
+          <div style="position:relative;margin-bottom:16px;">
+            <input type="password" id="kaPassword" placeholder="Passwort" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;outline:none;padding-right:40px;">
+            <span id="kaPasswordToggle" onclick="toggleKaPassword()" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:18px;user-select:none;color:var(--text-secondary);">👁️</span>
+          </div>
           <button class="btn btn-primary" onclick="kaLogin()" style="width:100%;">Verbinden</button>
           <div id="kaLoginError" style="color:var(--danger);font-size:13px;margin-top:8px;display:none;"></div>
           <div id="kaLoginLoading" style="font-size:13px;color:var(--text-secondary);margin-top:8px;display:none;">Verbinde...</div>
@@ -2280,6 +2296,19 @@ async function kaSendMessage(chatId) {
 function esc(s) {
   if (!s) return '';
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function toggleKaPassword() {
+  var input = document.getElementById('kaPassword');
+  var toggle = document.getElementById('kaPasswordToggle');
+  if (!input || !toggle) return;
+  if (input.type === 'password') {
+    input.type = 'text';
+    toggle.textContent = '🙈';
+  } else {
+    input.type = 'password';
+    toggle.textContent = '👁️';
+  }
 }
 
 function saveKaApiUrl() {
