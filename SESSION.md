@@ -42,5 +42,5 @@
 - (keine)
 
 ## Repo
-- `https://github.com/hydr0fx/resell-tracker`
-- Live: `https://hydr0fx.github.io/resell-tracker/`
+- `https://github.com/hydr0fx/flippy-bird`
+- Live: `https://hydr0fx.github.io/flippy-bird/`
