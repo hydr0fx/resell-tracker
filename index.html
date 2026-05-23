@@ -641,6 +641,14 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
         </div>
       </div>
       <div class="form-card">
+        <h3>Kleinanzeigen Backend</h3>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <input type="text" id="kaApiUrlInput" placeholder="http://localhost:3001/api" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;outline:none;">
+          <button class="btn btn-sm btn-primary" onclick="saveKaApiUrl()" style="width:auto;">Speichern</button>
+          <div id="kaApiUrlStatus" style="font-size:12px;color:var(--text-secondary);"></div>
+        </div>
+      </div>
+      <div class="form-card">
         <h3>Info</h3>
         <div style="text-align:center;padding:8px 0;color:var(--text-secondary);font-size:13px;">
           <p style="font-weight:700;color:var(--text);margin-bottom:4px;">Flippy Bird v2.2</p>
@@ -1143,7 +1151,7 @@ function navigate(page, params) {
     logo.style.display = 'block'; renderAddForm();
   }
   else if (page === 'detail') { title.textContent = 'Artikel-Detail'; backBtn.style.display = 'flex'; deleteBtn.style.display = 'none'; logo.style.display = 'block'; renderDetail(params); }
-  else if (page === 'settings') { title.textContent = 'Einstellungen'; backBtn.style.display = 'none'; deleteBtn.style.display = 'none'; logo.style.display = 'block'; renderCategoryList(); renderPlatformList(); }
+  else if (page === 'settings') { title.textContent = 'Einstellungen'; backBtn.style.display = 'none'; deleteBtn.style.display = 'none'; logo.style.display = 'block'; renderCategoryList(); renderPlatformList(); loadKaApiUrl(); }
   else if (page === 'kleinanzeigen') { title.textContent = 'Kleinanzeigen'; backBtn.style.display = 'none'; deleteBtn.style.display = 'none'; logo.style.display = 'block'; renderKleinanzeigen(); }
   else if (page === 'chats') { title.textContent = 'Chats'; backBtn.style.display = 'flex'; deleteBtn.style.display = 'none'; logo.style.display = 'block'; renderChats(); }
   else if (page === 'chat-detail') { title.textContent = 'Chat'; backBtn.style.display = 'flex'; deleteBtn.style.display = 'none'; logo.style.display = 'block'; renderChatDetail(params); }
@@ -2272,6 +2280,35 @@ async function kaSendMessage(chatId) {
 function esc(s) {
   if (!s) return '';
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function saveKaApiUrl() {
+  var input = document.getElementById('kaApiUrlInput');
+  var status = document.getElementById('kaApiUrlStatus');
+  if (!input) return;
+  var url = input.value.trim().replace(/\/+$/, '');
+  if (!url) {
+    localStorage.removeItem('ka_api_url');
+    KA_API = 'http://localhost:3001/api';
+    status.textContent = 'Standard-URL (localhost:3001)';
+  } else {
+    localStorage.setItem('ka_api_url', url);
+    KA_API = url;
+    status.textContent = 'Gespeichert: ' + url;
+  }
+}
+
+function loadKaApiUrl() {
+  var input = document.getElementById('kaApiUrlInput');
+  if (!input) return;
+  var saved = localStorage.getItem('ka_api_url');
+  if (saved) {
+    input.value = saved;
+    document.getElementById('kaApiUrlStatus').textContent = 'Aktive URL: ' + saved;
+  } else {
+    input.value = 'http://localhost:3001/api';
+    document.getElementById('kaApiUrlStatus').textContent = 'Standard: http://localhost:3001/api';
+  }
 }
 
 // Init
