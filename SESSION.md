@@ -39,8 +39,50 @@
 - Dauer ca. 2 Sekunden
 
 ## Offene Punkte
-- (keine)
+- [ ] Node.js auf PC installieren für lokalen Backend-Test
+- [ ] Backend auf Render deployen (`backend/render.yaml`)
+- [ ] API-URL in der PWA konfigurieren (Einstellungen)
 
 ## Repo
 - `https://github.com/hydr0fx/flippy-bird`
 - Live: `https://hydr0fx.github.io/flippy-bird/`
+
+---
+
+### Neu: Backend v1.0.0
+
+**Architektur:** PWA + Node.js Backend (Puppeteer)
+
+**Backend (`backend/`):**
+- `server.js` – Express-Server mit REST-API
+- `bot.js` – Puppeteer-Bot für Kleinanzeigen-Automation
+- `package.json` – Dependencies (Express, Puppeteer, CORS)
+- `render.yaml` – Deployment-Konfiguration für Render
+
+**API-Endpunkte:**
+| Methode | Pfad | Beschreibung |
+|---------|------|-------------|
+| POST | `/api/login` | Kleinanzeigen-Login |
+| GET | `/api/session` | Session-Status prüfen |
+| POST | `/api/logout` | Ausloggen |
+| GET | `/api/listings` | Eigene Anzeigen abrufen |
+| POST | `/api/listings` | Neue Anzeige erstellen |
+| POST | `/api/listings/:id/duplicate` | Anzeige duplizieren |
+| POST | `/api/listings/:id/republish` | Anzeige neu einstellen |
+| GET | `/api/chats` | Chats abrufen |
+| GET | `/api/chats/:id` | Chat-Nachrichten abrufen |
+| POST | `/api/chats/:id/messages` | Nachricht senden |
+| GET | `/api/health` | Health-Check |
+
+**PWA-Änderungen:**
+- Neuer Nav-Punkt "Kleinanzeigen"
+- Login-Formular für Kleinanzeigen-Zugangsdaten
+- Anzeigen-Liste mit Duplizieren & Neu einstellen
+- Chat-Ansicht mit Nachrichten schreiben
+- API-Client (`kaFetch`) mit Session-Management
+
+**ToDo für Deployment:**
+1. `hydr0fx/flippy-bird` auf GitHub
+2. Render.com Konto erstellen
+3. Backend via `render.yaml` deployen
+4. API-URL in der PWA Settings hinterlegen
