@@ -1,88 +1,54 @@
-# Sitzung 23.05.2026
+# Sitzung 23.05.2026 – v3.1
 
-## Änderungen
-
-### UI Cleanup
-- Alle Dekorationen entfernt (◆, ▶, goldene Balken, Muster, border-pattern)
-- Saubere Karten mit weichen Schatten, ruhige Übergänge
-- Header, Stats, Item-Cards, Form-Cards, Modal, Bottom-Nav vereinfacht
-- Dark Mode auf warmes Dunkelgold (`#1C1814`, `#2A241E`, `#E8DCC8`, `#D4A843`)
-
-### Kategorien & Plattformen sortierbar
-- Drag & Drop per Maus und Touch (gedrückt halten & ziehen)
-- `dragCatStart/Over/End`, `touchCatStart/Move/End` + Plattform-Äquivalente
+## Änderungen seit v3.0
 
 ### Photo Viewer
-- Fotos in Liste, Detailansicht und Bearbeitungsformular anklickbar
-- Modal-Viewer mit Pfeilen zum Blättern (Prev/Next)
-- `openPhotoViewer()`, `openTrackingViewer()`, `showPhotoModal()`
+- Vollbild-Overlay mit Zoom (rein/raus/reset), Rotation, Download
+- Navigation mit Prev/Next-Pfeilen
+- Indikator "X / Y"
+- Bild aus Detailansicht, Inventarliste und Formular öffnbar
 
-### Sendungsnummer in Item-Cards
-- Tracking-Nummer mit 📦-Icon in Karten-Details
+### PayPal Gebührenrechner
+- Modal-Overlay mit Eingabe des Verkaufspreises
+- Berechnung: 2,49% + 0,35€ Gebühr, Anzeige Netto-Betrag
+- "Gebühr übernehmen"-Button: übernimmt berechnete Gebühr ins Formular
 
-### Service Worker Network-First
-- `sw.js` immer neueste Version (kein Cache-Problem mehr)
-- `cacheFirst` → `networkFirst` (fetch, fallback zu cache)
-- Alle alten Caches werden bei Aktivierung gelöscht
-- Version `v2.3.0`
+### Versandkosten-Auswahl
+- Dropdown für Versandmethode (DHL, Hermes, Deutsche Post)
+- Dynamische Paketoptionen mit Kosten pro Methode
+- Auswahl wird im Item gespeichert
 
-### Auto-Update + Desktop-Notification
-- `APP_VERSION = 'v2.3.0'` – bei Versionswechsel: SW unregister, Caches leeren, Reload
-- Desktop-Notification bei neuem Update
-- SW-Check alle 10s
+### Sales Monatsraster
+- Skyscanner-ähnliches 3×4 Grid mit Monatskacheln
+- Jede Kachel: Monatsname, Gewinn (€), Anzahl Verkäufe
+- Jahr-Navigation mit ‹ › « »
+- Klick auf Kachel: Popup mit detaillierter Verkaufsliste, Gesamtgewinn, Ø Marge
 
-### Splash-Animation
-- Flappy Bird fliegt rein, hüpft, fällt in Geldgrube
-- Sound: Jump-Boop + Money-Explosion (Cha-Ching + Münzen)
-- Explosive Particle-Explosion mit €/$/₿-Symbolen
-- Bild via `splash-bird.png` (ersetzt durch `dtfjhdrj.png`)
-- Dauer ca. 2 Sekunden
+### Select-Modus für Verkäufe
+- Langdruck auf Sales-Header → Checkboxen erscheinen
+- Mehrere Items auswählen, als verkauft markieren
+- Auswahl-Leiste mit Counter und "Als verkauft markieren"-Button
 
-## Offene Punkte
-- [ ] Node.js auf PC installieren für lokalen Backend-Test
-- [ ] Backend auf Render deployen (`backend/render.yaml`)
-- [ ] API-URL in der PWA konfigurieren (Einstellungen)
+### UI/UX
+- Gold (#FACC15) Akzente für Buttons, aktive Filter, Nav-Add-Button
+- Dark Mode mit warmem Gold-Schema beibehalten
+- Live-Gewinnrechner im Formular (Gewinn, Marge %, ROI %)
+- Status-Buttons in Detailansicht (Bereit/Inseriert/Verkauft)
+- Automatische PayPal-Gebührenberechnung beim Eintragen des Verkaufspreises
 
-## Repo
-- `https://github.com/hydr0fx/flippy-bird`
-- Live: `https://hydr0fx.github.io/flippy-bird/`
+### Datenmodell-Erweiterungen
+- `paypalFee`, `shippingMethod`, `shippingCost` pro Item
+- `fSalePrice` statt `fSelling` (Formularfeld)
+- `sellDate` für Verkaufsdatum
 
----
+## Status
+- **Live:** https://hydr0fx.github.io/flippy-bird/ (GitHub Pages)
+- **SW Cache:** v3.1.0
+- **Kein Backend mehr** – reine Client-PWA
+- **Keine automatische Kleinanzeigen-Postings** – nur Export + Copy
 
-### Neu: Backend v1.0.0
-
-**Architektur:** PWA + Node.js Backend (Puppeteer)
-
-**Backend (`backend/`):**
-- `server.js` – Express-Server mit REST-API
-- `bot.js` – Puppeteer-Bot für Kleinanzeigen-Automation
-- `package.json` – Dependencies (Express, Puppeteer, CORS)
-- `render.yaml` – Deployment-Konfiguration für Render
-
-**API-Endpunkte:**
-| Methode | Pfad | Beschreibung |
-|---------|------|-------------|
-| POST | `/api/login` | Kleinanzeigen-Login |
-| GET | `/api/session` | Session-Status prüfen |
-| POST | `/api/logout` | Ausloggen |
-| GET | `/api/listings` | Eigene Anzeigen abrufen |
-| POST | `/api/listings` | Neue Anzeige erstellen |
-| POST | `/api/listings/:id/duplicate` | Anzeige duplizieren |
-| POST | `/api/listings/:id/republish` | Anzeige neu einstellen |
-| GET | `/api/chats` | Chats abrufen |
-| GET | `/api/chats/:id` | Chat-Nachrichten abrufen |
-| POST | `/api/chats/:id/messages` | Nachricht senden |
-| GET | `/api/health` | Health-Check |
-
-**PWA-Änderungen:**
-- Neuer Nav-Punkt "Kleinanzeigen"
-- Login-Formular für Kleinanzeigen-Zugangsdaten
-- Anzeigen-Liste mit Duplizieren & Neu einstellen
-- Chat-Ansicht mit Nachrichten schreiben
-- API-Client (`kaFetch`) mit Session-Management
-
-**ToDo für Deployment:**
-1. `hydr0fx/flippy-bird` auf GitHub
-2. Render.com Konto erstellen
-3. Backend via `render.yaml` deployen
-4. API-URL in der PWA Settings hinterlegen
+## Letzter Commit
+```
+de96e35 Add .gitignore
+8111f2b v3.1: Photo viewer, PayPal calculator, shipping cost selector, sales month grid, select mode
+```

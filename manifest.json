@@ -6,7 +6,7 @@
   "scope": "/flippy-bird/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#22C55E",
+  "theme_color": "#1A1A2E",
   "orientation": "portrait",
   "icons": [
     {
