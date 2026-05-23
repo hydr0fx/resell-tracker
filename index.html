@@ -2061,8 +2061,8 @@ function loadDarkMode() {
 }
 
 // ===== Kleinanzeigen API =====
-const KA_DEFAULT = 'https://dc7daeb31e0006.lhr.life/api';
-const KA_API = localStorage.getItem('ka_api_url') || KA_DEFAULT;
+const KA_DEFAULT = 'https://0bc09800fe37fd03-77-181-151-90.serveousercontent.com';
+var KA_API = localStorage.getItem('ka_api_url') || KA_DEFAULT;
 let kaSession = JSON.parse(localStorage.getItem('ka_session') || 'null');
 
 async function kaFetch(path, opts) {
@@ -2146,12 +2146,23 @@ async function kaLogin() {
     await kaFetch('/login', { method: 'POST', body: JSON.stringify({ email, password }) });
     kaSession = { loggedIn: true, email };
     localStorage.setItem('ka_session', JSON.stringify(kaSession));
-    renderKleinanzeigen();
+    showKaSuccess();
+    setTimeout(function() { renderKleinanzeigen(); }, 800);
   } catch (e) {
     errorEl.textContent = e.message;
     errorEl.style.display = 'block';
   }
   loadingEl.style.display = 'none';
+}
+
+function showKaSuccess() {
+  var existing = document.getElementById('kaSuccessOverlay');
+  if (existing) existing.remove();
+  var overlay = document.createElement('div');
+  overlay.id = 'kaSuccessOverlay';
+  overlay.innerHTML = '<div style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:9999;"><div style="background:var(--card);border-radius:16px;padding:32px;text-align:center;animation:kaPop 0.3s ease;"><div style="font-size:48px;margin-bottom:12px;">✅</div><div style="font-size:18px;font-weight:700;margin-bottom:4px;">Verbunden!</div><div style="font-size:13px;color:var(--text-secondary);">Kleinanzeigen erfolgreich verknüpft</div></div></div><style>@keyframes kaPop{0%{transform:scale(0.5);opacity:0}100%{transform:scale(1);opacity:1}}</style>';
+  document.body.appendChild(overlay);
+  setTimeout(function() { overlay.remove(); }, 2500);
 }
 
 async function kaLogout() {
@@ -2318,25 +2329,29 @@ function saveKaApiUrl() {
   var url = input.value.trim().replace(/\/+$/, '');
   if (!url) {
     localStorage.removeItem('ka_api_url');
-    KA_API = 'http://localhost:3001/api';
-    status.textContent = 'Standard-URL (localhost:3001)';
+    KA_API = KA_DEFAULT;
+    status.textContent = 'Standard-URL';
   } else {
     localStorage.setItem('ka_api_url', url);
     KA_API = url;
-    status.textContent = 'Gespeichert: ' + url;
+    status.textContent = '✅ Gespeichert: ' + url;
+    status.style.color = 'var(--success)';
   }
 }
 
 function loadKaApiUrl() {
   var input = document.getElementById('kaApiUrlInput');
   if (!input) return;
+  var status = document.getElementById('kaApiUrlStatus');
   var saved = localStorage.getItem('ka_api_url');
   if (saved) {
     input.value = saved;
-    document.getElementById('kaApiUrlStatus').textContent = 'Aktive URL: ' + saved;
+    status.textContent = 'Aktive URL: ' + saved;
+    KA_API = saved;
   } else {
-    input.value = 'http://localhost:3001/api';
-    document.getElementById('kaApiUrlStatus').textContent = 'Standard: http://localhost:3001/api';
+    input.value = KA_DEFAULT;
+    status.textContent = 'Standard: ' + KA_DEFAULT;
+    KA_API = KA_DEFAULT;
   }
 }
 
