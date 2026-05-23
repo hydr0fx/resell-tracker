@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#22C55E">
+<meta name="theme-color" content="#1A1A2E">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>Flippy Bird</title>
@@ -21,6 +21,7 @@
   --primary-dark: #15803D;
   --primary-light: #DCFCE7;
   --gold: #FACC15;
+  --gold-dark: #E6B800;
   --danger: #EF4444;
   --info: #3B82F6;
   --purple: #8B5CF6;
@@ -44,25 +45,23 @@ body {
 }
 input, textarea, button, select { font-family: inherit; font-size: inherit; }
 
-/* Header */
 .app-header {
   position: fixed; top: 0; left: 0; right: 0; height: var(--header-height);
   background: var(--card); border-bottom: 1px solid var(--border);
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0 16px; z-index: 100;
+  padding: 0 12px; z-index: 100;
 }
 .app-header h1 { font-size: 17px; font-weight: 700; }
-.header-left, .header-right { display: flex; align-items: center; gap: 8px; min-width: 40px; }
+.header-left, .header-right { display: flex; align-items: center; gap: 6px; min-width: 40px; }
 .header-left { justify-content: flex-start; }
 .header-right { justify-content: flex-end; }
 .header-back { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text); padding: 4px; display: none; }
-.header-icon { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text); padding: 6px; border-radius: 50%; }
+.header-icon { background: none; border: none; font-size: 18px; cursor: pointer; color: var(--text); padding: 6px; border-radius: 50%; }
 .header-icon:hover { background: var(--bg); }
+.header-logo { font-size: 22px; }
 
-/* Content */
 .main-content { padding: 12px 16px 100px; }
 
-/* Bottom Nav */
 .bottom-nav {
   position: fixed; bottom: 0; left: 0; right: 0; height: var(--nav-height);
   background: var(--card); border-top: 1px solid var(--border);
@@ -71,52 +70,37 @@ input, textarea, button, select { font-family: inherit; font-size: inherit; }
 }
 .nav-item {
   display: flex; flex-direction: column; align-items: center; gap: 2px;
-  background: none; border: none; cursor: pointer; padding: 6px 12px;
+  background: none; border: none; cursor: pointer; padding: 6px 10px;
   color: var(--text-secondary); font-size: 10px; font-weight: 500; transition: color 0.15s;
 }
-.nav-item.active { color: var(--primary); }
-.nav-item svg { width: 24px; height: 24px; }
-.nav-add {
-  position: relative; margin-top: -12px;
-}
+.nav-item.active { color: var(--gold); }
+.nav-item svg { width: 22px; height: 22px; }
+.nav-add { position: relative; margin-top: -12px; }
 .nav-add-btn {
   width: 52px; height: 52px; border-radius: 50%; border: none;
-  background: var(--primary); color: white; cursor: pointer;
+  background: var(--gold); color: #1F1F1F; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 4px 12px rgba(34,197,94,0.35);
-  font-size: 26px; transition: transform 0.15s;
+  box-shadow: 0 4px 12px rgba(250,204,21,0.35);
+  font-size: 26px; font-weight: 700; transition: transform 0.15s;
 }
 .nav-add-btn:active { transform: scale(0.92); }
 
-/* Pages */
 .page { display: none; }
 .page.active { display: block; }
 
-/* Cards */
-.card {
-  background: var(--card); border-radius: var(--radius);
-  box-shadow: var(--shadow); padding: 16px; margin-bottom: 12px;
-}
+.card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px; margin-bottom: 12px; }
 
-/* Stat Cards */
 .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 16px; }
-.stat-card {
-  background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow);
-  padding: 14px; text-align: center;
-}
+.stat-card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 14px; text-align: center; }
 .stat-card .stat-label { font-size: 11px; color: var(--text-secondary); font-weight: 500; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 4px; }
 .stat-card .stat-value { font-size: 22px; font-weight: 800; }
 .stat-card .stat-value.positive { color: var(--primary); }
 .stat-card .stat-value.negative { color: var(--danger); }
 
-/* Section headers */
-.section-header {
-  display: flex; justify-content: space-between; align-items: center; margin: 16px 0 8px;
-}
+.section-header { display: flex; justify-content: space-between; align-items: center; margin: 16px 0 8px; }
 .section-header h3 { font-size: 15px; font-weight: 600; }
 .section-header .see-all { font-size: 12px; color: var(--primary); cursor: pointer; background: none; border: none; font-weight: 500; }
 
-/* Item Card */
 .item-card {
   display: flex; gap: 12px; background: var(--card); border-radius: var(--radius);
   box-shadow: var(--shadow); padding: 12px; margin-bottom: 8px; cursor: pointer; transition: box-shadow 0.15s;
@@ -136,34 +120,27 @@ input, textarea, button, select { font-family: inherit; font-size: inherit; }
 .item-card .item-profit.positive { color: var(--primary); }
 .item-card .item-profit.negative { color: var(--danger); }
 
-/* Status Badge */
-.status-badge {
-  display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 8px;
-  border-radius: 20px; text-transform: uppercase; letter-spacing: 0.3px;
-}
+.status-badge { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.3px; }
 .status-draft { background: #F3F4F6; color: #6B7280; }
 .status-bought { background: #DBEAFE; color: #2563EB; }
 .status-ready { background: #FEF3C7; color: #D97706; }
 .status-listed { background: #DCFCE7; color: #15803D; }
 .status-reserved { background: #EDE9FE; color: #7C3AED; }
-.status-sold { background: #22C55E; color: white; }
-.status-archived { background: #E5E7EB; color: #6B7280; }
+.status-sold { background: var(--gold); color: #1F1F1F; }
 
-/* Forms */
 .form-group { margin-bottom: 14px; }
-.form-label { display: block; font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.3px; }
+.form-label { display: block; font-size: 11px; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.3px; }
 .form-input, .form-select, .form-textarea {
   width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: var(--radius-sm);
   font-size: 14px; outline: none; background: var(--card); color: var(--text); transition: border-color 0.15s;
 }
-.form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--primary); }
+.form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--gold); }
 .form-textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .form-checkbox { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; }
-.form-checkbox input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--primary); cursor: pointer; }
+.form-checkbox input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--gold); cursor: pointer; }
 .form-section-title { font-size: 13px; font-weight: 600; color: var(--text); margin: 16px 0 8px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
 
-/* Buttons */
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 6px;
   padding: 10px 20px; border: none; border-radius: var(--radius-sm);
@@ -172,17 +149,17 @@ input, textarea, button, select { font-family: inherit; font-size: inherit; }
 .btn:active { transform: scale(0.97); }
 .btn-primary { background: var(--primary); color: white; }
 .btn-primary:hover { background: var(--primary-dark); }
+.btn-gold { background: var(--gold); color: #1F1F1F; }
+.btn-gold:hover { background: var(--gold-dark); }
 .btn-outline { background: transparent; color: var(--text); border: 1.5px solid var(--border); }
-.btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+.btn-outline:hover { border-color: var(--gold); color: var(--gold); }
 .btn-danger { background: var(--danger); color: white; }
 .btn-sm { padding: 6px 14px; font-size: 12px; }
 .btn-block { width: 100%; }
 .btn-group { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
-.btn-icon { width: 36px; height: 36px; padding: 0; border-radius: 50%; font-size: 16px; }
 
-/* Profit Display */
 .profit-card {
-  background: linear-gradient(135deg, var(--primary-light), #F0FDF4);
+  background: linear-gradient(135deg, #FEF3C7, #FDE68A);
   border-radius: var(--radius); padding: 16px; margin-bottom: 12px;
 }
 .profit-card .profit-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 13px; }
@@ -194,13 +171,11 @@ input, textarea, button, select { font-family: inherit; font-size: inherit; }
 .profit-card .profit-total.positive { color: var(--primary); }
 .profit-card .profit-total.negative { color: var(--danger); }
 
-/* Image Picker */
 .image-picker { display: flex; gap: 8px; overflow-x: auto; padding: 4px 0; }
 .image-picker .img-thumb {
   width: 72px; height: 72px; border-radius: var(--radius-sm); background: var(--bg);
   border: 2px dashed var(--border); display: flex; align-items: center; justify-content: center;
-  cursor: pointer; flex-shrink: 0; font-size: 24px; color: var(--text-secondary); position: relative;
-  overflow: hidden;
+  cursor: pointer; flex-shrink: 0; font-size: 24px; color: var(--text-secondary); position: relative; overflow: hidden;
 }
 .image-picker .img-thumb img { width: 100%; height: 100%; object-fit: cover; }
 .image-picker .img-thumb .remove-img {
@@ -208,41 +183,34 @@ input, textarea, button, select { font-family: inherit; font-size: inherit; }
   border-radius: 50%; background: var(--danger); color: white; border: none;
   font-size: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center;
 }
-.image-picker .img-thumb.main { border-color: var(--primary); border-style: solid; }
+.image-picker .img-thumb.main { border-color: var(--gold); border-style: solid; }
 .image-picker .img-thumb.main::after {
   content: '★'; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
   font-size: 10px; color: var(--gold); background: rgba(255,255,255,0.8); padding: 0 4px; border-radius: 4px;
 }
 
-/* Search + Filter */
-.search-bar {
-  display: flex; gap: 8px; margin-bottom: 12px;
-}
+.search-bar { display: flex; gap: 8px; margin-bottom: 12px; }
 .search-bar input {
   flex: 1; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: var(--radius-sm);
   font-size: 14px; outline: none; background: var(--card);
 }
-.search-bar input:focus { border-color: var(--primary); }
-.filter-chips {
-  display: flex; gap: 6px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 8px;
-  -webkit-overflow-scrolling: touch;
-}
+.search-bar input:focus { border-color: var(--gold); }
+.filter-chips { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 8px; -webkit-overflow-scrolling: touch; }
 .filter-chip {
   padding: 5px 12px; border-radius: 20px; border: 1.5px solid var(--border);
   background: var(--card); font-size: 12px; font-weight: 500; cursor: pointer;
   white-space: nowrap; transition: all 0.15s; color: var(--text-secondary);
 }
-.filter-chip.active { background: var(--primary); color: white; border-color: var(--primary); }
+.filter-chip.active { background: var(--gold); color: #1F1F1F; border-color: var(--gold); }
 
-/* Preview Card */
-.preview-card {
-  background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow-md);
-  overflow: hidden; margin-bottom: 16px;
+.sort-bar { display: flex; justify-content: flex-end; margin-bottom: 8px; }
+.sort-select {
+  padding: 6px 10px; border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+  font-size: 12px; background: var(--card); color: var(--text); outline: none;
 }
-.preview-card .preview-img {
-  width: 100%; height: 180px; background: var(--bg); display: flex;
-  align-items: center; justify-content: center; font-size: 48px; color: var(--text-secondary);
-}
+
+.preview-card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow-md); overflow: hidden; margin-bottom: 16px; }
+.preview-card .preview-img { width: 100%; height: 180px; background: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 48px; color: var(--text-secondary); }
 .preview-card .preview-img img { width: 100%; height: 100%; object-fit: cover; }
 .preview-card .preview-body { padding: 14px; }
 .preview-card .preview-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
@@ -250,7 +218,6 @@ input, textarea, button, select { font-family: inherit; font-size: inherit; }
 .preview-card .preview-location { font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; }
 .preview-card .preview-desc { font-size: 13px; line-height: 1.6; color: var(--text); white-space: pre-wrap; }
 
-/* Toast */
 .toast {
   position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px);
   background: #1F1F1F; color: white; padding: 10px 20px; border-radius: 20px;
@@ -259,40 +226,31 @@ input, textarea, button, select { font-family: inherit; font-size: inherit; }
 }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-/* Info Box */
-.info-box {
-  background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: var(--radius-sm);
-  padding: 12px; font-size: 12px; color: #1E40AF; line-height: 1.5; margin-bottom: 12px;
-}
+.info-box { background: #FEF3C7; border: 1px solid #FDE68A; border-radius: var(--radius-sm); padding: 12px; font-size: 12px; color: #92400E; line-height: 1.5; margin-bottom: 12px; }
 .info-box strong { font-weight: 600; }
 
-/* Copy buttons */
-.copy-row {
-  display: flex; align-items: center; gap: 8px; margin-bottom: 12px;
-}
+.copy-row { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
 .copy-row .copy-input {
   flex: 1; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: var(--radius-sm);
   font-size: 14px; outline: none; background: var(--bg); color: var(--text);
 }
 .copy-row .copy-btn {
   padding: 10px 16px; border: none; border-radius: var(--radius-sm);
-  background: var(--primary); color: white; font-size: 12px; font-weight: 600; cursor: pointer;
+  background: var(--gold); color: #1F1F1F; font-size: 12px; font-weight: 600; cursor: pointer;
   white-space: nowrap; transition: background 0.15s;
 }
-.copy-row .copy-btn:active { background: var(--primary-dark); }
+.copy-row .copy-btn:active { background: var(--gold-dark); }
 .copy-textarea {
   width: 100%; padding: 12px; border: 1.5px solid var(--border); border-radius: var(--radius-sm);
   font-size: 13px; line-height: 1.6; resize: vertical; min-height: 160px;
   outline: none; background: var(--bg); color: var(--text); margin-bottom: 8px;
 }
 
-/* Loading */
 .loading { text-align: center; padding: 40px; color: var(--text-secondary); font-size: 13px; }
 .empty-state { text-align: center; padding: 40px 20px; color: var(--text-secondary); }
 .empty-state .empty-icon { font-size: 48px; margin-bottom: 12px; }
 .empty-state p { font-size: 13px; }
 
-/* Modal */
 .modal-overlay {
   position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4);
   z-index: 200; display: none; align-items: center; justify-content: center; padding: 20px;
@@ -307,62 +265,157 @@ input, textarea, button, select { font-family: inherit; font-size: inherit; }
 .modal-actions { display: flex; gap: 8px; }
 .modal-actions .btn { flex: 1; }
 
-/* Sort dropdown */
-.sort-bar { display: flex; justify-content: flex-end; margin-bottom: 8px; }
-.sort-select {
-  padding: 6px 10px; border: 1.5px solid var(--border); border-radius: var(--radius-sm);
-  font-size: 12px; background: var(--card); color: var(--text); outline: none;
-}
-
-/* Image detail view */
 .detail-image {
   width: 100%; height: 260px; background: var(--bg); border-radius: var(--radius);
   display: flex; align-items: center; justify-content: center; font-size: 48px;
-  color: var(--text-secondary); margin-bottom: 12px; overflow: hidden; cursor: pointer;
+  color: var(--text-secondary); margin-bottom: 12px; overflow: hidden; cursor: pointer; position: relative;
 }
 .detail-image img { width: 100%; height: 100%; object-fit: cover; }
-.detail-images-row {
-  display: flex; gap: 6px; overflow-x: auto; margin-bottom: 12px; padding: 2px 0;
+.detail-image .img-actions {
+  position: absolute; bottom: 8px; right: 8px; display: flex; gap: 4px; opacity: 0; transition: opacity 0.2s;
 }
+.detail-image:hover .img-actions { opacity: 1; }
+.detail-image .img-actions button {
+  width: 32px; height: 32px; border-radius: 50%; border: none; background: rgba(0,0,0,0.6); color: white;
+  font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+.detail-images-row { display: flex; gap: 6px; overflow-x: auto; margin-bottom: 12px; padding: 2px 0; }
 .detail-images-row .thumb {
   width: 48px; height: 48px; border-radius: 6px; background: var(--bg);
   flex-shrink: 0; overflow: hidden; cursor: pointer; border: 2px solid transparent;
 }
-.detail-images-row .thumb.active { border-color: var(--primary); }
+.detail-images-row .thumb.active { border-color: var(--gold); }
 .detail-images-row .thumb img { width: 100%; height: 100%; object-fit: cover; }
 
-/* Detail sections */
 .detail-section { margin-bottom: 16px; }
 .detail-section h3 { font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.3px; }
-.detail-price-grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
-}
-.detail-price-grid .price-item {
-  background: var(--bg); border-radius: var(--radius-sm); padding: 10px; text-align: center;
-}
+.detail-price-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.detail-price-grid .price-item { background: var(--bg); border-radius: var(--radius-sm); padding: 10px; text-align: center; }
 .detail-price-grid .price-item .p-label { font-size: 10px; color: var(--text-secondary); text-transform: uppercase; }
 .detail-price-grid .price-item .p-value { font-size: 16px; font-weight: 700; }
 .detail-price-grid .price-item .p-value.positive { color: var(--primary); }
 .detail-price-grid .price-item .p-value.negative { color: var(--danger); }
 
-/* Sales filter */
-.sales-filter {
-  display: flex; gap: 6px; margin-bottom: 12px;
-}
+.sales-filter { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
 .sales-filter button {
   padding: 6px 14px; border-radius: 20px; border: 1.5px solid var(--border);
   background: var(--card); font-size: 12px; font-weight: 500; cursor: pointer; color: var(--text-secondary);
   transition: all 0.15s;
 }
-.sales-filter button.active { background: var(--primary); color: white; border-color: var(--primary); }
+.sales-filter button.active { background: var(--gold); color: #1F1F1F; border-color: var(--gold); }
+
+/* Month tiles (Skyscanner style) */
+.month-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+.month-tile {
+  background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow);
+  padding: 12px; text-align: center; cursor: pointer; transition: all 0.15s; border: 2px solid transparent;
+}
+.month-tile:active { transform: scale(0.95); }
+.month-tile.selected { border-color: var(--gold); background: #FEFCF3; }
+.month-tile .month-name { font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; }
+.month-tile .month-profit { font-size: 16px; font-weight: 800; }
+.month-tile .month-profit.positive { color: var(--primary); }
+.month-tile .month-profit.negative { color: var(--danger); }
+.month-tile .month-count { font-size: 10px; color: var(--text-secondary); margin-top: 2px; }
+.month-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.month-nav button { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text); padding: 4px 8px; }
+.month-nav span { font-size: 14px; font-weight: 600; }
+
+/* Month profit popup */
+.profit-popup {
+  position: fixed; bottom: 0; left: 0; right: 0; background: var(--card);
+  border-radius: 16px 16px 0 0; box-shadow: 0 -8px 30px rgba(0,0,0,0.12);
+  z-index: 150; padding: 20px; max-height: 60vh; overflow-y: auto;
+  transform: translateY(100%); transition: transform 0.3s ease;
+}
+.profit-popup.open { transform: translateY(0); }
+.profit-popup .popup-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.profit-popup .popup-header h3 { font-size: 16px; }
+.profit-popup .popup-close { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-secondary); padding: 4px; }
+.profit-popup .popup-total { text-align: center; padding: 12px; margin-bottom: 12px; background: var(--bg); border-radius: var(--radius-sm); }
+.profit-popup .popup-total .big { font-size: 28px; font-weight: 800; }
+.profit-popup .popup-total .big.positive { color: var(--primary); }
+.profit-popup .popup-total .big.negative { color: var(--danger); }
+.profit-popup .popup-total .sub { font-size: 12px; color: var(--text-secondary); }
+
+/* Photo Viewer (full screen) */
+.photo-viewer {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.92);
+  z-index: 300; display: none; flex-direction: column; align-items: center; justify-content: center;
+}
+.photo-viewer.active { display: flex; }
+.photo-viewer .pv-top {
+  position: absolute; top: 0; left: 0; right: 0; display: flex; justify-content: space-between;
+  padding: 16px; z-index: 10;
+}
+.photo-viewer .pv-top button {
+  width: 40px; height: 40px; border-radius: 50%; border: none;
+  background: rgba(255,255,255,0.15); color: white; font-size: 20px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.photo-viewer .pv-img-wrap {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  width: 100%; overflow: hidden; cursor: grab; position: relative;
+}
+.photo-viewer .pv-img-wrap img {
+  max-width: 100%; max-height: 90vh; object-fit: contain; transition: transform 0.1s;
+  user-select: none; -webkit-user-drag: none;
+}
+.photo-viewer .pv-bottom {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  display: flex; align-items: center; justify-content: center; gap: 20px;
+  padding: 16px; z-index: 10;
+}
+.photo-viewer .pv-bottom button {
+  width: 44px; height: 44px; border-radius: 50%; border: none;
+  background: rgba(255,255,255,0.15); color: white; font-size: 18px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.photo-viewer .pv-counter {
+  position: absolute; bottom: 68px; left: 50%; transform: translateX(-50%);
+  color: white; font-size: 13px; font-weight: 600; background: rgba(0,0,0,0.5);
+  padding: 4px 14px; border-radius: 20px;
+}
+.photo-viewer .pv-nav {
+  position: absolute; top: 50%; transform: translateY(-50%); width: 100%;
+  display: flex; justify-content: space-between; padding: 0 8px; z-index: 5; pointer-events: none;
+}
+.photo-viewer .pv-nav button {
+  width: 44px; height: 44px; border-radius: 50%; border: none;
+  background: rgba(255,255,255,0.15); color: white; font-size: 22px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; pointer-events: auto;
+}
+
+/* Checkbox select for sales */
+.select-mode-bar {
+  display: none; align-items: center; gap: 8px; padding: 8px 12px;
+  background: var(--gold); color: #1F1F1F; border-radius: var(--radius-sm); margin-bottom: 8px;
+  font-size: 13px; font-weight: 600;
+}
+.select-mode-bar.active { display: flex; }
+.select-mode-bar button { background: #1F1F1F; color: white; border: none; padding: 4px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; }
+.item-card .item-select { display: none; width: 20px; height: 20px; accent-color: var(--gold); cursor: pointer; flex-shrink: 0; margin-top: 2px; }
+.item-card.select-mode .item-select { display: block; }
+
+/* Detail row for PayPal */
+.detail-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+.detail-row .label { color: var(--text-secondary); }
+.detail-row .value { font-weight: 600; }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0F0F0F; --card: #1A1A2E; --text: #F0F0F0; --text-secondary: #9CA3AF;
-    --border: #2D2D44; --primary-light: #064E3B;
+    --bg: #0F0F0F;
+    --card: #1A1A2E;
+    --text: #F0F0F0;
+    --text-secondary: #9CA3AF;
+    --border: #2D2D44;
+    --primary-light: #064E3B;
+    --gold: #FACC15;
   }
-  .profit-card { background: linear-gradient(135deg, #064E3B, #0F172A); }
-  .info-box { background: #1E3A5F; border-color: #2563EB; color: #93C5FD; }
+  .profit-card { background: linear-gradient(135deg, #1A1A2E, #2D2D44); }
+  .profit-card .profit-total { color: var(--gold); }
+  .month-tile.selected { background: #1A1A2E; }
+  .info-box { background: #2D2D44; border-color: #FACC15; color: #FDE68A; }
 }
 </style>
 </head>
@@ -371,9 +424,9 @@ input, textarea, button, select { font-family: inherit; font-size: inherit; }
 <header class="app-header">
   <div class="header-left">
     <button class="header-back" id="backBtn" onclick="goBack()">←</button>
-    <span id="headerLogo" style="font-size:20px;">🐦</span>
+    <span class="header-logo">🐦</span>
   </div>
-  <h1 id="pageTitle">Dashboard</h1>
+  <h1 id="pageTitle">Flippy Bird</h1>
   <div class="header-right">
     <button class="header-icon" onclick="showSearch()" id="searchBtn" style="display:none;">🔍</button>
   </div>
@@ -388,7 +441,7 @@ input, textarea, button, select { font-family: inherit; font-size: inherit; }
     <div class="stat-card"><div class="stat-label">Aktive</div><div class="stat-value" id="dashActive">-</div></div>
     <div class="stat-card"><div class="stat-label">Ø Marge</div><div class="stat-value" id="dashMargin">-</div></div>
   </div>
-  <div class="section-header"><h3>Letzte Artikel</h3><button class="see-all" onclick="navigate('inventory')">Alle anzeigen</button></div>
+  <div class="section-header"><h3>Letzte Artikel</h3><button class="see-all" onclick="navigate('inventory')">Alle</button></div>
   <div id="dashRecent"></div>
 </div>
 
@@ -396,14 +449,14 @@ input, textarea, button, select { font-family: inherit; font-size: inherit; }
 <div class="page" id="page-inventory">
   <div class="search-bar">
     <input type="text" id="searchInput" placeholder="Artikel suchen..." oninput="renderInventory()">
-    <button class="btn btn-sm btn-outline" onclick="document.getElementById('searchInput').value='';renderInventory()" style="flex-shrink:0;">✕</button>
+    <button class="btn btn-sm btn-outline" onclick="document.getElementById('searchInput').value='';renderInventory()">✕</button>
   </div>
   <div class="filter-chips" id="filterChips"></div>
   <div class="sort-bar">
     <select class="sort-select" id="sortSelect" onchange="renderInventory()">
-      <option value="newest">Neueste zuerst</option>
-      <option value="profit">Höchster Gewinn</option>
-      <option value="margin">Höchste Marge</option>
+      <option value="newest">Neueste</option>
+      <option value="profit">Gewinn</option>
+      <option value="margin">Marge</option>
       <option value="unlisted">Nicht inseriert</option>
     </select>
   </div>
@@ -428,14 +481,26 @@ input, textarea, button, select { font-family: inherit; font-size: inherit; }
 
   <div class="form-section-title">Preise</div>
   <div class="form-row">
-    <div class="form-group"><label class="form-label">Einkaufspreis (€)</label><input class="form-input" id="fPurchase" type="number" step="0.01" placeholder="0.00" oninput="calcLiveProfit()"></div>
-    <div class="form-group"><label class="form-label">Verkaufspreis (€)</label><input class="form-input" id="fSelling" type="number" step="0.01" placeholder="0.00" oninput="calcLiveProfit()"></div>
+    <div class="form-group"><label class="form-label">Einkaufspreis (€)</label><input class="form-input" id="fPurchase" type="number" step="0.01" placeholder="0.00" oninput="calcLiveProfit();autoCalcPayPal()"></div>
+    <div class="form-group"><label class="form-label">Verkaufspreis (€)</label><input class="form-input" id="fSalePrice" type="number" step="0.01" placeholder="0.00" oninput="calcLiveProfit();autoCalcPayPal()"></div>
+  </div>
+  <div class="form-row">
+    <div class="form-group"><label class="form-label">PayPal Gebühr (€)</label><input class="form-input" id="fPaypalFee" type="number" step="0.01" placeholder="auto"></div>
+    <div class="form-group" style="display:flex;align-items:flex-end;padding-bottom:4px;">
+      <button class="btn btn-sm btn-outline" onclick="openPayPalCalc()" style="width:100%;">PayPal Rechner</button>
+    </div>
   </div>
   <div id="liveProfit" style="display:none;" class="profit-card"></div>
 
+  <div class="form-section-title">Versand</div>
+  <div class="form-row">
+    <div class="form-group"><label class="form-label">Versandart</label><select class="form-select" id="fShippingMethod" onchange="updateShippingCost()"><option value="">Kein Versand</option><option value="DHL">DHL</option><option value="Hermes">Hermes</option><option value="Deutsche Post">Deutsche Post</option></select></div>
+    <div class="form-group"><label class="form-label">Versandkosten (€)</label><select class="form-select" id="fShippingCost"><option value="">-</option></select></div>
+  </div>
+
   <div class="form-section-title">Details</div>
   <div class="form-group"><label class="form-label">Standort</label><input class="form-input" id="fLocation" placeholder="55122 Mainz"></div>
-  <div class="form-group"><label class="form-label">Zubehör</label><input class="form-input" id="fAccessories" placeholder="z.B. Netzteil, Kabel, Tasche"></div>
+  <div class="form-group"><label class="form-label">Zubehör</label><input class="form-input" id="fAccessories" placeholder="z.B. Netzteil, Kabel, Tasche (durch Komma trennen)"></div>
   <div class="form-group"><label class="form-label">Mängel</label><textarea class="form-textarea" id="fDefects" placeholder="z.B. Display hat Kratzer..."></textarea></div>
   <div class="form-group"><label class="form-label">Notizen</label><textarea class="form-textarea" id="fNotes" placeholder="Interne Notizen..."></textarea></div>
 
@@ -443,10 +508,10 @@ input, textarea, button, select { font-family: inherit; font-size: inherit; }
   <div class="form-checkbox"><input type="checkbox" id="fPickup" checked><label for="fPickup">Abholung möglich</label></div>
   <div class="form-checkbox"><input type="checkbox" id="fShipping" checked><label for="fShipping">Versand möglich</label></div>
   <div class="form-checkbox"><input type="checkbox" id="fPaypal" checked><label for="fPaypal">PayPal FF möglich</label></div>
-  <div class="form-checkbox"><input type="checkbox" id="fPrivateSale" checked><label for="fPrivateSale">Privatverkauf-Hinweis hinzufügen</label></div>
+  <div class="form-checkbox"><input type="checkbox" id="fPrivateSale" checked><label for="fPrivateSale">Privatverkauf-Hinweis</label></div>
 
   <div class="btn-group">
-    <button class="btn btn-primary btn-block" onclick="saveItem()">Speichern</button>
+    <button class="btn btn-gold btn-block" onclick="saveItem()">Speichern</button>
     <button class="btn btn-outline btn-block" onclick="prepareExport()">Für Kleinanzeigen vorbereiten</button>
   </div>
 </div>
@@ -458,7 +523,7 @@ input, textarea, button, select { font-family: inherit; font-size: inherit; }
 
 <!-- EXPORT -->
 <div class="page" id="page-export">
-  <div class="info-box"><strong>Flippy Bird</strong> postet nicht automatisch. Du kannst Titel, Preis und Beschreibung kopieren und dann Kleinanzeigen öffnen.</div>
+  <div class="info-box"><strong>Flippy Bird</strong> postet nicht automatisch. Kopiere Titel, Preis und Beschreibung und öffne dann Kleinanzeigen.</div>
   <div id="exportPreview"></div>
   <div class="form-section-title">Titel</div>
   <div class="copy-row">
@@ -470,9 +535,9 @@ input, textarea, button, select { font-family: inherit; font-size: inherit; }
   </div>
   <div class="form-section-title">Beschreibung</div>
   <textarea class="copy-textarea" id="exportDesc" readonly></textarea>
-  <button class="btn btn-sm btn-outline" onclick="copyText('exportDesc','Beschreibung kopiert!')" style="margin-bottom:12px;width:100%;">Beschreibung kopieren</button>
+  <button class="btn btn-sm btn-gold" onclick="copyText('exportDesc','Beschreibung kopiert!')" style="margin-bottom:12px;width:100%;">Beschreibung kopieren</button>
   <div class="btn-group">
-    <button class="btn btn-primary" style="flex:1;" onclick="copyAllExport()">Alles kopieren</button>
+    <button class="btn btn-gold" style="flex:1;" onclick="copyAllExport()">Alles kopieren</button>
     <button class="btn btn-outline" style="flex:1;" onclick="openKleinanzeigen()">Kleinanzeigen öffnen</button>
   </div>
   <button class="btn btn-sm btn-outline btn-block mt-8" onclick="markAsListed()" style="margin-top:8px;">Als inseriert markieren</button>
@@ -480,16 +545,35 @@ input, textarea, button, select { font-family: inherit; font-size: inherit; }
 
 <!-- SALES -->
 <div class="page" id="page-sales">
-  <div class="sales-filter" id="salesFilter">
-    <button class="active" data-period="month">Dieser Monat</button>
-    <button data-period="lastmonth">Letzter Monat</button>
-    <button data-period="all">Gesamt</button>
+  <div class="section-header"><h3>Zeitraum</h3></div>
+  <div class="month-nav">
+    <button onclick="shiftSalesMonth(-12)">«</button>
+    <button onclick="shiftSalesMonth(-1)">‹</button>
+    <span id="salesYearLabel">2026</span>
+    <button onclick="shiftSalesMonth(1)">›</button>
+    <button onclick="shiftSalesMonth(12)">»</button>
   </div>
-  <div class="stats-grid" style="grid-template-columns:1fr 1fr;">
-    <div class="stat-card"><div class="stat-label">Verkäufe</div><div class="stat-value" id="salesCount">-</div></div>
-    <div class="stat-card"><div class="stat-label">Monatsgewinn</div><div class="stat-value positive" id="salesProfit">-</div></div>
+  <div class="month-grid" id="monthGrid"></div>
+  <div class="section-header"><h3>Verkaufte Artikel</h3></div>
+  <div class="select-mode-bar" id="selectModeBar">
+    <span id="selectCount">0 ausgewählt</span>
+    <button onclick="markSelectedSold()">Als verkauft markieren</button>
+    <button onclick="exitSelectMode()">Abbrechen</button>
   </div>
   <div id="salesList"></div>
+</div>
+
+<!-- Profil Popup -->
+<div class="profit-popup" id="profitPopup">
+  <div class="popup-header">
+    <h3 id="popupMonthTitle">Monat</h3>
+    <button class="popup-close" onclick="closeProfitPopup()">✕</button>
+  </div>
+  <div class="popup-total">
+    <div class="big positive" id="popupTotalProfit">0 €</div>
+    <div class="sub" id="popupSub">X Verkäufe · Ø Marge Y%</div>
+  </div>
+  <div id="popupSalesList"></div>
 </div>
 
 <!-- SETTINGS -->
@@ -498,11 +582,8 @@ input, textarea, button, select { font-family: inherit; font-size: inherit; }
   <div class="form-group"><label class="form-label">Standard-Standort</label><input class="form-input" id="sLocation" placeholder="55122 Mainz"></div>
   <div class="form-group"><label class="form-label">Standard-Footer (wird an jede Beschreibung angehängt)</label><textarea class="form-textarea" id="sFooter" style="min-height:60px;"></textarea></div>
   <div class="form-checkbox" style="margin-bottom:8px;"><input type="checkbox" id="sDarkMode"><label for="sDarkMode">Dark Mode aktivieren</label></div>
-  <button class="btn btn-primary btn-block" onclick="saveSettings()">Einstellungen speichern</button>
-  <div style="margin-top:20px;text-align:center;font-size:11px;color:var(--text-secondary);">
-    <p>Flippy Bird v2.0</p>
-    <p>Daten werden lokal auf diesem Gerät gespeichert.</p>
-  </div>
+  <button class="btn btn-gold btn-block" onclick="saveSettings()">Einstellungen speichern</button>
+  <div style="margin-top:20px;text-align:center;font-size:11px;color:var(--text-secondary);"><p>Flippy Bird v3.1</p><p>Daten werden lokal gespeichert.</p></div>
 </div>
 
 </main>
@@ -518,7 +599,7 @@ input, textarea, button, select { font-family: inherit; font-size: inherit; }
   </button>
   <button class="nav-item nav-add" onclick="navigate('add')" data-page="add">
     <div class="nav-add-btn">+</div>
-    <span style="margin-top:2px;">Hinzufügen</span>
+    <span style="margin-top:2px;">Neu</span>
   </button>
   <button class="nav-item" onclick="navigate('sales')" data-page="sales">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M12 1l-4 4M12 1l4 4"/><path d="M4 12h16"/></svg>
@@ -538,8 +619,44 @@ input, textarea, button, select { font-family: inherit; font-size: inherit; }
     <p id="modalText">Sind Sie sicher?</p>
     <div class="modal-actions">
       <button class="btn btn-outline" onclick="closeModal()">Abbrechen</button>
-      <button class="btn btn-danger" id="modalConfirmBtn" onclick="closeModal()">Löschen</button>
+      <button class="btn btn-danger" id="modalConfirmBtn" onclick="closeModal()">OK</button>
     </div>
+  </div>
+</div>
+
+<!-- PayPal Modal -->
+<div class="modal-overlay" id="paypalOverlay" onclick="if(event.target===this)document.getElementById('paypalOverlay').classList.remove('active')">
+  <div class="modal" style="max-width:360px;">
+    <h3>PayPal Gebührenrechner</h3>
+    <div class="form-group">
+      <label class="form-label">Verkaufspreis (€)</label>
+      <input class="form-input" type="number" id="paypalCalcPrice" step="0.01" min="0" placeholder="0.00" oninput="calcPayPalFee()">
+    </div>
+    <div id="paypalResult" style="margin-top:8px;"></div>
+    <button class="btn btn-sm btn-gold" onclick="usePayPalFee()" id="usePaypalBtn" style="display:none;width:100%;">Gebühr übernehmen</button>
+    <button class="btn btn-sm btn-outline mt-8" onclick="document.getElementById('paypalOverlay').classList.remove('active')" style="width:100%;margin-top:8px;">Schließen</button>
+  </div>
+</div>
+
+<!-- Photo Viewer -->
+<div class="photo-viewer" id="photoViewer">
+  <div class="pv-top">
+    <button onclick="closePhotoViewer()">✕</button>
+    <button onclick="downloadCurrentPhoto()">⬇</button>
+  </div>
+  <div class="pv-nav">
+    <button onclick="prevPhoto()" id="pvPrev">‹</button>
+    <button onclick="nextPhoto()" id="pvNext">›</button>
+  </div>
+  <div class="pv-img-wrap" id="pvImgWrap">
+    <img id="pvImg" src="" onclick="toggleZoom()">
+  </div>
+  <div class="pv-counter" id="pvCounter">1 / 1</div>
+  <div class="pv-bottom">
+    <button onclick="rotatePhoto(-90)" title="Drehen">↻</button>
+    <button onclick="zoomOut()" title="Rauszoomen">🔍-</button>
+    <button onclick="resetZoom()" title="Zurücksetzen">⟲</button>
+    <button onclick="zoomIn()" title="Reinzoomen">🔍+</button>
   </div>
 </div>
 
@@ -549,10 +666,39 @@ var items = [];
 var editingId = null;
 let currentPage = 'dashboard';
 let exportItemId = null;
+let pvList = [];
+let pvIdx = 0;
+let pvZoom = 1;
+let pvRotation = 0;
+let selectMode = false;
+let selectedItems = [];
+let salesYearOffset = 0;
 
-const CATEGORIES = ['Konsolen','Spiele','PC-Hardware','Smartphones','Kleidung','Haushaltsgeräte','Sonstiges'];
-const CONDITIONS = ['Neu','Wie neu','Sehr gut','Gut','Gebrauchsspuren','Defekt'];
-const STATUS_LABELS = { draft:'Entwurf', bought:'Gekauft', ready:'Bereit', listed:'Inseriert', reserved:'Reserviert', sold:'Verkauft', archived:'Archiviert' };
+const SHIPPING_OPTIONS = {
+  DHL: [
+    { label: 'Päckchen S (bis 2kg)', cost: 5.49 },
+    { label: 'Päckchen M (bis 2kg)', cost: 6.49 },
+    { label: 'Paket S (bis 2kg)', cost: 8.49 },
+    { label: 'Paket M (bis 10kg)', cost: 11.49 },
+    { label: 'Paket L (bis 31,5kg)', cost: 16.49 }
+  ],
+  Hermes: [
+    { label: 'S (bis 1,5kg)', cost: 4.50 },
+    { label: 'M (bis 5kg)', cost: 5.50 },
+    { label: 'L (bis 10kg)', cost: 6.50 },
+    { label: 'XL (bis 25kg)', cost: 14.50 }
+  ],
+  'Deutsche Post': [
+    { label: 'Brief Standard (bis 20g)', cost: 0.85 },
+    { label: 'Brief Kompakt (bis 50g)', cost: 1.00 },
+    { label: 'Brief Groß (bis 500g)', cost: 1.60 },
+    { label: 'Brief Maxi (bis 1000g)', cost: 2.75 },
+    { label: 'Warenpost (bis 50g)', cost: 2.25 },
+    { label: 'Warenpost (bis 500g)', cost: 2.65 },
+    { label: 'Warenpost (bis 1000g)', cost: 3.20 },
+    { label: 'Warenpost (bis 2000g)', cost: 4.00 }
+  ]
+};
 
 function getDefaults() {
   var s = localStorage.getItem('flippybird_settings');
@@ -568,12 +714,9 @@ function navigate(page, param) {
   if (el) el.classList.add('active');
   var nav = document.querySelector('[data-page="'+page+'"]');
   if (nav) nav.classList.add('active');
-
   document.getElementById('backBtn').style.display = (page === 'detail' || page === 'export') ? 'flex' : 'none';
   document.getElementById('searchBtn').style.display = (page === 'inventory') ? 'block' : 'none';
-
   currentPage = page;
-
   switch(page) {
     case 'dashboard': setTitle('Flippy Bird'); renderDashboard(); break;
     case 'inventory': setTitle('Artikel'); renderInventory(); break;
@@ -587,60 +730,51 @@ function navigate(page, param) {
 }
 
 function setTitle(t) { document.getElementById('pageTitle').textContent = t; }
-function goBack() {
-  if (currentPage === 'detail' || currentPage === 'export') navigate('inventory');
-  else navigate('dashboard');
-}
+function goBack() { if (currentPage==='detail'||currentPage==='export') navigate('inventory'); else navigate('dashboard'); }
 function showSearch() { document.getElementById('searchInput').focus(); }
 
 // ===== DASHBOARD =====
 function renderDashboard() {
   var totalProfit = 0; var soldCount = 0; var margins = [];
-  var activeItems = items.filter(function(i) { return i.status !== 'sold' && i.status !== 'archived'; });
-  var soldItems = items.filter(function(i) { return i.status === 'sold'; });
-  soldItems.forEach(function(i) {
-    var profit = (i.sellingPrice || 0) - (i.purchasePrice || 0);
-    totalProfit += profit;
-    if (i.sellingPrice) margins.push(profit / i.sellingPrice * 100);
+  var activeItems = items.filter(function(i){return i.status!=='sold'&&i.status!=='archived';});
+  var soldItems = items.filter(function(i){return i.status==='sold';});
+  soldItems.forEach(function(i){
+    var p = (i.sellingPrice||0)-(i.purchasePrice||0); totalProfit += p;
+    if (i.sellingPrice) margins.push(p/i.sellingPrice*100);
   });
-  var avgMargin = margins.length ? (margins.reduce(function(a,b){return a+b;},0)/margins.length) : 0;
-  document.getElementById('dashProfit').textContent = totalProfit.toFixed(2).replace('.',',') + ' €';
-  document.getElementById('dashProfit').className = 'stat-value ' + (totalProfit >= 0 ? 'positive' : 'negative');
+  var avgMargin = margins.length ? margins.reduce(function(a,b){return a+b;},0)/margins.length : 0;
+  document.getElementById('dashProfit').textContent = (totalProfit>=0?'+':'')+totalProfit.toFixed(2).replace('.',',') + ' €';
+  document.getElementById('dashProfit').className = 'stat-value ' + (totalProfit>=0?'positive':'negative');
   document.getElementById('dashActive').textContent = activeItems.length;
-  document.getElementById('dashMargin').textContent = avgMargin.toFixed(1) + '%';
-
+  document.getElementById('dashMargin').textContent = avgMargin.toFixed(1)+'%';
   var recent = items.slice().sort(function(a,b){return (b.createdAt||0)-(a.createdAt||0);}).slice(0,5);
   var html = '';
-  if (!recent.length) html = '<div class="empty-state"><div class="empty-icon">🐦</div><p>Noch keine Artikel. Erstelle deinen ersten!</p></div>';
-  else recent.forEach(function(i) { html += renderItemCard(i); });
+  if (!recent.length) html = '<div class="empty-state"><div class="empty-icon">🐦</div><p>Noch keine Artikel.</p></div>';
+  else recent.forEach(function(i){html+=renderItemCard(i);});
   document.getElementById('dashRecent').innerHTML = html;
 }
 
 // ===== INVENTORY =====
 function renderInventory() {
-  var search = (document.getElementById('searchInput').value || '').toLowerCase();
+  var search = (document.getElementById('searchInput').value||'').toLowerCase();
   var filter = document.querySelector('#filterChips .filter-chip.active');
   var filterVal = filter ? filter.dataset.filter : 'all';
   var sort = document.getElementById('sortSelect').value;
-
   renderFilterChips(filterVal);
-
-  var list = items.slice().filter(function(i) {
-    if (filterVal !== 'all' && i.status !== filterVal) return false;
-    if (search && i.name.toLowerCase().indexOf(search) === -1) return false;
+  var list = items.slice().filter(function(i){
+    if (filterVal!=='all' && i.status!==filterVal) return false;
+    if (search && i.name.toLowerCase().indexOf(search)===-1) return false;
     return true;
   });
-
   switch(sort) {
-    case 'profit': list.sort(function(a,b){return ((b.sellingPrice||0)-(b.purchasePrice||0)) - ((a.sellingPrice||0)-(a.purchasePrice||0));}); break;
+    case 'profit': list.sort(function(a,b){return ((b.sellingPrice||0)-(b.purchasePrice||0))-((a.sellingPrice||0)-(a.purchasePrice||0));}); break;
     case 'margin': list.sort(function(a,b){var ma=a.sellingPrice?((a.sellingPrice-a.purchasePrice)/a.sellingPrice*100):0;var mb=b.sellingPrice?((b.sellingPrice-b.purchasePrice)/b.sellingPrice*100):0;return mb-ma;}); break;
     case 'unlisted': list.sort(function(a,b){return (a.status==='listed'?1:0)-(b.status==='listed'?1:0);}); break;
     default: list.sort(function(a,b){return (b.createdAt||0)-(a.createdAt||0);});
   }
-
   var html = '';
   if (!list.length) html = '<div class="empty-state"><div class="empty-icon">🔍</div><p>Keine Artikel gefunden.</p></div>';
-  else list.forEach(function(i) { html += renderItemCard(i); });
+  else list.forEach(function(i){html+=renderItemCard(i);});
   document.getElementById('inventoryList').innerHTML = html;
 }
 
@@ -648,529 +782,531 @@ function renderFilterChips(active) {
   var filters = ['all','draft','bought','ready','listed','sold'];
   var labels = ['Alle','Entwurf','Gekauft','Bereit','Inseriert','Verkauft'];
   var html = '';
-  filters.forEach(function(f,i) {
-    html += '<div class="filter-chip' + (f === active ? ' active' : '') + '" data-filter="' + f + '" onclick="setFilter(this,\''+f+'\')">' + labels[i] + '</div>';
-  });
+  filters.forEach(function(f,i){html+='<div class="filter-chip'+(f===active?' active':'')+'" data-filter="'+f+'" onclick="setFilter(this,\''+f+'\')">'+labels[i]+'</div>';});
   document.getElementById('filterChips').innerHTML = html;
 }
-
-function setFilter(el, f) {
-  document.querySelectorAll('#filterChips .filter-chip').forEach(function(c){c.classList.remove('active');});
-  el.classList.add('active');
-  renderInventory();
-}
+function setFilter(el,f) { document.querySelectorAll('#filterChips .filter-chip').forEach(function(c){c.classList.remove('active');});el.classList.add('active');renderInventory(); }
 
 function renderItemCard(item) {
-  var profit = (item.sellingPrice || 0) - (item.purchasePrice || 0);
-  var margin = item.sellingPrice ? (profit / item.sellingPrice * 100) : 0;
-  var img = item.images && item.images[0] ? '<img src="'+item.images[0]+'">' : '<span>📷</span>';
-  var statusClass = 'status-' + (item.status === 'ready_for_listing' ? 'ready' : item.status === 'listed' ? 'listed' : item.status === 'sold' ? 'sold' : item.status);
-  var statusLabel = STATUS_LABELS[item.status] || item.status;
-  if (item.status === 'ready_for_listing') statusLabel = 'Bereit';
-  return '<div class="item-card" onclick="navigate(\'detail\',\''+item.id+'\')">' +
-    '<div class="item-img">' + img + '</div>' +
-    '<div class="item-info"><div class="item-name">' + esc(item.name) + '</div>' +
-    '<div class="item-meta">' + esc(item.category) + ' · <span class="status-badge ' + statusClass + '">' + statusLabel + '</span></div>' +
-    '<div class="item-prices"><span>EK ' + fmt(item.purchasePrice) + '</span><span>VK ' + fmt(item.sellingPrice) + '</span></div>' +
-    '<div class="item-profit ' + (profit >= 0 ? 'positive' : 'negative') + '">' + (profit >= 0 ? '+' : '') + profit.toFixed(2).replace('.',',') + ' € · ' + margin.toFixed(1) + '%</div></div></div>';
+  var profit = (item.sellingPrice||0)-(item.purchasePrice||0);
+  var margin = item.sellingPrice ? (profit/item.sellingPrice*100) : 0;
+  var img = item.images&&item.images[0] ? '<img src="'+item.images[0]+'">':'<span>📷</span>';
+  var sc = 'status-'+(item.status==='ready_for_listing'?'ready':item.status);
+  var sl = item.status==='ready_for_listing'?'Bereit':(STATUS_LABELS[item.status]||item.status);
+  return '<div class="item-card" onclick="'+(selectMode?'toggleSelect(\''+item.id+'\')':'navigate(\'detail\',\''+item.id+'\')')+'">'+
+    '<input type="checkbox" class="item-select" '+(selectMode?'':'style="display:none"')+' '+(selectedItems.indexOf(item.id)>-1?'checked':'')+' onchange="toggleSelect(\''+item.id+'\')">'+
+    '<div class="item-img">'+img+'</div>'+
+    '<div class="item-info"><div class="item-name">'+esc(item.name)+'</div>'+
+    '<div class="item-meta">'+esc(item.category)+' · <span class="status-badge '+sc+'">'+sl+'</span></div>'+
+    '<div class="item-prices"><span>EK '+fmt(item.purchasePrice)+'</span><span>VK '+fmt(item.sellingPrice)+'</span></div>'+
+    '<div class="item-profit '+(profit>=0?'positive':'negative')+'">'+(profit>=0?'+':'')+profit.toFixed(2).replace('.',',')+' € · '+margin.toFixed(1)+'%</div></div></div>';
 }
 
 // ===== FORM =====
+var formImages = [];
+
 function resetForm() {
-  document.querySelectorAll('#page-add input, #page-add textarea').forEach(function(el){ el.value = ''; });
-  document.querySelectorAll('#page-add select').forEach(function(el){ el.selectedIndex = 0; });
-  document.getElementById('fPickup').checked = true;
-  document.getElementById('fShipping').checked = true;
-  document.getElementById('fPaypal').checked = true;
-  document.getElementById('fPrivateSale').checked = true;
-  var def = getDefaults();
-  document.getElementById('fLocation').value = def.location || '55122 Mainz';
-  document.getElementById('liveProfit').style.display = 'none';
-  document.getElementById('imagePicker').innerHTML = '<div class="img-thumb" onclick="document.getElementById(\'fileInput\').click()">+</div><input type="file" id="fileInput" accept="image/*" multiple style="display:none;" onchange="handleImages(event)">';
-  window.formImages = [];
+  document.querySelectorAll('#page-add input, #page-add textarea').forEach(function(e){e.value='';});
+  document.querySelectorAll('#page-add select').forEach(function(e){e.selectedIndex=0;});
+  document.getElementById('fPickup').checked=true;
+  document.getElementById('fShipping').checked=true;
+  document.getElementById('fPaypal').checked=true;
+  document.getElementById('fPrivateSale').checked=true;
+  document.getElementById('fShippingMethod').value='';
+  document.getElementById('fShippingCost').innerHTML='<option value="">-</option>';
+  var def=getDefaults();
+  document.getElementById('fLocation').value=def.location||'55122 Mainz';
+  document.getElementById('liveProfit').style.display='none';
+  formImages=[];
+  document.getElementById('imagePicker').innerHTML='<div class="img-thumb" onclick="document.getElementById(\'fileInput\').click()">+</div><input type="file" id="fileInput" accept="image/*" multiple style="display:none;" onchange="handleImages(event)">';
   if (editingId) {
-    var item = items.find(function(i){return i.id===editingId;});
+    var item=items.find(function(i){return i.id===editingId;});
     if (item) {
-      document.getElementById('fName').value = item.name || '';
-      document.getElementById('fBrand').value = item.brand || '';
-      document.getElementById('fModel').value = item.model || '';
-      document.getElementById('fCategory').value = item.category || 'Sonstiges';
-      document.getElementById('fCondition').value = item.condition || 'Gut';
-      document.getElementById('fPurchase').value = item.purchasePrice || '';
-      document.getElementById('fSelling').value = item.sellingPrice || '';
-      document.getElementById('fLocation').value = item.location || def.location;
-      document.getElementById('fAccessories').value = item.accessories || '';
-      document.getElementById('fDefects').value = item.defects || '';
-      document.getElementById('fNotes').value = item.notes || '';
-      document.getElementById('fPickup').checked = item.pickup !== false;
-      document.getElementById('fShipping').checked = item.shipping !== false;
-      document.getElementById('fPaypal').checked = item.paypal !== false;
-      document.getElementById('fPrivateSale').checked = item.privateSale !== false;
-      if (item.images) { window.formImages = item.images.slice(); renderImagePreview(); }
+      document.getElementById('fName').value=item.name||'';
+      document.getElementById('fBrand').value=item.brand||'';
+      document.getElementById('fModel').value=item.model||'';
+      document.getElementById('fCategory').value=item.category||'Sonstiges';
+      document.getElementById('fCondition').value=item.condition||'Gut';
+      document.getElementById('fPurchase').value=item.purchasePrice||'';
+      document.getElementById('fSalePrice').value=item.sellingPrice||'';
+      document.getElementById('fLocation').value=item.location||def.location;
+      document.getElementById('fAccessories').value=item.accessories||'';
+      document.getElementById('fDefects').value=item.defects||'';
+      document.getElementById('fNotes').value=item.notes||'';
+      document.getElementById('fPickup').checked=item.pickup!==false;
+      document.getElementById('fShipping').checked=item.shipping!==false;
+      document.getElementById('fPaypal').checked=item.paypal!==false;
+      document.getElementById('fPrivateSale').checked=item.privateSale!==false;
+      if (item.images) { formImages=item.images.slice(); renderImagePreview(); }
       calcLiveProfit();
     }
   }
 }
 
-var formImages = [];
 function handleImages(e) {
-  var files = e.target.files;
-  for (var i = 0; i < files.length; i++) {
-    (function(file) {
-      var reader = new FileReader();
-      reader.onload = function(ev) {
-        formImages.push(ev.target.result);
-        renderImagePreview();
-      };
-      reader.readAsDataURL(file);
-    })(files[i]);
-  }
-  e.target.value = '';
+  var files=e.target.files;
+  for (var i=0;i<files.length;i++){(function(file){var reader=new FileReader();reader.onload=function(ev){formImages.push(ev.target.result);renderImagePreview();};reader.readAsDataURL(file);})(files[i]);}
+  e.target.value='';
 }
 
 function renderImagePreview() {
-  var html = formImages.map(function(img,i){
-    return '<div class="img-thumb' + (i===0?' main':'') + '"><img src="'+img+'"><button class="remove-img" onclick="removeImage('+i+')">✕</button></div>';
-  }).join('');
-  html += '<div class="img-thumb" onclick="document.getElementById(\'fileInput\').click()">+</div>';
-  var p = document.getElementById('imagePicker');
-  if (p) p.innerHTML = html + '<input type="file" id="fileInput" accept="image/*" multiple style="display:none;" onchange="handleImages(event)">';
+  var html=formImages.map(function(img,i){return '<div class="img-thumb'+(i===0?' main':'')+'"><img src="'+img+'"><button class="remove-img" onclick="removeImage('+i+')">✕</button></div>';}).join('');
+  html+='<div class="img-thumb" onclick="document.getElementById(\'fileInput\').click()">+</div>';
+  var p=document.getElementById('imagePicker');if(p)p.innerHTML=html+'<input type="file" id="fileInput" accept="image/*" multiple style="display:none;" onchange="handleImages(event)">';
 }
 
-function removeImage(idx) {
-  formImages.splice(idx, 1);
-  renderImagePreview();
-}
+function removeImage(idx) { formImages.splice(idx,1); renderImagePreview(); }
 
 function calcLiveProfit() {
-  var purchase = parseFloat(document.getElementById('fPurchase').value) || 0;
-  var selling = parseFloat(document.getElementById('fSelling').value) || 0;
-  var el = document.getElementById('liveProfit');
-  if (!purchase && !selling) { el.style.display = 'none'; return; }
-  var profit = selling - purchase;
-  var margin = selling ? (profit / selling * 100) : 0;
-  var roi = purchase ? (profit / purchase * 100) : 0;
-  el.style.display = 'block';
-  el.innerHTML = '<div class="profit-total ' + (profit >= 0 ? 'positive' : 'negative') + '">' + (profit >= 0 ? '+' : '') + profit.toFixed(2).replace('.',',') + ' €</div>' +
-    '<div class="profit-row"><span class="label">Marge</span><span class="value">' + margin.toFixed(1) + '%</span></div>' +
-    '<div class="profit-row"><span class="label">ROI</span><span class="value">' + roi.toFixed(1) + '%</span></div>';
+  var purchase=parseFloat(document.getElementById('fPurchase').value)||0;
+  var selling=parseFloat(document.getElementById('fSalePrice').value)||0;
+  var el=document.getElementById('liveProfit');
+  if (!purchase&&!selling){el.style.display='none';return;}
+  var profit=selling-purchase;
+  var margin=selling?(profit/selling*100):0;
+  var roi=purchase?(profit/purchase*100):0;
+  el.style.display='block';
+  el.innerHTML='<div class="profit-total '+(profit>=0?'positive':'negative')+'">'+(profit>=0?'+':'')+profit.toFixed(2).replace('.',',')+' €</div>'+
+    '<div class="profit-row"><span class="label">Marge</span><span class="value">'+margin.toFixed(1)+'%</span></div>'+
+    '<div class="profit-row"><span class="label">ROI</span><span class="value">'+roi.toFixed(1)+'%</span></div>';
+}
+
+function updateShippingCost() {
+  var method=document.getElementById('fShippingMethod').value;
+  var sel=document.getElementById('fShippingCost');
+  sel.innerHTML='<option value="">-</option>';
+  if (!method||!SHIPPING_OPTIONS[method]) return;
+  SHIPPING_OPTIONS[method].forEach(function(o){sel.innerHTML+='<option value="'+o.cost+'">'+o.label+' ('+o.cost.toFixed(2).replace('.',',')+' €)</option>';});
 }
 
 function saveItem() {
-  var name = document.getElementById('fName').value.trim();
-  if (!name) { showToast('Bitte Artikelnamen eingeben'); return; }
-  var now = Date.now();
-  var item = {
-    id: editingId || 'item_' + now + '_' + Math.random().toString(36).slice(2,6),
-    name: name,
-    brand: document.getElementById('fBrand').value.trim(),
-    model: document.getElementById('fModel').value.trim(),
-    category: document.getElementById('fCategory').value,
-    condition: document.getElementById('fCondition').value,
-    purchasePrice: parseFloat(document.getElementById('fPurchase').value) || 0,
-    sellingPrice: parseFloat(document.getElementById('fSelling').value) || 0,
-    location: document.getElementById('fLocation').value.trim(),
-    defects: document.getElementById('fDefects').value.trim(),
-    accessories: document.getElementById('fAccessories').value.trim(),
-    notes: document.getElementById('fNotes').value.trim(),
-    pickup: document.getElementById('fPickup').checked,
-    shipping: document.getElementById('fShipping').checked,
-    paypal: document.getElementById('fPaypal').checked,
-    privateSale: document.getElementById('fPrivateSale').checked,
-    images: formImages.slice(),
-    status: editingId ? undefined : 'draft',
-    createdAt: editingId ? undefined : now,
-    updatedAt: now
+  var name=document.getElementById('fName').value.trim();
+  if (!name){showToast('Bitte Artikelnamen eingeben');return;}
+  var now=Date.now();
+  var item={
+    id:editingId||'item_'+now+'_'+Math.random().toString(36).slice(2,6),
+    name:name,
+    brand:document.getElementById('fBrand').value.trim(),
+    model:document.getElementById('fModel').value.trim(),
+    category:document.getElementById('fCategory').value,
+    condition:document.getElementById('fCondition').value,
+    purchasePrice:parseFloat(document.getElementById('fPurchase').value)||0,
+    sellingPrice:parseFloat(document.getElementById('fSalePrice').value)||0,
+    paypalFee:parseFloat(document.getElementById('fPaypalFee').value)||0,
+    shippingMethod:document.getElementById('fShippingMethod').value,
+    shippingCost:parseFloat(document.getElementById('fShippingCost').value)||0,
+    location:document.getElementById('fLocation').value.trim(),
+    defects:document.getElementById('fDefects').value.trim(),
+    accessories:document.getElementById('fAccessories').value.trim(),
+    notes:document.getElementById('fNotes').value.trim(),
+    pickup:document.getElementById('fPickup').checked,
+    shipping:document.getElementById('fShipping').checked,
+    paypal:document.getElementById('fPaypal').checked,
+    privateSale:document.getElementById('fPrivateSale').checked,
+    images:formImages.slice(),
+    status:editingId?undefined:'draft',
+    createdAt:editingId?undefined:now,
+    updatedAt:now
   };
-  if (editingId) {
-    var idx = items.findIndex(function(i){return i.id===editingId;});
-    if (idx > -1) { Object.assign(items[idx], item); items[idx].updatedAt = now; }
-    editingId = null;
-  } else {
-    items.push(item);
-  }
-  saveData();
-  showToast('Artikel gespeichert!');
-  navigate('inventory');
+  if (editingId){var idx=items.findIndex(function(i){return i.id===editingId;});if(idx>-1){Object.assign(items[idx],item);items[idx].updatedAt=now;}editingId=null;}
+  else items.push(item);
+  saveData();showToast('Artikel gespeichert!');navigate('inventory');
+}
+
+function saveItemDirect() {
+  var name=document.getElementById('fName').value.trim();
+  if (!name) return;
+  var now=Date.now();
+  var item={
+    id:editingId||'item_'+now,
+    name:name, brand:document.getElementById('fBrand').value.trim(),
+    model:document.getElementById('fModel').value.trim(),
+    category:document.getElementById('fCategory').value,
+    condition:document.getElementById('fCondition').value,
+    purchasePrice:parseFloat(document.getElementById('fPurchase').value)||0,
+    sellingPrice:parseFloat(document.getElementById('fSalePrice').value)||0,
+    paypalFee:parseFloat(document.getElementById('fPaypalFee').value)||0,
+    shippingMethod:document.getElementById('fShippingMethod').value,
+    shippingCost:parseFloat(document.getElementById('fShippingCost').value)||0,
+    location:document.getElementById('fLocation').value.trim(),
+    defects:document.getElementById('fDefects').value.trim(),
+    accessories:document.getElementById('fAccessories').value.trim(),
+    notes:document.getElementById('fNotes').value.trim(),
+    pickup:document.getElementById('fPickup').checked,
+    shipping:document.getElementById('fShipping').checked,
+    paypal:document.getElementById('fPaypal').checked,
+    privateSale:document.getElementById('fPrivateSale').checked,
+    images:formImages.slice(), status:'draft', createdAt:now, updatedAt:now
+  };
+  if (editingId){var idx=items.findIndex(function(i){return i.id===editingId;});if(idx>-1){Object.assign(items[idx],item);editingId=null;}}
+  else items.push(item);
+  exportItemId=item.id; saveData();
 }
 
 // ===== DETAIL =====
 function renderDetail(id) {
-  var item = items.find(function(i){return i.id===id;});
-  if (!item) { document.getElementById('detailContent').innerHTML = '<div class="empty-state"><p>Artikel nicht gefunden</p></div>'; return; }
-  var profit = (item.sellingPrice || 0) - (item.purchasePrice || 0);
-  var margin = item.sellingPrice ? (profit / item.sellingPrice * 100) : 0;
-  var roi = item.purchasePrice ? (profit / item.purchasePrice * 100) : 0;
-  var img = item.images && item.images[0] ? item.images[0] : null;
-  var statusClass = 'status-' + (item.status === 'ready_for_listing' ? 'ready' : item.status);
-
-  var html = '';
-  if (item.images && item.images.length) {
-    html += '<div class="detail-image" onclick="enlargeImage(\''+item.images[0]+'\')"><img src="'+item.images[0]+'"></div>';
-    if (item.images.length > 1) {
-      html += '<div class="detail-images-row">';
-      item.images.forEach(function(img,i){
-        html += '<div class="thumb' + (i===0?' active':'') + '" onclick="switchDetailImage(this,\''+img+'\')"><img src="'+img+'"></div>';
-      });
-      html += '</div>';
+  var item=items.find(function(i){return i.id===id;});
+  if (!item){document.getElementById('detailContent').innerHTML='<div class="empty-state"><p>Nicht gefunden</p></div>';return;}
+  var profit=(item.sellingPrice||0)-(item.purchasePrice||0);
+  var margin=item.sellingPrice?(profit/item.sellingPrice*100):0;
+  var roi=item.purchasePrice?(profit/item.purchasePrice*100):0;
+  var sc='status-'+(item.status==='ready_for_listing'?'ready':item.status);
+  var sl=item.status==='ready_for_listing'?'Bereit':(STATUS_LABELS[item.status]||item.status);
+  var html='';
+  if (item.images&&item.images.length){
+    html+='<div class="detail-image"><img src="'+item.images[0]+'" onclick="openPhotoViewer(\''+item.id+'\',0)"><div class="img-actions"><button onclick="event.stopPropagation();openPhotoViewer(\''+item.id+'\',0)" title="Vergrößern">🔍</button><button onclick="event.stopPropagation();downloadImage(\''+item.images[0]+'\')" title="Download">⬇</button></div></div>';
+    if (item.images.length>1){
+      html+='<div class="detail-images-row">';
+      item.images.forEach(function(img,i){html+='<div class="thumb'+(i===0?' active':'')+'" onclick="switchDetailImage(this,\''+img+'\')"><img src="'+img+'"></div>';});
+      html+='</div>';
     }
-  } else {
-    html += '<div class="detail-image"><span>📷</span></div>';
-  }
-
-  html += '<div style="margin-bottom:12px;"><div style="font-size:18px;font-weight:700;margin-bottom:4px;">' + esc(item.name) + '</div>' +
-    '<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;"><span class="status-badge ' + statusClass + '">' + (STATUS_LABELS[item.status]||item.status) + '</span>' +
-    '<span style="font-size:12px;color:var(--text-secondary);">' + esc(item.category) + '</span>' +
-    (item.condition ? '<span style="font-size:12px;color:var(--text-secondary);">· ' + esc(item.condition) + '</span>' : '') +
-    '</div></div>';
-
-  html += '<div class="detail-section"><h3>Preise</h3><div class="detail-price-grid">' +
-    '<div class="price-item"><div class="p-label">Einkauf</div><div class="p-value">' + fmt(item.purchasePrice) + '</div></div>' +
-    '<div class="price-item"><div class="p-label">Verkauf</div><div class="p-value">' + fmt(item.sellingPrice) + '</div></div>' +
-    '<div class="price-item"><div class="p-label">Gewinn</div><div class="p-value ' + (profit>=0?'positive':'negative') + '">' + (profit>=0?'+':'') + profit.toFixed(2).replace('.',',') + ' €</div></div>' +
-    '<div class="price-item"><div class="p-label">Marge</div><div class="p-value">' + margin.toFixed(1) + '%</div></div>' +
-    '</div></div>';
-
-  html += '<div class="btn-group">' +
-    '<button class="btn btn-sm btn-primary" style="flex:1;" onclick="editItem(\''+item.id+'\')">Bearbeiten</button>' +
-    '<button class="btn btn-sm btn-outline" style="flex:1;" onclick="prepareExportFromDetail(\''+item.id+'\')">Export</button>' +
+  } else html+='<div class="detail-image"><span>📷</span></div>';
+  html+='<div style="margin-bottom:12px;"><div style="font-size:18px;font-weight:700;margin-bottom:4px;">'+esc(item.name)+'</div>'+
+    '<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;"><span class="status-badge '+sc+'">'+sl+'</span>'+
+    '<span style="font-size:12px;color:var(--text-secondary);">'+esc(item.category)+'</span>'+
+    (item.condition?'<span style="font-size:12px;color:var(--text-secondary);">· '+esc(item.condition)+'</span>':'')+'</div></div>';
+  html+='<div class="detail-section"><h3>Preise</h3><div class="detail-price-grid">'+
+    '<div class="price-item"><div class="p-label">Einkauf</div><div class="p-value">'+fmt(item.purchasePrice)+'</div></div>'+
+    '<div class="price-item"><div class="p-label">Verkauf</div><div class="p-value">'+fmt(item.sellingPrice)+'</div></div>'+
+    '<div class="price-item"><div class="p-label">Gewinn</div><div class="p-value '+(profit>=0?'positive':'negative')+'">'+(profit>=0?'+':'')+profit.toFixed(2).replace('.',',')+' €</div></div>'+
+    '<div class="price-item"><div class="p-label">Marge</div><div class="p-value">'+margin.toFixed(1)+'%</div></div></div></div>';
+  if (item.shippingMethod||item.shippingCost){html+='<div class="detail-section"><h3>Versand</h3><div style="font-size:13px;">'+(item.shippingMethod?esc(item.shippingMethod):'')+(item.shippingCost?' · '+item.shippingCost.toFixed(2).replace('.',',')+' €':'')+'</div></div>';}
+  html+='<div class="btn-group">'+
+    '<button class="btn btn-sm btn-gold" style="flex:1;" onclick="editItem(\''+item.id+'\')">Bearbeiten</button>'+
+    '<button class="btn btn-sm btn-outline" style="flex:1;" onclick="prepareExportFromDetail(\''+item.id+'\')">Export</button>'+
     '<button class="btn btn-sm btn-danger" onclick="deleteItem(\''+item.id+'\')">Löschen</button></div>';
-
-  html += '<div class="btn-group">';
-  if (item.status !== 'ready_for_listing') html += '<button class="btn btn-sm btn-outline" onclick="setItemStatus(\''+item.id+'\',\'ready_for_listing\')">Bereit</button>';
-  if (item.status !== 'listed') html += '<button class="btn btn-sm btn-outline" onclick="setItemStatus(\''+item.id+'\',\'listed\')">Inseriert</button>';
-  if (item.status !== 'sold') html += '<button class="btn btn-sm btn-outline" onclick="setItemStatus(\''+item.id+'\',\'sold\')">Verkauft</button>';
-  html += '</div>';
-
-  if (item.brand || item.model) html += '<div class="detail-section"><h3>Produkt</h3><div style="font-size:13px;">' + [item.brand,item.model].filter(Boolean).join(' ') + '</div></div>';
-  if (item.location) html += '<div class="detail-section"><h3>Standort</h3><div style="font-size:13px;">' + esc(item.location) + '</div></div>';
-  if (item.accessories) html += '<div class="detail-section"><h3>Zubehör</h3><div style="font-size:13px;">' + esc(item.accessories) + '</div></div>';
-  if (item.defects) html += '<div class="detail-section"><h3>Mängel</h3><div style="font-size:13px;color:var(--danger);">' + esc(item.defects) + '</div></div>';
-  if (item.notes) html += '<div class="detail-section"><h3>Notizen</h3><div style="font-size:13px;">' + esc(item.notes) + '</div></div>';
-
-  document.getElementById('detailContent').innerHTML = html;
+  html+='<div class="btn-group">';
+  if (item.status!=='ready_for_listing') html+='<button class="btn btn-sm btn-outline" onclick="setItemStatus(\''+item.id+'\',\'ready_for_listing\')">Bereit</button>';
+  if (item.status!=='listed') html+='<button class="btn btn-sm btn-outline" onclick="setItemStatus(\''+item.id+'\',\'listed\')">Inseriert</button>';
+  if (item.status!=='sold') html+='<button class="btn btn-sm btn-outline" onclick="setItemStatus(\''+item.id+'\',\'sold\')">Verkauft</button>';
+  html+='</div>';
+  if (item.brand||item.model) html+='<div class="detail-section"><h3>Produkt</h3><div style="font-size:13px;">'+[item.brand,item.model].filter(Boolean).join(' ')+'</div></div>';
+  if (item.location) html+='<div class="detail-section"><h3>Standort</h3><div style="font-size:13px;">'+esc(item.location)+'</div></div>';
+  if (item.accessories) html+='<div class="detail-section"><h3>Zubehör</h3><div style="font-size:13px;">'+esc(item.accessories)+'</div></div>';
+  if (item.defects) html+='<div class="detail-section"><h3>Mängel</h3><div style="font-size:13px;color:var(--danger);">'+esc(item.defects)+'</div></div>';
+  if (item.notes) html+='<div class="detail-section"><h3>Notizen</h3><div style="font-size:13px;">'+esc(item.notes)+'</div></div>';
+  document.getElementById('detailContent').innerHTML=html;
 }
 
-function switchDetailImage(el, src) {
+function switchDetailImage(el,src) {
   document.querySelectorAll('.detail-images-row .thumb').forEach(function(t){t.classList.remove('active');});
   el.classList.add('active');
-  document.querySelector('.detail-image img').src = src;
+  document.querySelector('.detail-image img').src=src;
 }
 
-function enlargeImage(src) {
-  var w = window.open('', '_blank');
-  if (w) { w.document.write('<img src="'+src+'" style="max-width:100%;max-height:100vh;margin:auto;display:block;">'); }
+// ===== PHOTO VIEWER =====
+function openPhotoViewer(itemId, idx) {
+  var item=items.find(function(i){return i.id===itemId;});
+  if (!item||!item.images||!item.images.length) return;
+  pvList=item.images; pvIdx=idx; pvZoom=1; pvRotation=0;
+  updatePhotoViewer();
+  document.getElementById('photoViewer').classList.add('active');
+}
+
+function updatePhotoViewer() {
+  var img=document.getElementById('pvImg');
+  img.src=pvList[pvIdx];
+  img.style.transform='scale('+pvZoom+') rotate('+pvRotation+'deg)';
+  document.getElementById('pvCounter').textContent=(pvIdx+1)+' / '+pvList.length;
+  document.getElementById('pvPrev').style.display=pvIdx>0?'flex':'none';
+  document.getElementById('pvNext').style.display=pvIdx<pvList.length-1?'flex':'none';
+}
+
+function prevPhoto(){if(pvIdx>0){pvIdx--;pvZoom=1;pvRotation=0;updatePhotoViewer();}}
+function nextPhoto(){if(pvIdx<pvList.length-1){pvIdx++;pvZoom=1;pvRotation=0;updatePhotoViewer();}}
+function closePhotoViewer(){document.getElementById('photoViewer').classList.remove('active');}
+function zoomIn(){pvZoom=Math.min(pvZoom+0.25,4);updatePhotoViewer();}
+function zoomOut(){pvZoom=Math.max(pvZoom-0.25,0.25);updatePhotoViewer();}
+function resetZoom(){pvZoom=1;pvRotation=0;updatePhotoViewer();}
+function toggleZoom(){if(pvZoom>1){pvZoom=1;}else{pvZoom=2;}updatePhotoViewer();}
+function rotatePhoto(deg){pvRotation=(pvRotation+deg)%360;updatePhotoViewer();}
+
+function downloadCurrentPhoto() {
+  var img=document.getElementById('pvImg');
+  if (!img.src||img.src==='') return;
+  var a=document.createElement('a');
+  a.href=img.src;
+  a.download='flippybird_photo_'+(pvIdx+1)+'.jpg';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+}
+
+function downloadImage(src) {
+  var a=document.createElement('a');a.href=src;a.download='flippybird_photo.jpg';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+}
+
+// ===== PAYPAL =====
+function autoCalcPayPal() {
+  var price=parseFloat(document.getElementById('fSalePrice').value)||0;
+  var feeInput=document.getElementById('fPaypalFee');
+  if (price>0&&!feeInput.value){var fee=price*0.0249+0.35;feeInput.value=fee.toFixed(2);}
+}
+
+function openPayPalCalc() {
+  document.getElementById('paypalCalcPrice').value=document.getElementById('fSalePrice').value||'';
+  document.getElementById('paypalResult').innerHTML='';
+  document.getElementById('usePaypalBtn').style.display='none';
+  document.getElementById('paypalOverlay').classList.add('active');
+  if (document.getElementById('paypalCalcPrice').value) calcPayPalFee();
+}
+
+function calcPayPalFee() {
+  var price=parseFloat(document.getElementById('paypalCalcPrice').value)||0;
+  var el=document.getElementById('paypalResult');
+  var btn=document.getElementById('usePaypalBtn');
+  if (price<=0){el.innerHTML='';btn.style.display='none';return;}
+  var fee=price*0.0249+0.35;
+  var netto=price-fee;
+  el.innerHTML='<div class="detail-row"><span class="label">Verkaufspreis</span><span class="value">'+price.toFixed(2).replace('.',',')+' €</span></div><div class="detail-row"><span class="label">PayPal Gebühr (2,49% + 0,35 €)</span><span class="value" style="color:var(--danger);">- '+fee.toFixed(2).replace('.',',')+' €</span></div><div class="detail-row" style="font-weight:700;border-bottom:none;"><span class="label">Erhaltener Betrag</span><span class="value" style="color:var(--primary);">'+netto.toFixed(2).replace('.',',')+' €</span></div>';
+  btn.style.display='block';btn.dataset.fee=fee.toFixed(2);
+}
+
+function usePayPalFee() {
+  var fee=document.getElementById('usePaypalBtn').dataset.fee;
+  if (fee){document.getElementById('fPaypalFee').value=fee.replace(',','.');}
+  document.getElementById('paypalOverlay').classList.remove('active');
 }
 
 // ===== EXPORT =====
 function prepareExport(itemId) {
-  if (itemId) { exportItemId = itemId; navigate('export', itemId); }
-  else if (editingId) { exportItemId = editingId; saveItemDirect(); navigate('export', exportItemId); }
-  else {
-    var name = document.getElementById('fName').value.trim();
-    if (!name) { showToast('Erst Artikel speichern'); return; }
-    saveItemDirect();
-    navigate('export', exportItemId);
-  }
+  if (itemId){exportItemId=itemId;navigate('export',itemId);}
+  else if (editingId){exportItemId=editingId;saveItemDirect();navigate('export',exportItemId);}
+  else{var n=document.getElementById('fName').value.trim();if(!n){showToast('Erst Artikel speichern');return;}saveItemDirect();navigate('export',exportItemId);}
 }
 
-function prepareExportFromDetail(id) {
-  exportItemId = id;
-  navigate('export', id);
-}
+function prepareExportFromDetail(id){exportItemId=id;navigate('export',id);}
 
 function renderExport(id) {
-  var item = items.find(function(i){return i.id===id;});
-  if (!item) { document.getElementById('exportPreview').innerHTML = '<div class="empty-state"><p>Artikel nicht gefunden</p></div>'; return; }
-  var title = generateTitle(item);
-  var desc = generateDescription(item);
-  var price = (item.sellingPrice || 0).toFixed(2).replace('.',',') + ' €';
-  var img = item.images && item.images[0] ? '<img src="'+item.images[0]+'">' : '<span>📷</span>';
-
-  document.getElementById('exportTitle').value = title;
-  document.getElementById('exportPrice').value = price;
-  document.getElementById('exportDesc').value = desc;
-
-  document.getElementById('exportPreview').innerHTML =
-    '<div class="preview-card"><div class="preview-img">' + img + '</div>' +
-    '<div class="preview-body"><div class="preview-title">' + esc(title) + '</div>' +
-    '<div class="preview-price">' + price + '</div>' +
-    '<div class="preview-location">' + esc(item.location || '55122 Mainz') + '</div>' +
-    '<div class="preview-desc">' + esc(desc.slice(0,200)) + '...</div></div></div>';
+  var item=items.find(function(i){return i.id===id;});
+  if (!item){document.getElementById('exportPreview').innerHTML='<div class="empty-state"><p>Nicht gefunden</p></div>';return;}
+  var title=generateTitle(item);
+  var desc=generateDescription(item);
+  var price=(item.sellingPrice||0).toFixed(2).replace('.',',')+' €';
+  var img=item.images&&item.images[0]?'<img src="'+item.images[0]+'">':'<span>📷</span>';
+  document.getElementById('exportTitle').value=title;
+  document.getElementById('exportPrice').value=price;
+  document.getElementById('exportDesc').value=desc;
+  document.getElementById('exportPreview').innerHTML='<div class="preview-card"><div class="preview-img">'+img+'</div>'+
+    '<div class="preview-body"><div class="preview-title">'+esc(title)+'</div>'+
+    '<div class="preview-price">'+price+'</div>'+
+    '<div class="preview-location">'+esc(item.location||'55122 Mainz')+'</div>'+
+    '<div class="preview-desc">'+esc(desc.slice(0,200))+'...</div></div></div>';
 }
 
 function generateTitle(item) {
-  var parts = [];
+  var parts=[];
   if (item.brand) parts.push(item.brand);
   if (item.model) parts.push(item.model);
-  if (!item.brand && !item.model) parts.push(item.name);
-  if (item.name && item.name !== (item.brand+' '+item.model).trim()) {
-    var extra = item.name.replace(item.brand||'','').replace(item.model||'','').trim();
-    if (extra && extra.length > 3) parts.push(extra);
-  }
-  var title = parts.join(' ').trim();
-  if (title.length > 65) title = title.slice(0,62)+'...';
-  return title || item.name;
+  if (!item.brand&&!item.model) parts.push(item.name);
+  var extra=item.name.replace(item.brand||'','').replace(item.model||'','').trim();
+  if (extra&&extra.length>3) parts.push(extra);
+  var title=parts.join(' ').trim();
+  if (title.length>65) title=title.slice(0,62)+'...';
+  return title||item.name;
 }
 
 function generateDescription(item) {
-  var lines = [];
-  var name = item.name || '';
-  var hasBrandModel = item.brand || item.model;
-
-  lines.push('Verkaufe ' + (name.toLowerCase().indexOf(name.charAt(0)) === 0 ? name : name) + '.');
-
-  if (item.condition === 'Defekt') {
-    lines.push('Der Artikel wird ausdrücklich als defekt verkauft.');
-  } else {
+  var lines=[];
+  lines.push('Verkaufe '+item.name+'.');
+  if (item.condition==='Defekt'){lines.push('Der Artikel wird ausdrücklich als defekt verkauft.');}
+  else {
     lines.push('Der Artikel funktioniert einwandfrei.');
-    if (item.category === 'Konsolen') lines.push('Tasten, Ton, Ladefunktion und Display wurden getestet.');
-    else if (item.category === 'Spiele') lines.push('Das Spiel startet normal und wird erkannt.');
-    else if (item.category === 'PC-Hardware') lines.push('Die Hardware wurde getestet und funktioniert.');
-    else if (item.category === 'Smartphones') lines.push('Display, Akku, Kamera und alle Funktionen wurden getestet.');
+    if (item.category==='Konsolen') lines.push('Tasten, Ton, Ladefunktion und Display wurden getestet.');
+    else if (item.category==='Spiele') lines.push('Das Spiel startet normal und wird erkannt.');
+    else if (item.category==='PC-Hardware') lines.push('Die Hardware wurde getestet und funktioniert.');
+    else if (item.category==='Smartphones') lines.push('Display, Akku, Kamera und alle Funktionen wurden getestet.');
   }
-
-  if (item.defects) lines.push('Hinweis: ' + item.defects);
-
-  if (item.accessories) {
-    var accs = item.accessories.split(',').map(function(s){return s.trim();}).filter(Boolean);
-    if (accs.length) {
-      lines.push('');
-      lines.push('Lieferumfang:');
-      accs.forEach(function(a){ lines.push('- ' + a); });
-    }
+  if (item.defects) lines.push('Hinweis: '+item.defects);
+  if (item.accessories){
+    var accs=item.accessories.split(',').map(function(s){return s.trim();}).filter(Boolean);
+    if (accs.length){lines.push('');lines.push('Lieferumfang:');accs.forEach(function(a){lines.push('- '+a);});}
   }
-
-  lines.push('');
-  lines.push('Zustand siehe Bilder.');
-
-  var def = getDefaults();
-  var footer = def.footer || 'Abholung möglich in 55122 Mainz oder Versand per PayPal FF.\nDa Privatverkauf, keine Rückgabe oder Garantie.';
-  lines.push('');
-  lines.push(footer);
-
+  lines.push('');lines.push('Zustand siehe Bilder.');
+  var def=getDefaults();var footer=def.footer||'Abholung möglich in 55122 Mainz oder Versand per PayPal FF.\nDa Privatverkauf, keine Rückgabe oder Garantie.';
+  lines.push('');lines.push(footer);
   return lines.join('\n');
 }
 
-function copyText(id, msg) {
-  var el = document.getElementById(id);
-  var text = el.value || el.textContent || el.innerText;
-  if (!text) return;
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(text).then(function(){ showToast(msg); });
-  } else {
-    var ta = document.createElement('textarea');
-    ta.value = text; ta.style.position='fixed'; ta.style.left='-9999px';
-    document.body.appendChild(ta); ta.select();
-    try { document.execCommand('copy'); showToast(msg); } catch {}
-    document.body.removeChild(ta);
-  }
+function copyText(id,msg){
+  var el=document.getElementById(id);var text=el.value||el.textContent||el.innerText;if(!text)return;
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(function(){showToast(msg);});}
+  else{var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.left='-9999px';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');showToast(msg);}catch{}document.body.removeChild(ta);}
 }
 
 function copyAllExport() {
-  var title = document.getElementById('exportTitle').value;
-  var price = document.getElementById('exportPrice').value;
-  var desc = document.getElementById('exportDesc').value;
-  var text = title + '\n' + price + '\n\n' + desc;
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(text).then(function(){ showToast('Alles kopiert!'); });
-  } else {
-    var ta = document.createElement('textarea');
-    ta.value = text; ta.style.position='fixed'; ta.style.left='-9999px';
-    document.body.appendChild(ta); ta.select();
-    try { document.execCommand('copy'); showToast('Alles kopiert!'); } catch {}
-    document.body.removeChild(ta);
+  var t=document.getElementById('exportTitle').value,p=document.getElementById('exportPrice').value,d=document.getElementById('exportDesc').value,text=t+'\n'+p+'\n\n'+d;
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(function(){showToast('Alles kopiert!');});}
+  else{var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.left='-9999px';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');showToast('Alles kopiert!');}catch{}document.body.removeChild(ta);}
+}
+
+function openKleinanzeigen(){window.open('https://www.kleinanzeigen.de/p-anzeige-aufgeben.html','_blank');}
+function markAsListed(){if(!exportItemId)return;setItemStatus(exportItemId,'listed');showToast('Als inseriert markiert!');}
+
+// ===== SALES =====
+function renderSales() {
+  var now=new Date();var year=now.getFullYear()+salesYearOffset;
+  document.getElementById('salesYearLabel').textContent=year;
+  renderMonthGrid(year);
+  renderSalesList();
+}
+
+function shiftSalesMonth(n){
+  salesYearOffset+=n/12;
+  renderSales();
+}
+
+function renderMonthGrid(year) {
+  var names=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+  var now=new Date();var curMonth=now.getMonth();var curYear=now.getFullYear();
+  var grid=document.getElementById('monthGrid');grid.innerHTML='';
+  for (var m=0;m<12;m++){
+    var tile=document.createElement('div');tile.className='month-tile';
+    var sold=items.filter(function(i){
+      if(i.status!=='sold') return false;
+      var d=i.sellDate?new Date(i.sellDate):new Date(i.updatedAt||i.createdAt);
+      return d.getMonth()===m&&d.getFullYear()===year;
+    });
+    var profit=0;sold.forEach(function(i){profit+=(i.sellingPrice||0)-(i.purchasePrice||0);});
+    tile.innerHTML='<div class="month-name">'+names[m]+'</div>'+
+      '<div class="month-profit '+(profit>=0?'positive':'negative')+'">'+(profit>=0?'+':'')+profit.toFixed(0)+' €</div>'+
+      '<div class="month-count">'+sold.length+' Verkäufe</div>';
+    tile.onclick=function(mm,yr){return function(){showMonthPopup(mm,yr);};}(m,year);
+    grid.appendChild(tile);
   }
 }
 
-function openKleinanzeigen() {
-  window.open('https://www.kleinanzeigen.de/p-anzeige-aufgeben.html', '_blank');
-}
-
-function markAsListed() {
-  if (!exportItemId) return;
-  setItemStatus(exportItemId, 'listed');
-  showToast('Als inseriert markiert!');
-}
-
-// ===== SALES =====
-function renderSales(period) {
-  period = period || getSalesPeriod();
-  var sold = items.filter(function(i){return i.status==='sold';});
-  var now = new Date();
-  var filtered = sold.filter(function(i){
-    if (period === 'month') { var d = new Date(i.sellDate || i.updatedAt || i.createdAt); return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear(); }
-    if (period === 'lastmonth') { var d = new Date(i.sellDate || i.updatedAt || i.createdAt); var m = now.getMonth()-1; var y = now.getFullYear(); if(m<0){m=11;y--;} return d.getMonth()===m && d.getFullYear()===y; }
-    return true;
+function showMonthPopup(month,year) {
+  var names=['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+  var sold=items.filter(function(i){
+    if(i.status!=='sold')return false;
+    var d=i.sellDate?new Date(i.sellDate):new Date(i.updatedAt||i.createdAt);
+    return d.getMonth()===month&&d.getFullYear()===year;
   });
-  var totalProfit = 0;
-  filtered.forEach(function(i){ totalProfit += (i.sellingPrice||0) - (i.purchasePrice||0); });
-  document.getElementById('salesCount').textContent = filtered.length;
-  document.getElementById('salesProfit').textContent = totalProfit.toFixed(2).replace('.',',') + ' €';
-  document.getElementById('salesProfit').className = 'stat-value ' + (totalProfit>=0?'positive':'negative');
-
-  var html = '';
-  if (!filtered.length) html = '<div class="empty-state"><div class="empty-icon">💰</div><p>Keine Verkäufe in diesem Zeitraum.</p></div>';
-  else filtered.sort(function(a,b){return (b.sellDate||b.updatedAt||0)-(a.sellDate||a.updatedAt||0);}).forEach(function(i){
-    var profit = (i.sellingPrice||0) - (i.purchasePrice||0);
-    var d = i.sellDate ? new Date(i.sellDate) : new Date(i.updatedAt || i.createdAt);
-    html += '<div class="item-card" style="cursor:default;"><div class="item-img">' +
-      (i.images&&i.images[0]?'<img src="'+i.images[0]+'">':'<span>📷</span>') +
-      '</div><div class="item-info"><div class="item-name">'+esc(i.name)+'</div>' +
-      '<div class="item-meta">'+esc(i.platform||'Kleinanzeigen')+' · '+d.toLocaleDateString('de-DE')+'</div>' +
-      '<div class="item-prices"><span>EK '+fmt(i.purchasePrice)+'</span><span>VK '+fmt(i.sellingPrice)+'</span></div>' +
-      '<div class="item-profit '+(profit>=0?'positive':'negative')+'">'+(profit>=0?'+':'')+profit.toFixed(2).replace('.',',')+' €</div></div></div>';
+  var profit=0;sold.forEach(function(i){profit+=(i.sellingPrice||0)-(i.purchasePrice||0);});
+  var margins=sold.map(function(i){return i.sellingPrice?(((i.sellingPrice||0)-(i.purchasePrice||0))/i.sellingPrice*100):0;});
+  var avgMargin=margins.length?margins.reduce(function(a,b){return a+b;},0)/margins.length:0;
+  document.getElementById('popupMonthTitle').textContent=names[month]+' '+year;
+  document.getElementById('popupTotalProfit').textContent=(profit>=0?'+':'')+profit.toFixed(2).replace('.',',')+' €';
+  document.getElementById('popupTotalProfit').className='big '+(profit>=0?'positive':'negative');
+  document.getElementById('popupSub').textContent=sold.length+' Verkäufe · Ø Marge '+avgMargin.toFixed(1)+'%';
+  var html='';
+  sold.sort(function(a,b){return (b.sellDate||b.updatedAt||0)-(a.sellDate||a.updatedAt||0);}).forEach(function(i){
+    var p=(i.sellingPrice||0)-(i.purchasePrice||0);
+    var d=i.sellDate?new Date(i.sellDate):new Date(i.updatedAt||i.createdAt);
+    html+='<div class="item-card" style="cursor:default;margin-bottom:6px;">'+
+      '<div class="item-img">'+(i.images&&i.images[0]?'<img src="'+i.images[0]+'">':'<span>📷</span>')+'</div>'+
+      '<div class="item-info"><div class="item-name">'+esc(i.name)+'</div>'+
+      '<div class="item-meta">'+d.toLocaleDateString('de-DE')+' · '+esc(i.platform||'Kleinanzeigen')+'</div>'+
+      '<div class="item-profit '+(p>=0?'positive':'negative')+'">'+(p>=0?'+':'')+p.toFixed(2).replace('.',',')+' €</div></div></div>';
   });
-  document.getElementById('salesList').innerHTML = html;
+  document.getElementById('popupSalesList').innerHTML=html;
+  document.getElementById('profitPopup').classList.add('open');
 }
 
-function getSalesPeriod() {
-  var active = document.querySelector('#salesFilter .active');
-  return active ? active.dataset.period : 'month';
+function closeProfitPopup(){document.getElementById('profitPopup').classList.remove('open');}
+
+function renderSalesList() {
+  var year=new Date().getFullYear()+salesYearOffset;
+  var sold=items.filter(function(i){
+    if(i.status!=='sold')return false;
+    var d=i.sellDate?new Date(i.sellDate):new Date(i.updatedAt||i.createdAt);
+    return d.getFullYear()===year;
+  });
+  var html='';
+  if(!sold.length)html='<div class="empty-state"><div class="empty-icon">💰</div><p>Keine Verkäufe in '+year+'.</p></div>';
+  else{
+    // Select mode bar
+    var bar=document.getElementById('selectModeBar');
+    if(selectMode){bar.classList.add('active');document.getElementById('selectCount').textContent=selectedItems.length+' ausgewählt';}
+    else bar.classList.remove('active');
+    sold.sort(function(a,b){return(b.sellDate||b.updatedAt||0)-(a.sellDate||a.updatedAt||0);}).forEach(function(i){
+      var p=(i.sellingPrice||0)-(i.purchasePrice||0);
+      var d=i.sellDate?new Date(i.sellDate):new Date(i.updatedAt||i.createdAt);
+      html+='<div class="item-card" onclick="'+(selectMode?'toggleSelect(\''+i.id+'\')':'')+'" style="cursor:'+(selectMode?'pointer':'default')+'">'+
+        '<input type="checkbox" class="item-select" '+(selectMode?'':'style="display:none"')+' '+(selectedItems.indexOf(i.id)>-1?'checked':'')+' onchange="toggleSelect(\''+i.id+'\')">'+
+        '<div class="item-img">'+(i.images&&i.images[0]?'<img src="'+i.images[0]+'">':'<span>📷</span>')+'</div>'+
+        '<div class="item-info"><div class="item-name">'+esc(i.name)+'</div>'+
+        '<div class="item-meta">'+d.toLocaleDateString('de-DE')+' · '+esc(i.platform||'Kleinanzeigen')+'</div>'+
+        '<div class="item-prices"><span>EK '+fmt(i.purchasePrice)+'</span><span>VK '+fmt(i.sellingPrice)+'</span></div>'+
+        '<div class="item-profit '+(p>=0?'positive':'negative')+'">'+(p>=0?'+':'')+p.toFixed(2).replace('.',',')+' €</div></div></div>';
+    });
+  }
+  document.getElementById('salesList').innerHTML=html;
 }
 
-// Sales filter click
-document.addEventListener('click', function(e) {
-  var btn = e.target.closest('#salesFilter button');
-  if (btn) {
-    document.querySelectorAll('#salesFilter button').forEach(function(b){b.classList.remove('active');});
-    btn.classList.add('active');
-    renderSales(btn.dataset.period);
+// Enter select mode by long press or button
+function enterSelectMode() {
+  selectMode=true;selectedItems=[];
+  renderSalesList();
+}
+function exitSelectMode(){selectMode=false;selectedItems=[];renderSalesList();}
+function toggleSelect(id){var idx=selectedItems.indexOf(id);if(idx>-1)selectedItems.splice(idx,1);else selectedItems.push(id);renderSalesList();}
+
+function markSelectedSold() {
+  if(!selectedItems.length){showToast('Keine Artikel ausgewählt');return;}
+  selectedItems.forEach(function(id){
+    var item=items.find(function(i){return i.id===id;});
+    if(item&&item.status!=='sold'){item.status='sold';item.sellDate=Date.now();item.updatedAt=Date.now();}
+  });
+  saveData();showToast(selectedItems.length+' als verkauft markiert!');selectedItems=[];exitSelectMode();renderSales();renderDashboard();
+}
+
+// Long press on sales header to enter select mode
+document.addEventListener('DOMContentLoaded',function(){
+  var salesHeader=document.querySelector('[data-page="sales"]');
+  if(salesHeader){
+    var timer;
+    salesHeader.addEventListener('touchstart',function(){timer=setTimeout(enterSelectMode,600);});
+    salesHeader.addEventListener('touchend',function(){clearTimeout(timer);});
+    salesHeader.addEventListener('touchmove',function(){clearTimeout(timer);});
   }
 });
 
 // ===== SETTINGS =====
 function renderSettings() {
-  var def = getDefaults();
-  document.getElementById('sLocation').value = def.location || '55122 Mainz';
-  document.getElementById('sFooter').value = def.footer || '';
-  document.getElementById('sDarkMode').checked = localStorage.getItem('flippybird_darkmode') === '1';
+  var def=getDefaults();
+  document.getElementById('sLocation').value=def.location||'55122 Mainz';
+  document.getElementById('sFooter').value=def.footer||'';
+  document.getElementById('sDarkMode').checked=localStorage.getItem('flippybird_darkmode')==='1';
 }
-
 function saveSettings() {
-  var settings = {
-    location: document.getElementById('sLocation').value.trim(),
-    footer: document.getElementById('sFooter').value.trim()
-  };
-  localStorage.setItem('flippybird_settings', JSON.stringify(settings));
-  var dark = document.getElementById('sDarkMode').checked;
-  localStorage.setItem('flippybird_darkmode', dark ? '1' : '0');
-  applyDarkMode(dark);
-  showToast('Einstellungen gespeichert!');
+  var settings={location:document.getElementById('sLocation').value.trim(),footer:document.getElementById('sFooter').value.trim()};
+  localStorage.setItem('flippybird_settings',JSON.stringify(settings));
+  var dark=document.getElementById('sDarkMode').checked;
+  localStorage.setItem('flippybird_darkmode',dark?'1':'0');
+  applyDarkMode(dark);showToast('Einstellungen gespeichert!');
 }
 
 // ===== HELPERS =====
-function esc(s) {
-  if (!s) return '';
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const STATUS_LABELS={draft:'Entwurf',bought:'Gekauft',ready:'Bereit',listed:'Inseriert',reserved:'Reserviert',sold:'Verkauft',archived:'Archiviert'};
+
+function esc(s){if(!s)return '';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function fmt(v){if(v===null||v===undefined||v==='')return '-';return parseFloat(v).toFixed(2).replace('.',',')+' €';}
+function showToast(msg){var el=document.getElementById('toast');if(!el)return;el.textContent=msg;el.classList.add('show');clearTimeout(el._timeout);el._timeout=setTimeout(function(){el.classList.remove('show');},2000);}
+function saveData(){localStorage.setItem('flippybird_items',JSON.stringify(items));}
+function loadData(){try{var raw=localStorage.getItem('flippybird_items');items=raw?JSON.parse(raw):[];}catch{items=[];}}
+
+function setItemStatus(id,status){
+  var item=items.find(function(i){return i.id===id;});if(!item)return;
+  item.status=status;if(status==='sold')item.sellDate=Date.now();item.updatedAt=Date.now();saveData();
+  renderDashboard();if(currentPage==='detail')renderDetail(id);
 }
 
-function fmt(v) {
-  if (v === null || v === undefined || v === '') return '-';
-  return parseFloat(v).toFixed(2).replace('.',',') + ' €';
-}
+function editItem(id){editingId=id;navigate('add');}
 
-function showToast(msg) {
-  var el = document.getElementById('toast');
-  if (!el) return;
-  el.textContent = msg;
-  el.classList.add('show');
-  clearTimeout(el._timeout);
-  el._timeout = setTimeout(function(){ el.classList.remove('show'); }, 2000);
-}
-
-function saveData() {
-  localStorage.setItem('flippybird_items', JSON.stringify(items));
-}
-
-function loadData() {
-  try {
-    var raw = localStorage.getItem('flippybird_items');
-    items = raw ? JSON.parse(raw) : [];
-  } catch { items = []; }
-}
-
-function setItemStatus(id, status) {
-  var item = items.find(function(i){return i.id===id;});
-  if (!item) return;
-  item.status = status;
-  if (status === 'sold') item.sellDate = Date.now();
-  item.updatedAt = Date.now();
-  saveData();
-  renderDashboard();
-  if (currentPage === 'detail') renderDetail(id);
-}
-
-function editItem(id) {
-  editingId = id;
-  navigate('add');
-}
-
-function deleteItem(id) {
-  document.getElementById('modalTitle').textContent = 'Artikel löschen';
-  document.getElementById('modalText').textContent = 'Willst du diesen Artikel wirklich löschen?';
-  document.getElementById('modalConfirmBtn').onclick = function() {
-    items = items.filter(function(i){return i.id!==id;});
-    saveData();
-    closeModal();
-    showToast('Gelöscht!');
-    navigate('inventory');
-  };
+function deleteItem(id){
+  document.getElementById('modalTitle').textContent='Löschen';
+  document.getElementById('modalText').textContent='Artikel wirklich löschen?';
+  document.getElementById('modalConfirmBtn').onclick=function(){items=items.filter(function(i){return i.id!==id;});saveData();closeModal();showToast('Gelöscht!');navigate('inventory');};
   document.getElementById('modalOverlay').classList.add('active');
 }
+function closeModal(){document.getElementById('modalOverlay').classList.remove('active');}
 
-function closeModal() {
-  document.getElementById('modalOverlay').classList.remove('active');
-}
-
-function saveItemDirect() {
-  var name = document.getElementById('fName').value.trim();
-  if (!name) return;
-  var now = Date.now();
-  var item = {
-    id: editingId || 'item_' + now,
-    name: name,
-    brand: document.getElementById('fBrand').value.trim(),
-    model: document.getElementById('fModel').value.trim(),
-    category: document.getElementById('fCategory').value,
-    condition: document.getElementById('fCondition').value,
-    purchasePrice: parseFloat(document.getElementById('fPurchase').value) || 0,
-    sellingPrice: parseFloat(document.getElementById('fSelling').value) || 0,
-    location: document.getElementById('fLocation').value.trim(),
-    defects: document.getElementById('fDefects').value.trim(),
-    accessories: document.getElementById('fAccessories').value.trim(),
-    notes: document.getElementById('fNotes').value.trim(),
-    pickup: document.getElementById('fPickup').checked,
-    shipping: document.getElementById('fShipping').checked,
-    paypal: document.getElementById('fPaypal').checked,
-    privateSale: document.getElementById('fPrivateSale').checked,
-    images: formImages.slice(),
-    status: 'draft',
-    createdAt: now,
-    updatedAt: now
-  };
-  if (editingId) {
-    var idx = items.findIndex(function(i){return i.id===editingId;});
-    if (idx > -1) { Object.assign(items[idx], item); editingId = null; }
-  } else { items.push(item); }
-  exportItemId = item.id;
-  saveData();
-}
-
-// ===== DARK MODE =====
-function applyDarkMode(enabled) {
-  if (enabled) document.documentElement.style.setProperty('--bg','#0F0F0F');
-  else document.documentElement.style.removeProperty('--bg');
-}
+function applyDarkMode(enabled){if(enabled)document.documentElement.style.setProperty('--bg','#0F0F0F');else document.documentElement.style.removeProperty('--bg');}
 
 // ===== INIT =====
-loadData();
-renderDashboard();
-
-// Apply dark mode from storage
-if (localStorage.getItem('flippybird_darkmode') === '1') {
-  applyDarkMode(true);
-}
+loadData();renderDashboard();
+if(localStorage.getItem('flippybird_darkmode')==='1')applyDarkMode(true);
 </script>
 </body>
 </html>
