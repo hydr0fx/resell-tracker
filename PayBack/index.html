@@ -1,0 +1,2005 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#22C55E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>PayBack</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-icon.png">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+--bg:#F7F8FA;--card:#FFFFFF;--text:#111827;--text-secondary:#6B7280;--border:#E5E7EB;
+--green:#22C55E;--green-dark:#15803D;--green-light:#DCFCE7;--red:#EF4444;--red-light:#FEE2E2;
+--yellow:#F59E0B;--yellow-light:#FEF3C7;--blue:#3B82F6;--blue-light:#DBEAFE;--purple:#8B5CF6;--purple-light:#EDE9FE;
+--radius:16px;--radius-sm:10px;--radius-pill:999px;--shadow:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);
+--shadow-md:0 4px 12px rgba(0,0,0,0.08);--shadow-lg:0 8px 24px rgba(0,0,0,0.1);
+--nav-height:68px;--header-height:54px;--safe-bottom:env(safe-area-inset-bottom,0px)
+}
+body{
+font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,sans-serif;
+background:var(--bg);color:var(--text);font-size:15px;line-height:1.5;
+-webkit-font-smoothing:antialiased;padding-bottom:calc(var(--nav-height) + var(--safe-bottom));padding-top:var(--header-height);min-height:100vh
+}
+input,textarea,button,select{font-family:inherit;font-size:inherit;outline:none}
+a{color:var(--green);text-decoration:none}
+
+/* App Header */
+.app-header{position:fixed;top:0;left:0;right:0;height:var(--header-height);background:var(--card);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;z-index:100}
+.header-left{display:flex;align-items:center;gap:8px;min-width:40px}
+.header-left .logo{width:30px;height:30px;background:var(--green);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:14px;flex-shrink:0}
+.header-title{font-size:18px;font-weight:700;flex:1}
+.header-right{display:flex;align-items:center;gap:4px;min-width:40px;justify-content:flex-end}
+.header-btn{background:none;border:none;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-secondary);transition:background 0.15s}
+.header-btn:hover{background:var(--bg)}
+.header-back{display:none;background:none;border:none;width:36px;height:36px;border-radius:50%;align-items:center;justify-content:center;cursor:pointer;color:var(--text);font-size:20px}
+.header-back.show{display:flex}
+
+/* Bottom Nav */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:calc(var(--nav-height) + var(--safe-bottom));background:var(--card);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-around;z-index:100;padding-bottom:var(--safe-bottom)}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;cursor:pointer;padding:4px 12px;color:var(--text-secondary);font-size:10px;font-weight:500;transition:color 0.15s;position:relative}
+.nav-item svg{width:24px;height:24px}
+.nav-item span{font-size:10px}
+.nav-item.active{color:var(--green)}
+.nav-add{margin-top:-8px}
+.nav-add-btn{width:52px;height:52px;border-radius:50%;border:none;background:var(--green);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(34,197,94,0.35);font-size:28px;font-weight:300;transition:transform 0.15s}
+.nav-add-btn:active{transform:scale(0.92)}
+
+/* Pages */
+.page{display:none;padding:12px 16px 20px}
+.page.active{display:block}
+
+/* Cards */
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:12px}
+.card-sm{padding:12px;border-radius:var(--radius-sm)}
+
+/* Balance Card */
+.balance-card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow-md);padding:20px;margin-bottom:16px}
+.balance-card .label{font-size:12px;color:var(--text-secondary);font-weight:500;margin-bottom:2px}
+.balance-card .amount{font-size:20px;font-weight:700}
+.balance-card .amount.green{color:var(--green)}
+.balance-card .amount.red{color:var(--red)}
+.balance-rows{display:flex;flex-direction:column;gap:6px}
+.balance-row{display:flex;justify-content:space-between;align-items:center}
+.balance-row .lbl{font-size:13px;color:var(--text-secondary)}
+.balance-row .val{font-size:16px;font-weight:600}
+.balance-row .val.green{color:var(--green)}
+.balance-row .val.red{color:var(--red)}
+.balance-net{margin-top:12px;padding-top:12px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.balance-net .lbl{font-size:13px;font-weight:600;color:var(--text)}
+.balance-net .val{font-size:24px;font-weight:800}
+.balance-net .val.green{color:var(--green)}
+.balance-net .val.red{color:var(--red)}
+
+/* Quick Actions */
+.quick-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.qaction{background:var(--card);border-radius:var(--radius-sm);box-shadow:var(--shadow);padding:12px;border:none;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px;transition:transform 0.15s}
+.qaction:active{transform:scale(0.97)}
+.qaction .qicon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.qaction .qicon.green{background:var(--green-light);color:var(--green)}
+.qaction .qicon.red{background:var(--red-light);color:var(--red)}
+.qaction .qicon.blue{background:var(--blue-light);color:var(--blue)}
+.qaction .qicon.purple{background:var(--purple-light);color:var(--purple)}
+.qaction .qtext{font-size:13px;font-weight:600;color:var(--text);line-height:1.3}
+
+/* Section */
+.section-header{display:flex;justify-content:space-between;align-items:center;margin:16px 0 8px}
+.section-header h2{font-size:15px;font-weight:700}
+.section-header .see-all{font-size:12px;color:var(--green);cursor:pointer;background:none;border:none;font-weight:600}
+
+/* Debt Card */
+.debt-card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px;margin-bottom:8px;cursor:pointer;transition:transform 0.15s}
+.debt-card:active{transform:scale(0.98)}
+.debt-top{display:flex;align-items:center;gap:12px}
+.debt-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;color:#fff;flex-shrink:0}
+.debt-info{flex:1;min-width:0}
+.debt-name{font-size:15px;font-weight:600;color:var(--text)}
+.debt-reason{font-size:12px;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.debt-amount{text-align:right;flex-shrink:0}
+.debt-amount .num{font-size:18px;font-weight:800}
+.debt-amount .num.green{color:var(--green)}
+.debt-amount .num.red{color:var(--red)}
+.debt-amount .dir{font-size:11px;color:var(--text-secondary);font-weight:500}
+.debt-bottom{display:flex;align-items:center;justify-content:space-between;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
+.debt-meta{display:flex;align-items:center;gap:8px}
+.debt-meta .date{font-size:11px;color:var(--text-secondary)}
+.debt-meta .reminder-badge{font-size:10px;color:var(--yellow);background:var(--yellow-light);padding:2px 6px;border-radius:999px;font-weight:600}
+.debt-actions{display:flex;gap:4px}
+.debt-actions .act-btn{background:none;border:none;width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-secondary);font-size:14px}
+.debt-actions .act-btn:hover{background:var(--bg)}
+.debt-actions .act-btn.green{color:var(--green)}
+
+/* Status Badge */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:999px;font-size:11px;font-weight:600}
+.badge.open{background:var(--blue-light);color:var(--blue)}
+.badge.partial{background:var(--yellow-light);color:var(--yellow)}
+.badge.paid{background:var(--green-light);color:var(--green-dark)}
+.badge.disputed{background:var(--red-light);color:var(--red)}
+.badge.archived{background:var(--border);color:var(--text-secondary)}
+.badge.overdue{background:var(--red-light);color:var(--red)}
+
+/* Direction Badge */
+.dir-badge{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600}
+.dir-badge.green{color:var(--green)}
+.dir-badge.red{color:var(--red)}
+
+/* Avatar */
+.avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;color:#fff;flex-shrink:0}
+.avatar-sm{width:32px;height:32px;font-size:13px}
+.avatar-lg{width:56px;height:56px;font-size:22px}
+
+/* Forms */
+.form-group{margin-bottom:14px}
+.form-label{font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:4px;display:block}
+.form-input{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:15px;color:var(--text);background:var(--bg);transition:border-color 0.15s}
+.form-input:focus{border-color:var(--green);background:var(--card)}
+.form-input.large{font-size:28px;font-weight:800;padding:14px 16px;text-align:center}
+textarea.form-input{resize:vertical;min-height:80px}
+select.form-input{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px}
+
+/* Toggle Switch */
+.form-toggle{display:flex;gap:4px;background:var(--bg);border-radius:999px;padding:3px;margin-bottom:14px}
+.form-toggle button{flex:1;padding:8px 16px;border:none;border-radius:999px;cursor:pointer;font-size:13px;font-weight:600;background:transparent;color:var(--text-secondary);transition:all 0.15s}
+.form-toggle button.active{background:var(--card);color:var(--text);box-shadow:var(--shadow)}
+.form-toggle.toggle-green button.active{background:var(--green);color:#fff}
+.form-toggle.toggle-red button.active{background:var(--red);color:#fff}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 18px;border:none;border-radius:999px;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.15s;white-space:nowrap}
+.btn:active{transform:scale(0.97)}
+.btn-primary{background:var(--green);color:#fff;box-shadow:0 2px 8px rgba(34,197,94,0.25)}
+.btn-primary:hover{background:var(--green-dark)}
+.btn-secondary{background:var(--bg);color:var(--text)}
+.btn-danger{background:var(--red);color:#fff}
+.btn-ghost{background:transparent;color:var(--text-secondary)}
+.btn-block{width:100%}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-lg{padding:14px 24px;font-size:16px}
+.btn-icon{width:36px;height:36px;padding:0;border-radius:50%}
+
+/* Chips */
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px}
+.chip{padding:6px 14px;border-radius:999px;border:1.5px solid var(--border);background:var(--card);font-size:12px;font-weight:500;cursor:pointer;color:var(--text-secondary);transition:all 0.15s}
+.chip.active{background:var(--green);color:#fff;border-color:var(--green)}
+.chip.filter-chip.active{background:var(--green-light);color:var(--green-dark);border-color:var(--green)}
+.chip:hover{border-color:var(--green)}
+
+/* Search */
+.search-bar{position:relative;margin-bottom:12px}
+.search-bar input{width:100%;padding:10px 14px 10px 38px;border:1.5px solid var(--border);border-radius:999px;font-size:14px;color:var(--text);background:var(--card)}
+.search-bar input:focus{border-color:var(--green)}
+.search-bar .search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-secondary);font-size:16px}
+
+/* Amount Display */
+.amount-green{color:var(--green);font-weight:700}
+.amount-red{color:var(--red);font-weight:700}
+
+/* Empty State */
+.empty-state{text-align:center;padding:40px 20px}
+.empty-state .empty-icon{font-size:48px;margin-bottom:12px;opacity:0.5}
+.empty-state h3{font-size:17px;font-weight:700;margin-bottom:4px}
+.empty-state p{font-size:13px;color:var(--text-secondary);margin-bottom:16px}
+
+/* Toast */
+.toast-container{position:fixed;top:calc(var(--header-height) + 8px);left:50%;transform:translateX(-50%);z-index:999;pointer-events:none}
+.toast{background:#1F2937;color:#fff;padding:10px 20px;border-radius:999px;font-size:13px;font-weight:500;box-shadow:var(--shadow-lg);opacity:0;transition:opacity 0.3s;margin-bottom:6px;white-space:nowrap;pointer-events:none}
+.toast.show{opacity:1}
+
+/* Modal */
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);z-index:200;display:none;align-items:flex-end;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal-content{background:var(--card);border-radius:var(--radius) var(--radius) 0 0;width:100%;max-width:480px;max-height:85vh;overflow-y:auto;padding:20px;animation:slideUp 0.25s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.modal-header h3{font-size:17px;font-weight:700}
+.modal-close{background:none;border:none;font-size:22px;cursor:pointer;color:var(--text-secondary);width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:50%}
+.modal-close:hover{background:var(--bg)}
+
+/* Detail View */
+.detail-hero{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow-md);padding:24px;text-align:center;margin-bottom:12px}
+.detail-hero .big-amount{font-size:36px;font-weight:800;margin:8px 0}
+.detail-hero .big-amount.green{color:var(--green)}
+.detail-hero .big-amount.red{color:var(--red)}
+.detail-hero .d-person{font-size:18px;font-weight:700;margin-bottom:4px}
+.detail-hero .d-reason{font-size:14px;color:var(--text-secondary);margin-bottom:8px}
+.detail-hero .d-dates{font-size:12px;color:var(--text-secondary);display:flex;justify-content:center;gap:16px}
+.detail-section{margin-bottom:16px}
+.detail-section h3{font-size:13px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.3px;margin-bottom:8px}
+.detail-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.detail-actions .btn{width:100%}
+.payment-item{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px}
+.payment-item:last-child{border-bottom:none}
+.payment-item .p-amount{font-weight:700}
+
+/* Message Generator */
+.msg-tone-chips{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.msg-tone-chips .tone-chip{padding:6px 14px;border-radius:999px;border:1.5px solid var(--border);font-size:12px;font-weight:500;cursor:pointer;background:var(--card);color:var(--text-secondary);transition:all 0.15s}
+.msg-tone-chips .tone-chip.active{background:var(--green);color:#fff;border-color:var(--green)}
+.msg-preview{background:var(--bg);border-radius:var(--radius-sm);padding:16px;margin-bottom:12px;min-height:100px;font-size:14px;line-height:1.7;white-space:pre-wrap}
+.msg-actions{display:flex;flex-wrap:wrap;gap:8px}
+
+/* Share Card Preview */
+.share-card-preview{width:100%;aspect-ratio:1;border-radius:var(--radius);overflow:hidden;margin-bottom:12px;position:relative}
+.share-card-preview canvas{width:100%;height:100%;display:block}
+
+/* Group */
+.group-card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px;margin-bottom:8px;cursor:pointer}
+.group-card .g-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.group-card .g-title{font-size:15px;font-weight:600}
+.group-card .g-amount{font-size:18px;font-weight:800;color:var(--purple)}
+.group-card .g-meta{font-size:12px;color:var(--text-secondary);display:flex;gap:12px}
+.participant-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
+.participant-row:last-child{border-bottom:none}
+
+/* Settings */
+.settings-group{margin-bottom:20px}
+.settings-group h3{font-size:12px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.3px;margin-bottom:8px;padding:0 4px}
+.settings-item{display:flex;align-items:center;justify-content:space-between;padding:12px 4px;border-bottom:1px solid var(--border);cursor:pointer}
+.settings-item:last-child{border-bottom:none}
+.settings-item .s-left{display:flex;align-items:center;gap:10px}
+.settings-item .s-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.settings-item .s-label{font-size:14px;font-weight:500}
+.settings-item .s-value{font-size:13px;color:var(--text-secondary)}
+.settings-toggle{width:44px;height:24px;border-radius:999px;background:var(--border);border:none;cursor:pointer;position:relative;transition:background 0.2s}
+.settings-toggle.active{background:var(--green)}
+.settings-toggle::after{content:'';position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.15)}
+.settings-toggle.active::after{transform:translateX(20px)}
+
+/* Stat cards */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.stat-card{background:var(--card);border-radius:var(--radius-sm);box-shadow:var(--shadow);padding:14px;text-align:center}
+.stat-card .stat-num{font-size:22px;font-weight:800}
+.stat-card .stat-num.green{color:var(--green)}
+.stat-card .stat-num.red{color:var(--red)}
+.stat-card .stat-num.purple{color:var(--purple)}
+.stat-card .stat-lbl{font-size:11px;color:var(--text-secondary);font-weight:500;margin-top:2px}
+
+/* Image upload */
+.image-upload-area{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.image-upload-box{aspect-ratio:1;border:2px dashed var(--border);border-radius:var(--radius-sm);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;color:var(--text-secondary);font-size:11px;gap:4px;transition:border-color 0.15s}
+.image-upload-box:hover{border-color:var(--green)}
+.image-upload-box img{width:100%;height:100%;object-fit:cover;border-radius:var(--radius-sm)}
+.image-upload-box .remove-img{position:absolute;top:4px;right:4px;width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,0.6);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px}
+.image-upload-box{position:relative}
+
+/* Person card */
+.person-card{display:flex;align-items:center;gap:12px;padding:14px;background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:8px;cursor:pointer}
+.person-card .pc-info{flex:1}
+.person-card .pc-name{font-size:15px;font-weight:600}
+.person-card .pc-detail{font-size:12px;color:var(--text-secondary)}
+.person-card .pc-amount{text-align:right}
+.person-card .pc-amount .num{font-size:16px;font-weight:700}
+
+/* Overdue styles */
+.overdue-indicator{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:var(--red)}
+
+/* Scrollable chips */
+.chips-scroll{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.chips-scroll::-webkit-scrollbar{display:none}
+
+/* Sort dropdown */
+.sort-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.sort-bar select{padding:6px 12px;border:1.5px solid var(--border);border-radius:999px;font-size:12px;background:var(--card);color:var(--text);cursor:pointer}
+
+/* Payment form inline */
+.payment-form{padding:14px;background:var(--bg);border-radius:var(--radius-sm);margin-bottom:10px}
+.payment-form .row{display:flex;gap:8px;margin-bottom:8px}
+.payment-form .row>*{flex:1}
+
+/* Evidence gallery */
+.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.gallery img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:var(--radius-sm);cursor:pointer}
+
+/* Responsive */
+@media(min-width:480px){
+body{max-width:480px;margin:0 auto;border-left:1px solid var(--border);border-right:1px solid var(--border);min-height:100vh}
+}
+</style>
+</head>
+<body>
+
+<!-- APP HEADER -->
+<header class="app-header">
+  <div class="header-left">
+    <button class="header-back" id="backBtn" onclick="goBack()">←</button>
+    <div class="logo">P</div>
+  </div>
+  <div class="header-title" id="headerTitle">PayBack</div>
+  <div class="header-right" id="headerRight">
+    <button class="header-btn" onclick="showSearch()" title="Suchen">🔍</button>
+  </div>
+</header>
+
+<!-- TOAST -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- PAGE 1: DASHBOARD -->
+<div class="page active" id="page-dashboard">
+  <div class="balance-card">
+    <div style="font-size:13px;color:var(--text-secondary);font-weight:600;margin-bottom:10px">Dein Stand</div>
+    <div class="balance-rows">
+      <div class="balance-row">
+        <span class="lbl">Dir werden geschuldet</span>
+        <span class="val green" id="dashOwedToMe">0,00 €</span>
+      </div>
+      <div class="balance-row">
+        <span class="lbl">Du schuldest</span>
+        <span class="val red" id="dashIOwe">0,00 €</span>
+      </div>
+    </div>
+    <div class="balance-net">
+      <span class="lbl">Netto</span>
+      <span class="val" id="dashNet">0,00 €</span>
+    </div>
+  </div>
+
+  <div class="quick-actions">
+    <button class="qaction" onclick="navigateTo('add')">
+      <div class="qicon green">💰</div>
+      <div class="qtext">Mir schuldet<br>jemand</div>
+    </button>
+    <button class="qaction" onclick="navigateTo('add',true)">
+      <div class="qicon red">💳</div>
+      <div class="qtext">Ich schulde<br>jemandem</div>
+    </button>
+    <button class="qaction" onclick="navigateTo('groups')">
+      <div class="qicon purple">👥</div>
+      <div class="qtext">Rechnung<br>teilen</div>
+    </button>
+    <button class="qaction" onclick="showRemindSelector()">
+      <div class="qicon blue">🔔</div>
+      <div class="qtext">Erinnerung<br>erstellen</div>
+    </button>
+  </div>
+
+  <div id="dashOverdue"></div>
+
+  <div class="section-header">
+    <h2>Offene Beträge</h2>
+  </div>
+  <div id="dashOpenDebts"></div>
+
+  <div class="section-header">
+    <h2>Letzte Aktivitäten</h2>
+  </div>
+  <div id="dashActivity"></div>
+</div>
+
+<!-- PAGE 2: DEBTS LIST -->
+<div class="page" id="page-debts">
+  <div class="search-bar">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="debtSearch" placeholder="Person, Betrag oder Grund suchen" oninput="renderDebts()">
+  </div>
+  <div class="chips-scroll" id="filterChips"></div>
+  <div class="sort-bar">
+    <span style="font-size:12px;color:var(--text-secondary)" id="debtCount">0 Einträge</span>
+    <select id="sortSelect" onchange="renderDebts()">
+      <option value="newest">Neueste</option>
+      <option value="highest">Höchster Betrag</option>
+      <option value="oldest">Älteste</option>
+      <option value="due">Fällig bald</option>
+      <option value="name">Name A-Z</option>
+    </select>
+  </div>
+  <div id="debtList"></div>
+</div>
+
+<!-- PAGE 3: ADD DEBT -->
+<div class="page" id="page-add">
+  <div class="form-toggle toggle-green" id="addTypeToggle">
+    <button class="active" data-value="owed_to_me" onclick="setAddType('owed_to_me')">💰 Mir schuldet jemand</button>
+    <button data-value="i_owe" onclick="setAddType('i_owe')">💳 Ich schulde jemandem</button>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">Person</label>
+    <input class="form-input" id="addPerson" placeholder="Name eingeben" list="personList" autocomplete="off">
+    <datalist id="personList"></datalist>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">Betrag</label>
+    <input class="form-input large" id="addAmount" type="number" step="0.01" min="0.01" placeholder="0,00" inputmode="decimal">
+    <div style="font-size:12px;color:var(--text-secondary);text-align:center;margin-top:2px">EUR</div>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">Grund</label>
+    <input class="form-input" id="addReason" placeholder="z.B. Essen, Taxi, Kleinanzeigen, Einkauf">
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">Kategorie</label>
+    <div class="chips" id="categoryChips"></div>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">Datum</label>
+    <input class="form-input" id="addDate" type="date">
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">Fälligkeitsdatum (optional)</label>
+    <div class="chips" id="dueDateChips">
+      <span class="chip active" data-value="">Keins</span>
+      <span class="chip" data-value="today">Heute</span>
+      <span class="chip" data-value="tomorrow">Morgen</span>
+      <span class="chip" data-value="3days">In 3 Tagen</span>
+      <span class="chip" data-value="1week">In 1 Woche</span>
+      <span class="chip" data-value="custom">Eigenes Datum</span>
+    </div>
+    <input class="form-input" id="addDueDate" type="date" style="display:none;margin-top:6px">
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">Beschreibung (optional)</label>
+    <textarea class="form-input" id="addDescription" rows="2" placeholder="Weitere Details..."></textarea>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">Beleg / Bild</label>
+    <div class="image-upload-area" id="imageUploadArea">
+      <div class="image-upload-box" id="addImageBtn" onclick="document.getElementById('addImageInput').click()">
+        <span style="font-size:22px">📷</span>
+        <span>Bild hinzufügen</span>
+      </div>
+    </div>
+    <input type="file" id="addImageInput" accept="image/*" capture="environment" style="display:none" multiple onchange="handleImageUpload(event)">
+  </div>
+
+  <button class="btn btn-primary btn-block btn-lg" onclick="saveDebt()">Speichern</button>
+  <button class="btn btn-secondary btn-block" onclick="saveDebtAndMessage()" style="margin-top:6px">Speichern & Nachricht erstellen</button>
+</div>
+
+<!-- PAGE 4: GROUPS -->
+<div class="page" id="page-groups">
+  <div class="section-header">
+    <h2>Rechnung teilen</h2>
+  </div>
+
+  <div class="card">
+    <div class="form-group">
+      <label class="form-label">Titel der Rechnung</label>
+      <input class="form-input" id="groupTitle" placeholder="z.B. Abendessen, Taxifahrt">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Gesamtbetrag</label>
+      <input class="form-input large" id="groupAmount" type="number" step="0.01" min="0.01" placeholder="0,00" inputmode="decimal">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Bezahlt von</label>
+      <input class="form-input" id="groupPaidBy" placeholder="Name der Person, die bezahlt hat" list="personList">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Teilnehmer (durch Komma getrennt)</label>
+      <input class="form-input" id="groupParticipants" placeholder="z.B. Ahmed, Yassine, Hamza">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Aufteilung</label>
+      <div class="chips" id="splitTypeChips">
+        <span class="chip active" data-value="equal">Gleichmäßig</span>
+        <span class="chip" data-value="custom">Benutzerdefiniert</span>
+      </div>
+    </div>
+    <div id="customSplitArea" style="display:none">
+      <p style="font-size:12px;color:var(--text-secondary);margin-bottom:8px">Beträge pro Teilnehmer (mit Komma getrennt, Reihenfolge wie oben)</p>
+      <input class="form-input" id="groupCustomAmounts" placeholder="z.B. 10, 20, 15">
+    </div>
+    <button class="btn btn-primary btn-block" onclick="createGroupSplit()">Rechnung teilen</button>
+  </div>
+
+  <div class="section-header" style="margin-top:16px">
+    <h2>Vorhandene Gruppen</h2>
+  </div>
+  <div id="groupList"></div>
+</div>
+
+<!-- PAGE 5: SETTINGS -->
+<div class="page" id="page-settings">
+  <div class="settings-group">
+    <h3>Profil</h3>
+    <div class="card" style="padding:0">
+      <div class="settings-item">
+        <div class="s-left">
+          <div class="s-icon" style="background:var(--blue-light);color:var(--blue)">👤</div>
+          <span class="s-label">Dein Name</span>
+        </div>
+        <input class="form-input" id="settingsName" placeholder="Name" style="width:140px;text-align:right;padding:6px 10px;font-size:13px">
+      </div>
+    </div>
+  </div>
+
+  <div class="settings-group">
+    <h3>Zahlungsdaten</h3>
+    <div class="card" style="padding:0">
+      <div class="settings-item">
+        <div class="s-left">
+          <div class="s-icon" style="background:var(--blue-light);color:var(--blue)">💳</div>
+          <span class="s-label">PayPal.me Link</span>
+        </div>
+        <input class="form-input" id="settingsPaypal" placeholder="paypal.me/name" style="width:140px;text-align:right;padding:6px 10px;font-size:12px">
+      </div>
+      <div class="settings-item">
+        <div class="s-left">
+          <div class="s-icon" style="background:var(--purple-light);color:var(--purple)">📝</div>
+          <span class="s-label">Zahlungshinweis in Nachricht</span>
+        </div>
+        <button class="settings-toggle" id="settingsPaypalToggle" onclick="toggleSetting('paypalInMessage')"></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="settings-group">
+    <h3>Standard-Nachrichtenton</h3>
+    <div class="card" style="padding:12px">
+      <div class="chips" id="defaultToneChips"></div>
+    </div>
+  </div>
+
+  <div class="settings-group">
+    <h3>Daten</h3>
+    <div class="card" style="padding:0">
+      <div class="settings-item" onclick="exportData()">
+        <div class="s-left">
+          <div class="s-icon" style="background:var(--green-light);color:var(--green)">📤</div>
+          <span class="s-label">Daten exportieren</span>
+        </div>
+        <span class="s-value">→</span>
+      </div>
+      <div class="settings-item" onclick="importData()">
+        <div class="s-left">
+          <div class="s-icon" style="background:var(--yellow-light);color:var(--yellow)">📥</div>
+          <span class="s-label">Daten importieren</span>
+        </div>
+        <span class="s-value">→</span>
+      </div>
+      <div class="settings-item" onclick="if(confirm('Wirklich alle Daten löschen?')){clearAllData()}">
+        <div class="s-left">
+          <div class="s-icon" style="background:var(--red-light);color:var(--red)">🗑️</div>
+          <span class="s-label" style="color:var(--red)">Alle Daten löschen</span>
+        </div>
+        <span class="s-value">→</span>
+      </div>
+      <div class="settings-item" onclick="loadDemoData()">
+        <div class="s-left">
+          <div class="s-icon" style="background:var(--blue-light);color:var(--blue)">📋</div>
+          <span class="s-label">Demo-Daten laden</span>
+        </div>
+        <span class="s-value">→</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="settings-group">
+    <h3>Info</h3>
+    <div class="card" style="padding:0">
+      <div class="settings-item">
+        <div class="s-left">
+          <div class="s-icon" style="background:var(--border);color:var(--text-secondary)">ℹ️</div>
+          <span class="s-label">Version</span>
+        </div>
+        <span class="s-value">1.0.0</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL PAGE -->
+<div class="page" id="page-detail"></div>
+
+<!-- MESSAGE PAGE -->
+<div class="page" id="page-message"></div>
+
+<!-- PERSON DETAIL PAGE -->
+<div class="page" id="page-person"></div>
+
+<!-- GROUP DETAIL PAGE -->
+<div class="page" id="page-group-detail"></div>
+
+<!-- STATS PAGE -->
+<div class="page" id="page-stats"></div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav" id="bottomNav">
+  <button class="nav-item active" data-tab="dashboard" onclick="navigateTo('dashboard')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+    <span>Übersicht</span>
+  </button>
+  <button class="nav-item" data-tab="debts" onclick="navigateTo('debts')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+    <span>Schulden</span>
+  </button>
+  <button class="nav-item nav-add" data-tab="add" onclick="navigateTo('add')">
+    <div class="nav-add-btn">+</div>
+    <span style="margin-top:2px">Hinzufügen</span>
+  </button>
+  <button class="nav-item" data-tab="groups" onclick="navigateTo('groups')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    <span>Gruppen</span>
+  </button>
+  <button class="nav-item" data-tab="settings" onclick="navigateTo('settings')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    <span>Einstellungen</span>
+  </button>
+</nav>
+
+<!-- OVERLAY / MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal-content" id="modalContent">
+    <div class="modal-header">
+      <h3 id="modalTitle">Modal</h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<input type="file" id="importInput" accept=".json" style="display:none" onchange="handleImport(event)">
+
+<script>
+// ===== DATA MODEL =====
+const CATEGORIES = ['Essen','Fahrt','Einkauf','Verkauf','Miete','Freizeit','Reise','Sonstiges'];
+const TONES = ['Locker','Neutral','Direkt','Höflich','Streng'];
+const COLORS = ['#22C55E','#3B82F6','#8B5CF6','#F59E0B','#EF4444','#EC4899','#14B8A6','#6B7280'];
+
+let state = {
+  debts: [],
+  payments: [],
+  groups: [],
+  persons: [],
+  settings: {
+    name: '',
+    paypal: '',
+    paypalInMessage: false,
+    defaultTone: 'Neutral',
+    currency: 'EUR'
+  },
+  currentPage: 'dashboard',
+  editingDebtId: null,
+  selectedFilter: 'all',
+  addType: 'owed_to_me',
+  selectedCategory: 'Essen',
+  dueDateOption: ''
+};
+
+// ===== STORAGE =====
+function loadState(){
+  try{
+    const data = JSON.parse(localStorage.getItem('payback_state'));
+    if(data){
+      state.debts = data.debts || [];
+      state.payments = data.payments || [];
+      state.groups = data.groups || [];
+      state.settings = {...state.settings, ...data.settings};
+      rebuildPersons();
+    }
+  }catch(e){}
+}
+
+function saveState(){
+  try{
+    localStorage.setItem('payback_state', JSON.stringify({
+      debts: state.debts,
+      payments: state.payments,
+      groups: state.groups,
+      settings: state.settings
+    }));
+  }catch(e){}
+}
+
+function rebuildPersons(){
+  const map = {};
+  state.debts.forEach(d => {
+    if(!map[d.person]) map[d.person] = {name: d.person, debtIds: [], totalOwedToMe: 0, totalIOwe: 0};
+    map[d.person].debtIds.push(d.id);
+  });
+  state.persons = Object.values(map);
+}
+
+function genId(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+
+function today(){ return new Date().toISOString().slice(0,10); }
+
+function formatDate(d){ if(!d) return ''; const parts=d.split('-'); return parts[2]+'.'+parts[1]+'.'+parts[0]; }
+
+function formatMoney(n){ return Number(n).toFixed(2).replace('.',',')+' €'; }
+
+function daysBetween(a,b){ return Math.floor((new Date(b)-new Date(a))/(1000*60*60*24)); }
+
+// ===== NAVIGATION =====
+function navigateTo(page, param){
+  state.currentPage = page;
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const el = document.getElementById('page-'+page);
+  if(el) el.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const nav = document.querySelector(`.nav-item[data-tab="${page}"]`);
+  if(nav) nav.classList.add('active');
+  const backBtn = document.getElementById('backBtn');
+  const title = document.getElementById('headerTitle');
+  const right = document.getElementById('headerRight');
+  backBtn.classList.remove('show');
+  right.style.display = 'flex';
+  right.innerHTML = '';
+
+  switch(page){
+    case 'dashboard':
+      title.textContent = 'PayBack';
+      right.innerHTML = '<button class="header-btn" onclick="showStats()" title="Statistiken">📊</button>';
+      renderDashboard();
+      break;
+    case 'debts':
+      title.textContent = 'Schulden';
+      renderDebts();
+      break;
+    case 'add':
+      title.textContent = state.editingDebtId ? 'Schuld bearbeiten' : 'Schuld hinzufügen';
+      setupAddForm(param);
+      break;
+    case 'groups':
+      title.textContent = 'Gruppen';
+      renderGroups();
+      break;
+    case 'settings':
+      title.textContent = 'Einstellungen';
+      renderSettings();
+      break;
+    case 'detail':
+      title.textContent = 'Details';
+      backBtn.classList.add('show');
+      right.innerHTML = '<button class="header-btn" onclick="editDebt(\''+param+'\')" title="Bearbeiten">✏️</button>';
+      renderDetail(param);
+      break;
+    case 'message':
+      title.textContent = 'Nachricht erstellen';
+      backBtn.classList.add('show');
+      renderMessage(param);
+      break;
+    case 'person':
+      title.textContent = param;
+      backBtn.classList.add('show');
+      renderPersonDetail(param);
+      break;
+    case 'group-detail':
+      title.textContent = 'Gruppe';
+      backBtn.classList.add('show');
+      renderGroupDetail(param);
+      break;
+    case 'stats':
+      title.textContent = 'Statistiken';
+      backBtn.classList.add('show');
+      renderStats();
+      break;
+  }
+  window.scrollTo(0,0);
+}
+
+function goBack(){
+  const page = state.currentPage;
+  if(page==='detail'||page==='message'||page==='person'||page==='group-detail'||page==='stats'){
+    navigateTo('debts');
+  } else {
+    navigateTo('dashboard');
+  }
+}
+
+// ===== TOAST =====
+function showToast(msg){
+  const c = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className = 'toast show';
+  t.textContent = msg;
+  c.appendChild(t);
+  setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 300) }, 2000);
+}
+
+// ===== MODAL =====
+function openModal(title, content){
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalBody').innerHTML = content;
+  document.getElementById('modalOverlay').classList.add('show');
+}
+
+function closeModal(){
+  document.getElementById('modalOverlay').classList.remove('show');
+}
+
+// ===== AVATAR COLOR =====
+function avatarColor(name){
+  let hash = 0;
+  for(let i=0;i<name.length;i++) hash = name.charCodeAt(i)+((hash<<5)-hash);
+  return COLORS[Math.abs(hash)%COLORS.length];
+}
+
+function avatarInitials(name){
+  return name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+}
+
+// ===== STATUS HELPERS =====
+function getStatusInfo(status){
+  const map = {
+    open: {label:'Offen', cls:'open'},
+    partially_paid: {label:'Teilweise bezahlt', cls:'partial'},
+    paid: {label:'Bezahlt', cls:'paid'},
+    disputed: {label:'Streitfall', cls:'disputed'},
+    archived: {label:'Archiviert', cls:'archived'}
+  };
+  return map[status]||map.open;
+}
+
+function totalPayments(debtId){
+  return state.payments.filter(p => p.debtId === debtId).reduce((s,p) => s + Number(p.amount), 0);
+}
+
+function remainingAmount(debt){
+  return Math.max(0, Number(debt.amount) - totalPayments(debt.id));
+}
+
+function getEffectiveStatus(debt){
+  const paid = totalPayments(debt.id);
+  if(Number(debt.amount) <= 0) return 'paid';
+  if(paid >= Number(debt.amount)) return 'paid';
+  if(paid > 0) return 'partially_paid';
+  return debt.status;
+}
+
+function isOverdue(debt){
+  if(!debt.dueDate) return false;
+  const st = getEffectiveStatus(debt);
+  if(st==='paid'||st==='archived') return false;
+  return new Date(debt.dueDate) < new Date(new Date().toDateString());
+}
+
+// ===== DASHBOARD =====
+function renderDashboard(){
+  const debts = state.debts;
+  let owedToMe = 0, iOwe = 0;
+  debts.forEach(d => {
+    const rem = remainingAmount(d);
+    if(d.type==='owed_to_me' && getEffectiveStatus(d)!=='paid' && getEffectiveStatus(d)!=='archived') owedToMe += rem;
+    if(d.type==='i_owe' && getEffectiveStatus(d)!=='paid' && getEffectiveStatus(d)!=='archived') iOwe += rem;
+  });
+  const net = owedToMe - iOwe;
+
+  document.getElementById('dashOwedToMe').textContent = formatMoney(owedToMe);
+  document.getElementById('dashIOwe').textContent = formatMoney(iOwe);
+  const netEl = document.getElementById('dashNet');
+  netEl.textContent = (net>=0?'+':'')+formatMoney(Math.abs(net));
+  netEl.className = 'val ' + (net>=0?'green':'red');
+
+  // Overdue
+  const overdue = debts.filter(d => isOverdue(d));
+  const overdueHtml = document.getElementById('dashOverdue');
+  if(overdue.length>0){
+    overdueHtml.innerHTML = `<div class="card" style="border:2px solid var(--red);background:var(--red-light);padding:12px">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:18px">⚠️</span>
+        <div>
+          <div style="font-weight:700;font-size:14px;color:var(--red)">${overdue.length} überfällig</div>
+          <div style="font-size:12px;color:var(--text-secondary)">Diese Beträge sind bereits fällig</div>
+        </div>
+      </div>
+    </div>`;
+  } else {
+    overdueHtml.innerHTML = '';
+  }
+
+  // Open debts
+  const open = debts.filter(d => {
+    const st = getEffectiveStatus(d);
+    return st!=='paid' && st!=='archived';
+  }).slice(0,5);
+  const container = document.getElementById('dashOpenDebts');
+  if(open.length===0){
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">✅</div><h3>Alles ausgeglichen</h3><p>Du hast aktuell keine offenen Beträge.</p></div>`;
+  } else {
+    container.innerHTML = open.map(d => renderDebtCard(d)).join('');
+  }
+
+  // Activity
+  const acts = [];
+  state.payments.forEach(p => {
+    const d = debts.find(x => x.id === p.debtId);
+    if(d) acts.push({text: `<strong>${d.person}</strong> hat <strong>${formatMoney(p.amount)}</strong> teilweise bezahlt (${d.reason})`, date: p.date});
+  });
+  debts.filter(d => getEffectiveStatus(d)==='paid').forEach(d => {
+    const dir = d.type==='owed_to_me' ? 'hat' : 'hast';
+    acts.push({text: `${dir === 'hat' ? '' : 'Du'} ${dir==='hat'?d.person+' hat':'hast'} <strong>${d.person}</strong> ${formatMoney(d.amount)} als bezahlt markiert (${d.reason})`, date: d.updatedAt||d.date});
+  });
+  debts.filter(d => d.reminderCount>0).forEach(d => {
+    acts.push({text: `Erinnerung an <strong>${d.person}</strong> gesendet (${d.reason})`, date: d.lastReminderAt||d.date});
+  });
+  acts.sort((a,b) => b.date.localeCompare(a.date));
+  const actHtml = document.getElementById('dashActivity');
+  if(acts.length===0){
+    actHtml.innerHTML = '<div style="font-size:13px;color:var(--text-secondary);text-align:center;padding:12px">Noch keine Aktivitäten</div>';
+  } else {
+    actHtml.innerHTML = '<div class="card" style="padding:0">' + acts.slice(0,5).map(a =>
+      `<div style="padding:10px 14px;border-bottom:1px solid var(--border);font-size:13px">${a.text}</div>`
+    ).join('') + '</div>';
+  }
+}
+
+// ===== DEBT CARD =====
+function renderDebtCard(d){
+  const st = getEffectiveStatus(d);
+  const si = getStatusInfo(st);
+  const rem = remainingAmount(d);
+  const overdue = isOverdue(d);
+  const paidTotal = totalPayments(d.id);
+  const dirCls = d.type==='owed_to_me'?'green':'red';
+  const dirText = d.type==='owed_to_me'?'schuldet dir':'du schuldest';
+  return `<div class="debt-card" onclick="navigateTo('detail','${d.id}')">
+    <div class="debt-top">
+      <div class="debt-avatar" style="background:${avatarColor(d.person)}">${avatarInitials(d.person)}</div>
+      <div class="debt-info">
+        <div class="debt-name">${d.person}</div>
+        <div class="debt-reason">${d.reason}</div>
+      </div>
+      <div class="debt-amount">
+        <div class="num ${dirCls}">${formatMoney(rem)}</div>
+        <div class="dir ${dirCls}">${dirText}</div>
+      </div>
+    </div>
+    <div class="debt-bottom">
+      <div class="debt-meta">
+        <span class="date">${formatDate(d.date)}</span>
+        <span class="badge ${si.cls}">${si.label}</span>
+        ${overdue?'<span class="badge overdue">Überfällig</span>':''}
+        ${d.reminderCount>0?`<span class="reminder-badge">🔔 ${d.reminderCount}x erinnert</span>`:''}
+        ${paidTotal>0?`<span style="font-size:11px;color:var(--text-secondary)">${formatMoney(paidTotal)} gezahlt</span>`:''}
+      </div>
+      <div class="debt-actions">
+        <button class="act-btn" onclick="event.stopPropagation();copyDebtInfo('${d.id}')" title="Kopieren">📋</button>
+        <button class="act-btn green" onclick="event.stopPropagation();navigateTo('message','${d.id}')" title="Nachricht">💬</button>
+        <button class="act-btn" onclick="event.stopPropagation();quickPay('${d.id}')" title="Bezahlt">✅</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ===== DEBTS LIST =====
+function renderDebts(){
+  const query = document.getElementById('debtSearch').value.toLowerCase();
+  const filter = state.selectedFilter;
+  const sort = document.getElementById('sortSelect').value;
+  const filterChips = document.getElementById('filterChips');
+  const filters = ['all','owed_to_me','i_owe','open','partial','paid','overdue','disputed'];
+  const filterLabels = ['Alle','Mir geschuldet','Ich schulde','Offen','Teilweise','Bezahlt','Überfällig','Streitfall'];
+  filterChips.innerHTML = filters.map((f,i) =>
+    `<span class="chip filter-chip ${state.selectedFilter===f?'active':''}" onclick="state.selectedFilter='${f}';renderDebts()">${filterLabels[i]}</span>`
+  ).join('');
+
+  let list = [...state.debts];
+  // Search
+  if(query){
+    list = list.filter(d =>
+      d.person.toLowerCase().includes(query) ||
+      d.reason.toLowerCase().includes(query) ||
+      d.amount.toString().includes(query)
+    );
+  }
+  // Filter
+  if(filter==='owed_to_me') list = list.filter(d => d.type==='owed_to_me');
+  else if(filter==='i_owe') list = list.filter(d => d.type==='i_owe');
+  else if(filter==='open') list = list.filter(d => getEffectiveStatus(d)==='open');
+  else if(filter==='partial') list = list.filter(d => getEffectiveStatus(d)==='partially_paid');
+  else if(filter==='paid') list = list.filter(d => getEffectiveStatus(d)==='paid');
+  else if(filter==='overdue') list = list.filter(d => isOverdue(d));
+  else if(filter==='disputed') list = list.filter(d => d.status==='disputed');
+  // Sort
+  if(sort==='newest') list.sort((a,b) => b.date.localeCompare(a.date));
+  else if(sort==='oldest') list.sort((a,b) => a.date.localeCompare(b.date));
+  else if(sort==='highest') list.sort((a,b) => remainingAmount(b)-remainingAmount(a));
+  else if(sort==='due') list.sort((a,b) => (a.dueDate||'9999').localeCompare(b.dueDate||'9999'));
+  else if(sort==='name') list.sort((a,b) => a.person.localeCompare(b.person));
+
+  document.getElementById('debtCount').textContent = list.length+' Einträge';
+  const container = document.getElementById('debtList');
+  if(list.length===0){
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div><h3>Keine Einträge gefunden</h3></div>`;
+  } else {
+    container.innerHTML = list.map(d => renderDebtCard(d)).join('');
+  }
+}
+
+// ===== ADD/EDIT DEBT =====
+function setupAddForm(oweMode){
+  state.editingDebtId = null;
+  if(oweMode) setAddType('i_owe');
+  else setAddType(state.addType);
+
+  document.getElementById('addPerson').value = '';
+  document.getElementById('addAmount').value = '';
+  document.getElementById('addReason').value = '';
+  document.getElementById('addDate').value = today();
+  document.getElementById('addDueDate').value = '';
+  document.getElementById('addDueDate').style.display = 'none';
+  document.getElementById('addDescription').value = '';
+  document.getElementById('addDueDate');
+  state.dueDateOption = '';
+  state.selectedCategory = 'Essen';
+  document.querySelectorAll('#dueDateChips .chip').forEach(c => c.classList.remove('active'));
+  document.querySelector('#dueDateChips .chip').classList.add('active');
+
+  // Category chips
+  const catHtml = document.getElementById('categoryChips');
+  catHtml.innerHTML = CATEGORIES.map(c =>
+    `<span class="chip ${state.selectedCategory===c?'active':''}" onclick="state.selectedCategory='${c}';document.querySelectorAll('#categoryChips .chip').forEach(x=>x.classList.remove('active'));this.classList.add('active')">${c}</span>`
+  ).join('');
+
+  // Persons datalist
+  const names = [...new Set(state.debts.map(d => d.person))];
+  document.getElementById('personList').innerHTML = names.map(n => `<option value="${n}">`).join('');
+
+  // Due date chips
+  document.querySelectorAll('#dueDateChips .chip').forEach(c => {
+    c.onclick = function(){
+      document.querySelectorAll('#dueDateChips .chip').forEach(x => x.classList.remove('active'));
+      this.classList.add('active');
+      state.dueDateOption = this.dataset.value;
+      const dd = document.getElementById('addDueDate');
+      if(this.dataset.value==='custom'){
+        dd.style.display = 'block';
+      } else {
+        dd.style.display = 'none';
+        if(this.dataset.value==='today') dd.value = today();
+        else if(this.dataset.value==='tomorrow') dd.value = new Date(Date.now()+864e5).toISOString().slice(0,10);
+        else if(this.dataset.value==='3days') dd.value = new Date(Date.now()+3*864e5).toISOString().slice(0,10);
+        else if(this.dataset.value==='1week') dd.value = new Date(Date.now()+7*864e5).toISOString().slice(0,10);
+      }
+    };
+  });
+
+  if(state.editingDebtId){
+    const d = state.debts.find(x => x.id === state.editingDebtId);
+    if(d){
+      document.getElementById('addPerson').value = d.person;
+      document.getElementById('addAmount').value = d.amount;
+      document.getElementById('addReason').value = d.reason;
+      document.getElementById('addDate').value = d.date;
+      document.getElementById('addDescription').value = d.description||'';
+      state.selectedCategory = d.category;
+      state.addType = d.type;
+      setAddType(d.type);
+    }
+  }
+}
+
+function setAddType(t){
+  state.addType = t;
+  const toggle = document.getElementById('addTypeToggle');
+  toggle.className = 'form-toggle ' + (t==='owed_to_me'?'toggle-green':'toggle-red');
+  toggle.querySelectorAll('button').forEach(b => {
+    b.classList.toggle('active', b.dataset.value===t);
+  });
+}
+
+function handleImageUpload(e){
+  const files = e.target.files;
+  const area = document.getElementById('imageUploadArea');
+  for(const file of files){
+    const reader = new FileReader();
+    reader.onload = function(ev){
+      const div = document.createElement('div');
+      div.className = 'image-upload-box';
+      div.innerHTML = `<img src="${ev.target.result}"><button class="remove-img" onclick="this.parentElement.remove()">✕</button>`;
+      area.insertBefore(div, document.getElementById('addImageBtn'));
+    };
+    reader.readAsDataURL(file);
+  }
+  e.target.value = '';
+}
+
+function collectImages(){
+  const imgs = document.querySelectorAll('#imageUploadArea .image-upload-box img');
+  return Array.from(imgs).map(i => i.src);
+}
+
+function saveDebt(){
+  const person = document.getElementById('addPerson').value.trim();
+  const amount = parseFloat(document.getElementById('addAmount').value);
+  const reason = document.getElementById('addReason').value.trim();
+  const date = document.getElementById('addDate').value;
+  const description = document.getElementById('addDescription').value.trim();
+  const dueDate = document.getElementById('addDueDate').value || '';
+  const images = collectImages();
+
+  if(!person) return showToast('Bitte gib eine Person ein.');
+  if(!amount||amount<=0) return showToast('Bitte gib einen gültigen Betrag ein.');
+  if(!reason) return showToast('Bitte gib einen Grund ein.');
+
+  if(state.editingDebtId){
+    const d = state.debts.find(x => x.id === state.editingDebtId);
+    if(d){
+      d.person = person;
+      d.amount = amount;
+      d.reason = reason;
+      d.category = state.selectedCategory;
+      d.date = date;
+      d.dueDate = dueDate;
+      d.description = description;
+      d.evidenceImages = images;
+      d.updatedAt = new Date().toISOString();
+      saveState();
+      showToast('Gespeichert!');
+      navigateTo('detail', d.id);
+    }
+    return;
+  }
+
+  const debt = {
+    id: genId(),
+    person,
+    type: state.addType,
+    amount,
+    originalAmount: amount,
+    currency: 'EUR',
+    reason,
+    category: state.selectedCategory,
+    date,
+    dueDate,
+    description,
+    evidenceImages: images,
+    status: 'open',
+    reminderCount: 0,
+    lastReminderAt: null,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+  state.debts.push(debt);
+  saveState();
+  showToast('Gespeichert!');
+  document.getElementById('addPerson').value = '';
+  document.getElementById('addAmount').value = '';
+  document.getElementById('addReason').value = '';
+  navigateTo('dashboard');
+}
+
+function saveDebtAndMessage(){
+  const person = document.getElementById('addPerson').value.trim();
+  const amount = parseFloat(document.getElementById('addAmount').value);
+  const reason = document.getElementById('addReason').value.trim();
+  if(!person) return showToast('Bitte gib eine Person ein.');
+  if(!amount||amount<=0) return showToast('Bitte gib einen gültigen Betrag ein.');
+  if(!reason) return showToast('Bitte gib einen Grund ein.');
+  saveDebt();
+  const debt = state.debts[state.debts.length-1];
+  navigateTo('message', debt.id);
+}
+
+// ===== DETAIL =====
+function renderDetail(id){
+  const d = state.debts.find(x => x.id === id);
+  if(!d) return navigateTo('debts');
+  const st = getEffectiveStatus(d);
+  const si = getStatusInfo(st);
+  const rem = remainingAmount(d);
+  const paidTotal = totalPayments(d.id);
+  const dirCls = d.type==='owed_to_me'?'green':'red';
+  const dirText = d.type==='owed_to_me'?'schuldet dir':'du schuldest';
+  const dirFull = d.type==='owed_to_me' ? `${d.person} schuldet dir` : `Du schuldest ${d.person}`;
+  const overdue = isOverdue(d);
+
+  const payments = state.payments.filter(p => p.debtId === id);
+  const images = d.evidenceImages||[];
+
+  document.getElementById('page-detail').innerHTML = `
+    <div class="detail-hero">
+      <div class="d-person ${dirCls}">${dirFull}</div>
+      <div class="big-amount ${dirCls}">${formatMoney(rem)}</div>
+      ${paidTotal>0?`<div style="font-size:13px;color:var(--text-secondary)">${formatMoney(paidTotal)} bereits gezahlt von ${formatMoney(d.amount)}</div>`:''}
+      <div class="d-reason">${d.reason}</div>
+      <div style="margin-top:8px"><span class="badge ${si.cls}" style="font-size:13px;padding:4px 12px">${si.label}</span>${overdue?' <span class="badge overdue">Überfällig</span>':''}</div>
+      <div class="d-dates" style="margin-top:8px">
+        <span>Seit ${formatDate(d.date)}</span>
+        ${d.dueDate?`<span>Fällig: ${formatDate(d.dueDate)}</span>`:''}
+        ${d.reminderCount>0?`<span>🔔 ${d.reminderCount}x erinnert</span>`:''}
+      </div>
+    </div>
+
+    <div class="detail-actions">
+      <button class="btn btn-primary btn-sm" onclick="navigateTo('message','${d.id}')">💬 Nachricht</button>
+      <button class="btn btn-secondary btn-sm" onclick="copyDebtInfo('${d.id}')">📋 Kopieren</button>
+      ${st!=='paid'?`<button class="btn btn-secondary btn-sm" onclick="quickPay('${d.id}')">✅ Bezahlt markieren</button>`:''}
+      <button class="btn btn-secondary btn-sm" onclick="showPartialPayment('${d.id}')">💰 Teilzahlung</button>
+      <button class="btn btn-secondary btn-sm" onclick="editDebt('${d.id}')">✏️ Bearbeiten</button>
+      ${st!=='disputed'?`<button class="btn btn-secondary btn-sm" onclick="markDisputed('${d.id}')">⚠️ Streitfall</button>`:''}
+      <button class="btn btn-danger btn-sm" onclick="deleteDebt('${d.id}')">🗑️ Löschen</button>
+    </div>
+
+    ${payments.length>0?`
+    <div class="detail-section">
+      <h3>Zahlungsverlauf</h3>
+      <div class="card" style="padding:10px 14px">
+        ${payments.sort((a,b)=>b.date.localeCompare(a.date)).map(p => `
+          <div class="payment-item">
+            <span>${formatDate(p.date)}${p.note?' – '+p.note:''}</span>
+            <span class="p-amount green">+${formatMoney(p.amount)}</span>
+          </div>
+        `).join('')}
+        <div class="payment-item" style="font-weight:700;border-bottom:none;padding-top:10px">
+          <span>Rest offen</span>
+          <span class="${dirCls}">${formatMoney(rem)}</span>
+        </div>
+      </div>
+    </div>
+    `:''}
+
+    ${images.length>0?`
+    <div class="detail-section">
+      <h3>Belege (${images.length})</h3>
+      <div class="gallery">${images.map(img => `<img src="${img}" onclick="openImagePreview('${img}')">`).join('')}</div>
+    </div>
+    `:''}
+
+    ${d.description?`
+    <div class="detail-section">
+      <h3>Notizen</h3>
+      <div class="card"><p style="font-size:14px;line-height:1.6">${d.description}</p></div>
+    </div>
+    `:''}
+
+    <div class="detail-section">
+      <h3>Kategorie</h3>
+      <div class="card" style="padding:10px 14px">
+        <span class="chip active" style="cursor:default">${d.category}</span>
+      </div>
+    </div>
+  `;
+}
+
+function editDebt(id){
+  state.editingDebtId = id;
+  const d = state.debts.find(x => x.id === id);
+  if(!d) return;
+  navigateTo('add');
+  document.getElementById('addPerson').value = d.person;
+  document.getElementById('addAmount').value = d.amount;
+  document.getElementById('addReason').value = d.reason;
+  document.getElementById('addDate').value = d.date;
+  document.getElementById('addDescription').value = d.description||'';
+  state.selectedCategory = d.category;
+  state.addType = d.type;
+  setAddType(d.type);
+  // Image display
+  const area = document.getElementById('imageUploadArea');
+  (d.evidenceImages||[]).forEach(src => {
+    const div = document.createElement('div');
+    div.className = 'image-upload-box';
+    div.innerHTML = `<img src="${src}"><button class="remove-img" onclick="this.parentElement.remove()">✕</button>`;
+    area.insertBefore(div, document.getElementById('addImageBtn'));
+  });
+}
+
+function deleteDebt(id){
+  if(!confirm('Wirklich löschen?')) return;
+  state.debts = state.debts.filter(d => d.id !== id);
+  state.payments = state.payments.filter(p => p.debtId !== id);
+  saveState();
+  showToast('Gelöscht.');
+  navigateTo('debts');
+}
+
+function quickPay(id){
+  const d = state.debts.find(x => x.id === id);
+  if(!d) return;
+  const rem = remainingAmount(id);
+  if(rem<=0) return showToast('Bereits bezahlt.');
+  showToast('Als bezahlt markiert.');
+  state.payments.push({
+    id: genId(),
+    debtId: id,
+    amount: rem,
+    date: today(),
+    note: 'Komplettzahlung'
+  });
+  d.updatedAt = new Date().toISOString();
+  saveState();
+  renderDetail(id);
+  renderDashboard();
+}
+
+function markDisputed(id){
+  const d = state.debts.find(x => x.id === id);
+  if(!d) return;
+  d.status = 'disputed';
+  d.updatedAt = new Date().toISOString();
+  saveState();
+  showToast('Als Streitfall markiert.');
+  renderDetail(id);
+}
+
+function showPartialPayment(id){
+  openModal('Teilzahlung', `
+    <div class="payment-form">
+      <div class="form-group">
+        <label class="form-label">Betrag</label>
+        <input class="form-input large" id="payAmount" type="number" step="0.01" min="0.01" placeholder="0,00" inputmode="decimal">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Datum</label>
+        <input class="form-input" id="payDate" type="date" value="${today()}">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notiz (optional)</label>
+        <input class="form-input" id="payNote" placeholder="z.B. Bar, Überweisung">
+      </div>
+      <button class="btn btn-primary btn-block" onclick="addPayment('${id}')">Teilzahlung eintragen</button>
+    </div>
+  `);
+}
+
+function addPayment(debtId){
+  const amount = parseFloat(document.getElementById('payAmount').value);
+  const date = document.getElementById('payDate').value;
+  const note = document.getElementById('payNote').value.trim();
+  if(!amount||amount<=0) return showToast('Bitte gib einen gültigen Betrag ein.');
+  const payment = {
+    id: genId(),
+    debtId,
+    amount,
+    date,
+    note,
+    createdAt: new Date().toISOString()
+  };
+  state.payments.push(payment);
+  const d = state.debts.find(x => x.id === debtId);
+  if(d) d.updatedAt = new Date().toISOString();
+  saveState();
+  closeModal();
+  showToast('Teilzahlung eingetragen.');
+  renderDetail(debtId);
+}
+
+function openImagePreview(src){
+  openModal('', `<img src="${src}" style="width:100%;border-radius:8px">`);
+}
+
+// ===== COPY =====
+function copyToClipboard(text){
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(() => showToast('In Zwischenablage kopiert!'));
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('In Zwischenablage kopiert!');
+  }
+}
+
+function copyDebtInfo(id){
+  const d = state.debts.find(x => x.id === id);
+  if(!d) return;
+  const rem = remainingAmount(id);
+  const dir = d.type==='owed_to_me' ? 'schuldet dir' : 'schuldest du';
+  const text = `${d.person} ${dir} ${formatMoney(rem)} – ${d.reason} (${formatDate(d.date)})`;
+  copyToClipboard(text);
+}
+
+// ===== MESSAGE GENERATOR =====
+function renderMessage(id){
+  const d = state.debts.find(x => x.id === id);
+  if(!d) return navigateTo('debts');
+  const rem = remainingAmount(id);
+  const tone = state.settings.defaultTone || 'Neutral';
+  const paypalText = state.settings.paypalInMessage && state.settings.paypal ? `\n\nPayPal: ${state.settings.paypal}` : '';
+
+  document.getElementById('page-message').innerHTML = `
+    <div class="card" style="padding:14px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <div class="avatar" style="background:${avatarColor(d.person)}">${avatarInitials(d.person)}</div>
+        <div>
+          <div style="font-weight:600">${d.person}</div>
+          <div class="${d.type==='owed_to_me'?'dir-badge green':'dir-badge red'}">${d.type==='owed_to_me'?'schuldet dir':'du schuldest'} ${formatMoney(rem)}</div>
+        </div>
+      </div>
+      <div style="font-size:13px;color:var(--text-secondary)">${d.reason} · ${formatDate(d.date)}</div>
+    </div>
+
+    <div style="margin-bottom:10px">
+      <label style="font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:4px;display:block">Ton</label>
+      <div class="msg-tone-chips" id="toneChips">
+        ${TONES.map(t => `<span class="tone-chip ${t===tone?'active':''}" onclick="setMessageTone('${d.id}','${t}')">${t}</span>`).join('')}
+      </div>
+    </div>
+
+    <div style="margin-bottom:10px">
+      <label style="font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:4px;display:block">Nachricht</label>
+      <textarea class="form-input" id="msgText" rows="5" style="resize:vertical;min-height:100px">${generateMessage(d, tone)}${paypalText}</textarea>
+    </div>
+
+    <div class="msg-actions">
+      <button class="btn btn-primary btn-sm" onclick="copyMsgText()">📋 Kopieren</button>
+      <button class="btn btn-secondary btn-sm" onclick="openWhatsApp('${d.id}')">💬 WhatsApp öffnen</button>
+      <button class="btn btn-secondary btn-sm" onclick="markReminded('${d.id}')">🔔 Als erinnert markieren</button>
+      <button class="btn btn-secondary btn-sm" onclick="generateShareCard('${d.id}')">🖼️ Share-Bild erstellen</button>
+    </div>
+
+    <div id="shareCardPreview" style="margin-top:12px"></div>
+  `;
+}
+
+function generateMessage(d, tone){
+  const rem = remainingAmount(d.id) || d.amount;
+  const amount = formatMoney(rem);
+  const dueText = d.dueDate ? formatDate(d.dueDate) : 'bald';
+
+  const templates = {
+    owed_to_me: {
+      Locker: `Hey, kurze Erinnerung: Du schuldest mir noch ${amount} für ${d.reason}. Kannst du es mir bitte schicken? 🙏`,
+      Neutral: `Hey, bei mir sind noch ${amount} offen wegen ${d.reason}. Sag mir bitte kurz Bescheid, wann du es schicken kannst.`,
+      Direkt: `Hey, du schuldest mir noch ${amount} für ${d.reason}. Bitte schick es mir zeitnah.`,
+      Höflich: `Hey, ich wollte dich kurz daran erinnern, dass noch ${amount} wegen ${d.reason} offen sind. Wäre gut, wenn du es mir bald schicken kannst.`,
+      Streng: `Hey, die ${amount} wegen ${d.reason} sind immer noch offen. Bitte überweise mir den Betrag bis spätestens ${dueText}.`
+    },
+    i_owe: {
+      Locker: `Hey, ich schulde dir noch ${amount} für ${d.reason}. Ich schicke es dir bald. 🙏`,
+      Neutral: `Hey, bei mir sind noch ${amount} offen, die ich dir wegen ${d.reason} schulde. Ich gebe dir kurz Bescheid, sobald ich es geschickt habe.`,
+      Direkt: `Hey, ich schulde dir noch ${amount} für ${d.reason}. Ich kümmere mich darum.`,
+      Höflich: `Hey, ich wollte nur sagen, dass ich die ${amount} für ${d.reason} noch auf dem Schirm habe.`,
+      Streng: `Hey, ich schulde dir noch ${amount} für ${d.reason}. Ich erledige das bis ${dueText}.`
+    }
+  };
+  return templates[d.type]?.[tone] || templates[d.type]?.Neutral || '';
+}
+
+function setMessageTone(id, tone){
+  state.settings.defaultTone = tone;
+  saveState();
+  document.querySelectorAll('.tone-chip').forEach(c => c.classList.toggle('active', c.textContent===tone));
+  const d = state.debts.find(x => x.id === id);
+  if(d) document.getElementById('msgText').value = generateMessage(d, tone);
+}
+
+function copyMsgText(){
+  const text = document.getElementById('msgText').value;
+  if(text) copyToClipboard(text);
+}
+
+function openWhatsApp(id){
+  const d = state.debts.find(x => x.id === id);
+  if(!d) return;
+  const text = encodeURIComponent(document.getElementById('msgText').value || generateMessage(d, state.settings.defaultTone));
+  window.open(`https://wa.me/?text=${text}`, '_blank');
+}
+
+function markReminded(id){
+  const d = state.debts.find(x => x.id === id);
+  if(!d) return;
+  d.reminderCount = (d.reminderCount||0) + 1;
+  d.lastReminderAt = new Date().toISOString();
+  saveState();
+  showToast('Als erinnert markiert!');
+}
+
+// ===== SHARE CARD GENERATION =====
+function generateShareCard(id){
+  const d = state.debts.find(x => x.id === id);
+  if(!d) return;
+  const rem = remainingAmount(id);
+  const dirCls = d.type==='owed_to_me'?'green':'red';
+  const dirText = d.type==='owed_to_me' ? `${d.person} schuldet dir` : `Du schuldest ${d.person}`;
+  const st = getEffectiveStatus(d);
+  const si = getStatusInfo(st);
+
+  const canvas = document.createElement('canvas');
+  canvas.width = 1080;
+  canvas.height = 1080;
+  const ctx = canvas.getContext('2d');
+
+  // Background
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fillRect(0, 0, 1080, 1080);
+
+  // Top accent bar
+  const accent = d.type==='owed_to_me' ? '#22C55E' : '#EF4444';
+  ctx.fillStyle = accent;
+  ctx.fillRect(0, 0, 1080, 8);
+
+  // Logo
+  ctx.fillStyle = accent;
+  ctx.beginPath();
+  ctx.roundRect(40, 40, 60, 60, 14);
+  ctx.fill();
+  ctx.fillStyle = '#FFFFFF';
+  ctx.font = 'bold 32px -apple-system, BlinkMacSystemFont, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('P', 70, 70);
+
+  // Status label
+  ctx.fillStyle = '#6B7280';
+  ctx.font = '500 20px -apple-system, BlinkMacSystemFont, sans-serif';
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'top';
+  ctx.fillText('OFFENER BETRAG', 120, 48);
+
+  // Divider line
+  ctx.strokeStyle = '#E5E7EB';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(40, 120);
+  ctx.lineTo(1040, 120);
+  ctx.stroke();
+
+  // Direction text
+  ctx.fillStyle = '#111827';
+  ctx.font = '30px -apple-system, BlinkMacSystemFont, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  ctx.fillText(dirText, 540, 160);
+
+  // Amount
+  ctx.fillStyle = accent;
+  ctx.font = 'bold 96px -apple-system, BlinkMacSystemFont, sans-serif';
+  ctx.textBaseline = 'top';
+  ctx.fillText(formatMoney(rem), 540, 230);
+
+  // Reason
+  ctx.fillStyle = '#6B7280';
+  ctx.font = '28px -apple-system, BlinkMacSystemFont, sans-serif';
+  ctx.fillText(d.reason, 540, 370);
+
+  // Info section
+  const infoY = 460;
+  ctx.fillStyle = '#F7F8FA';
+  ctx.beginPath();
+  ctx.roundRect(80, infoY, 920, 110, 14);
+  ctx.fill();
+
+  ctx.fillStyle = '#6B7280';
+  ctx.font = '18px -apple-system, BlinkMacSystemFont, sans-serif';
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'top';
+  ctx.fillText('Datum', 120, infoY+20);
+  ctx.fillText('Kategorie', 400, infoY+20);
+  ctx.fillText('Status', 680, infoY+20);
+
+  ctx.fillStyle = '#111827';
+  ctx.font = 'bold 22px -apple-system, BlinkMacSystemFont, sans-serif';
+  ctx.fillText(formatDate(d.date), 120, infoY+50);
+  ctx.fillText(d.category, 400, infoY+50);
+  ctx.fillStyle = si.cls==='open'?'#3B82F6':si.cls==='partial'?'#F59E0B':si.cls==='paid'?'#22C55E':'#EF4444';
+  ctx.fillText(si.label, 680, infoY+50);
+
+  // Footer
+  ctx.fillStyle = '#E5E7EB';
+  ctx.beginPath();
+  ctx.moveTo(40, 1000);
+  ctx.lineTo(1040, 1000);
+  ctx.stroke();
+
+  ctx.fillStyle = '#9CA3AF';
+  ctx.font = '20px -apple-system, BlinkMacSystemFont, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  ctx.fillText('Erstellt mit PayBack', 540, 1020);
+
+  // Show canvas
+  const preview = document.getElementById('shareCardPreview');
+  preview.innerHTML = `
+    <div class="share-card-preview" id="shareCanvasWrap"></div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-primary btn-sm" onclick="downloadShareCard()">📥 Bild speichern</button>
+      <button class="btn btn-secondary btn-sm" onclick="shareImage()">📤 Bild teilen</button>
+    </div>
+  `;
+  const wrap = document.getElementById('shareCanvasWrap');
+  wrap.appendChild(canvas);
+  state._shareCanvas = canvas;
+}
+
+function downloadShareCard(){
+  const canvas = state._shareCanvas;
+  if(!canvas) return;
+  const link = document.createElement('a');
+  link.download = 'payback-schuldenkarte.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+  showToast('Bild gespeichert!');
+}
+
+function shareImage(){
+  const canvas = state._shareCanvas;
+  if(!canvas) return;
+  canvas.toBlob(blob => {
+    if(!blob) return;
+    if(navigator.share){
+      navigator.share({
+        title: 'PayBack Schuldenkarte',
+        files: [new File([blob], 'payback-schuldenkarte.png', {type: 'image/png'})]
+      }).catch(() => {});
+    } else {
+      downloadShareCard();
+    }
+  });
+}
+
+// ===== GROUPS =====
+function createGroupSplit(){
+  const title = document.getElementById('groupTitle').value.trim();
+  const amount = parseFloat(document.getElementById('groupAmount').value);
+  const paidBy = document.getElementById('groupPaidBy').value.trim();
+  const participantsStr = document.getElementById('groupParticipants').value.trim();
+  if(!title) return showToast('Bitte gib einen Titel ein.');
+  if(!amount||amount<=0) return showToast('Bitte gib einen gültigen Betrag ein.');
+  if(!paidBy) return showToast('Bitte gib an, wer bezahlt hat.');
+  if(!participantsStr) return showToast('Bitte gib Teilnehmer ein.');
+
+  const participants = participantsStr.split(',').map(p => p.trim()).filter(Boolean);
+  if(participants.length<2) return showToast('Bitte mindestens 2 Teilnehmer.');
+
+  const splitType = document.querySelector('#splitTypeChips .chip.active')?.dataset.value || 'equal';
+  let amounts = [];
+  if(splitType==='custom'){
+    const customStr = document.getElementById('groupCustomAmounts').value.trim();
+    amounts = customStr.split(',').map(a => parseFloat(a.trim()));
+    if(amounts.length !== participants.length || amounts.some(isNaN))
+      return showToast('Bitte gültige Beträge für alle Teilnehmer eingeben.');
+    if(amounts.reduce((s,a)=>s+a,0) > amount + 0.01)
+      return showToast('Die Summe der Anteile darf den Gesamtbetrag nicht überschreiten.');
+  } else {
+    const share = amount / (participants.length);
+    amounts = participants.map(() => share);
+  }
+
+  const group = {
+    id: genId(),
+    title,
+    totalAmount: amount,
+    paidBy,
+    participants: participants.map((p,i) => ({
+      person: p,
+      amount: amounts[i],
+      status: 'open'
+    })),
+    splitType,
+    createdAt: new Date().toISOString()
+  };
+  state.groups.push(group);
+
+  // Create debt entries
+  participants.forEach((p,i) => {
+    if(p === paidBy) return;
+    const amt = amounts[i];
+    if(amt <= 0) return;
+    const debt = {
+      id: genId(),
+      person: p,
+      type: 'owed_to_me',
+      amount: amt,
+      originalAmount: amt,
+      currency: 'EUR',
+      reason: title,
+      category: 'Sonstiges',
+      date: today(),
+      dueDate: '',
+      description: `Gruppenrechnung: ${title} (bezahlt von ${paidBy})`,
+      evidenceImages: [],
+      status: 'open',
+      reminderCount: 0,
+      lastReminderAt: null,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    state.debts.push(debt);
+  });
+
+  saveState();
+  showToast('Rechnung geteilt!');
+  document.getElementById('groupTitle').value = '';
+  document.getElementById('groupAmount').value = '';
+  document.getElementById('groupPaidBy').value = '';
+  document.getElementById('groupParticipants').value = '';
+  renderGroups();
+}
+
+function renderGroups(){
+  const container = document.getElementById('groupList');
+  if(state.groups.length===0){
+    container.innerHTML = '<div class="empty-state"><div class="empty-icon">👥</div><h3>Noch keine Gruppen</h3><p>Teile eine Rechnung mit Freunden.</p></div>';
+  } else {
+    container.innerHTML = state.groups.map(g => `
+      <div class="group-card" onclick="navigateTo('group-detail','${g.id}')">
+        <div class="g-top">
+          <div class="g-title">${g.title}</div>
+          <div class="g-amount">${formatMoney(g.totalAmount)}</div>
+        </div>
+        <div class="g-meta">
+          <span>Bezahlt von ${g.paidBy}</span>
+          <span>${g.participants.filter(p => p.status==='open').length} offen</span>
+          <span>${g.participants.length} Teilnehmer</span>
+        </div>
+      </div>
+    `).join('');
+  }
+}
+
+function renderGroupDetail(id){
+  const g = state.groups.find(x => x.id === id);
+  if(!g) return navigateTo('groups');
+  document.getElementById('page-group-detail').innerHTML = `
+    <div class="detail-hero" style="border-top:4px solid var(--purple)">
+      <div class="d-person" style="color:var(--purple)">${g.title}</div>
+      <div class="big-amount" style="color:var(--purple)">${formatMoney(g.totalAmount)}</div>
+      <div class="d-reason">Bezahlt von <strong>${g.paidBy}</strong></div>
+      <div class="d-dates" style="margin-top:8px">${formatDate(g.createdAt?.slice(0,10))}</div>
+    </div>
+    <div class="detail-section">
+      <h3>Teilnehmer (${g.participants.length})</h3>
+      <div class="card" style="padding:10px 14px">
+        ${g.participants.map(p => `
+          <div class="participant-row">
+            <div style="display:flex;align-items:center;gap:8px">
+              <div class="avatar avatar-sm" style="background:${avatarColor(p.person)};width:28px;height:28px;font-size:11px">${avatarInitials(p.person)}</div>
+              <span style="font-weight:600">${p.person}</span>
+              ${p.person===g.paidBy?'<span style="font-size:11px;color:var(--green);background:var(--green-light);padding:1px 6px;border-radius:999px;font-weight:600">Bezahlt</span>':''}
+            </div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-weight:700">${formatMoney(p.amount)}</span>
+              ${p.person!==g.paidBy ? `<span class="badge ${p.status==='paid'?'paid':'open'}">${p.status==='paid'?'Bezahlt':'Offen'}</span>` : ''}
+              ${p.person!==g.paidBy && p.status==='open' ? `<button class="btn btn-sm btn-ghost" onclick="markGroupParticipantPaid('${g.id}','${p.person}')">✅</button>` : ''}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function markGroupParticipantPaid(groupId, person){
+  const g = state.groups.find(x => x.id === groupId);
+  if(!g) return;
+  const p = g.participants.find(x => x.person === person);
+  if(p) p.status = 'paid';
+  // Also mark related debt
+  const debt = state.debts.find(d => d.person === person && d.reason === g.title && d.description?.includes(g.paidBy));
+  if(debt){
+    state.payments.push({
+      id: genId(),
+      debtId: debt.id,
+      amount: remainingAmount(debt.id),
+      date: today(),
+      note: 'Gruppenzahlung'
+    });
+  }
+  saveState();
+  showToast(`${person} als bezahlt markiert.`);
+  renderGroupDetail(groupId);
+}
+
+// ===== PERSON DETAIL =====
+function renderPersonDetail(name){
+  const debts = state.debts.filter(d => d.person === name);
+  let owedToMe = 0, iOwe = 0;
+  debts.forEach(d => {
+    const rem = remainingAmount(d.id);
+    if(d.type==='owed_to_me' && getEffectiveStatus(d)!=='paid') owedToMe += rem;
+    if(d.type==='i_owe' && getEffectiveStatus(d)!=='paid') iOwe += rem;
+  });
+  const net = owedToMe - iOwe;
+  document.getElementById('page-person').innerHTML = `
+    <div class="detail-hero">
+      <div class="avatar avatar-lg" style="background:${avatarColor(name)};margin:0 auto 8px">${avatarInitials(name)}</div>
+      <div class="d-person">${name}</div>
+      <div style="display:flex;justify-content:center;gap:20px;margin:8px 0">
+        <div><div style="font-size:12px;color:var(--text-secondary)">Bekommen</div><div style="font-weight:700;color:var(--green)">${formatMoney(owedToMe)}</div></div>
+        <div><div style="font-size:12px;color:var(--text-secondary)">Schulden</div><div style="font-weight:700;color:var(--red)">${formatMoney(iOwe)}</div></div>
+      </div>
+      <div style="font-weight:800;font-size:20px;${net>=0?'color:var(--green)':'color:var(--red)'}">
+        Verrechnet: ${net>=0?'+':''}${formatMoney(Math.abs(net))}
+      </div>
+      <div style="font-size:12px;color:var(--text-secondary);margin-top:4px">${debts.length} Einträge</div>
+    </div>
+    <div class="section-header"><h2>Einträge mit ${name}</h2></div>
+    <div id="personDebts">${debts.map(d => renderDebtCard(d)).join('')}</div>
+  `;
+}
+
+// ===== STATS =====
+function showStats(){
+  navigateTo('stats');
+}
+
+function renderStats(){
+  const debts = state.debts;
+  let totalOwed = 0, totalIOwe = 0, openCount = 0, paidCount = 0;
+  let maxAmount = 0, maxPerson = '', maxCat = '';
+  const catCount = {};
+
+  debts.forEach(d => {
+    const rem = remainingAmount(d.id);
+    const st = getEffectiveStatus(d);
+    if(st==='paid') paidCount++;
+    else openCount++;
+    if(d.type==='owed_to_me' && st!=='paid') totalOwed += rem;
+    if(d.type==='i_owe' && st!=='paid') totalIOwe += rem;
+    if(rem > maxAmount){ maxAmount = rem; maxPerson = d.person; }
+    catCount[d.category] = (catCount[d.category]||0) + 1;
+  });
+  maxCat = Object.entries(catCount).sort((a,b)=>b[1]-a[1])[0]?.[0]||'-';
+
+  document.getElementById('page-stats').innerHTML = `
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-num green">${formatMoney(totalOwed)}</div><div class="stat-lbl">Dir geschuldet</div></div>
+      <div class="stat-card"><div class="stat-num red">${formatMoney(totalIOwe)}</div><div class="stat-lbl">Du schuldest</div></div>
+      <div class="stat-card"><div class="stat-num ${totalOwed-totalIOwe>=0?'green':'red'}">${formatMoney(Math.abs(totalOwed-totalIOwe))}</div><div class="stat-lbl">Netto</div></div>
+      <div class="stat-card"><div class="stat-num purple">${openCount}</div><div class="stat-lbl">Offen</div></div>
+      <div class="stat-card"><div class="stat-num green">${paidCount}</div><div class="stat-lbl">Bezahlt</div></div>
+      <div class="stat-card"><div class="stat-num">${debts.length}</div><div class="stat-lbl">Gesamt</div></div>
+    </div>
+    <div class="card">
+      <div style="font-size:13px;font-weight:600;margin-bottom:8px">Höchster offener Betrag</div>
+      <div style="font-size:18px;font-weight:800;color:var(--green)">${formatMoney(maxAmount)}</div>
+      <div style="font-size:13px;color:var(--text-secondary)">${maxPerson}</div>
+    </div>
+    <div class="card">
+      <div style="font-size:13px;font-weight:600;margin-bottom:8px">Häufigste Kategorie</div>
+      <div style="font-size:18px;font-weight:800">${maxCat}</div>
+    </div>
+  `;
+}
+
+// ===== SETTINGS =====
+function renderSettings(){
+  document.getElementById('settingsName').value = state.settings.name || '';
+  document.getElementById('settingsPaypal').value = state.settings.paypal || '';
+  const toggle = document.getElementById('settingsPaypalToggle');
+  toggle.classList.toggle('active', !!state.settings.paypalInMessage);
+
+  const chipContainer = document.getElementById('defaultToneChips');
+  chipContainer.innerHTML = TONES.map(t =>
+    `<span class="chip ${t===state.settings.defaultTone?'active':''}" onclick="state.settings.defaultTone='${t}';saveState();renderSettings()">${t}</span>`
+  ).join('');
+
+  // Event listeners
+  document.getElementById('settingsName').onchange = function(){
+    state.settings.name = this.value;
+    saveState();
+  };
+  document.getElementById('settingsPaypal').onchange = function(){
+    state.settings.paypal = this.value;
+    saveState();
+  };
+}
+
+function toggleSetting(key){
+  if(key === 'paypalInMessage'){
+    state.settings.paypalInMessage = !state.settings.paypalInMessage;
+    saveState();
+    renderSettings();
+  }
+}
+
+// ===== EXPORT/IMPORT =====
+function exportData(){
+  const data = JSON.stringify({
+    debts: state.debts,
+    payments: state.payments,
+    groups: state.groups,
+    settings: state.settings,
+    exportedAt: new Date().toISOString()
+  }, null, 2);
+  const blob = new Blob([data], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'payback-export.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Daten exportiert!');
+}
+
+function importData(){
+  document.getElementById('importInput').click();
+}
+
+function handleImport(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev){
+    try{
+      const data = JSON.parse(ev.target.result);
+      if(data.debts) state.debts = data.debts;
+      if(data.payments) state.payments = data.payments;
+      if(data.groups) state.groups = data.groups;
+      if(data.settings) state.settings = {...state.settings, ...data.settings};
+      saveState();
+      rebuildPersons();
+      showToast('Daten importiert!');
+      navigateTo('dashboard');
+    } catch(e){
+      showToast('Fehler beim Import.');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+function clearAllData(){
+  state.debts = [];
+  state.payments = [];
+  state.groups = [];
+  state.settings = {name:'',paypal:'',paypalInMessage:false,defaultTone:'Neutral',currency:'EUR'};
+  saveState();
+  showToast('Alle Daten gelöscht.');
+  navigateTo('dashboard');
+}
+
+// ===== DEMO DATA =====
+function loadDemoData(){
+  const now = new Date();
+  const d = (days) => new Date(now - days*864e5).toISOString().slice(0,10);
+
+  const demoDebts = [
+    {id:'dd1',person:'Ahmed',type:'owed_to_me',amount:30,reason:'Essen + Getränke',category:'Essen',date:d(2),status:'open',dueDate:'',reminderCount:0},
+    {id:'dd2',person:'Yassine',type:'i_owe',amount:15,reason:'Taxi',category:'Fahrt',date:d(1),status:'open',dueDate:'',reminderCount:0},
+    {id:'dd3',person:'Käufer Gameboy',type:'owed_to_me',amount:50,reason:'Anzahlung Game Boy Advance SP',category:'Verkauf',date:d(0),status:'open',dueDate:'',reminderCount:0},
+    {id:'dd4',person:'Hamza',type:'owed_to_me',amount:20,reason:'Einkauf vorgestreckt',category:'Einkauf',date:d(7),status:'open',dueDate:d(1),reminderCount:1},
+    {id:'dd5',person:'Omar',type:'i_owe',amount:10,reason:'Snacks',category:'Essen',date:d(3),status:'paid',dueDate:'',reminderCount:0}
+  ];
+
+  const demoPayments = [
+    {id:'dp1',debtId:'dd3',amount:20,date:d(0),note:'Anzahlung'},
+    {id:'dp2',debtId:'dd5',amount:10,date:d(1),note:'Bar bezahlt'}
+  ];
+
+  state.debts = demoDebts.map(dd => ({...dd, originalAmount: dd.amount, currency:'EUR', description:'', evidenceImages:[], lastReminderAt: dd.reminderCount>0 ? new Date().toISOString() : null, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()}));
+  state.payments = demoPayments;
+  state.groups = [];
+  saveState();
+  rebuildPersons();
+  showToast('Demo-Daten geladen!');
+  navigateTo('dashboard');
+}
+
+// ===== REMIND SELECTOR =====
+function showRemindSelector(){
+  const open = state.debts.filter(d => {
+    const st = getEffectiveStatus(d);
+    return st!=='paid' && st!=='archived';
+  });
+  if(open.length===0) return showToast('Keine offenen Beträge zum Erinnern.');
+  const html = `<div style="margin-bottom:12px;font-size:14px;color:var(--text-secondary)">Wen möchtest du erinnern?</div>
+    ${open.map(d => `
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer" onclick="closeModal();navigateTo('message','${d.id}')">
+        <div>
+          <div style="font-weight:600">${d.person}</div>
+          <div style="font-size:12px;color:var(--text-secondary)">${d.reason}</div>
+        </div>
+        <div style="font-weight:700;${d.type==='owed_to_me'?'color:var(--green)':'color:var(--red)'}">${formatMoney(remainingAmount(d.id))}</div>
+      </div>
+    `).join('')}`;
+  openModal('Erinnerung erstellen', html);
+}
+
+// ===== SEARCH =====
+function showSearch(){
+  navigateTo('debts');
+  document.getElementById('debtSearch').focus();
+}
+
+// ===== INIT =====
+loadState();
+navigateTo('dashboard');
+
+// Register Service Worker
+if('serviceWorker' in navigator){
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('sw.js').then(function(r){
+      console.log('SW registered, scope:', r.scope);
+    }).catch(function(e){ console.log('SW failed:', e); });
+  });
+}
+</script>
+</body>
+</html>
