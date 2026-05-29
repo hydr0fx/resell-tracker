@@ -12,7 +12,7 @@ Private reselling-tracking PWA (Flippy Bird) for managing purchases, sales, prof
 ## Tech Stack
 - Vanilla JS (no frameworks)
 - CSS custom properties for theming
-- PWA via manifest.json + sw.js (cache v3.1.0)
+- PWA via manifest.json + sw.js (cache v3.2.0)
 
 ## Features
 - **Dashboard:** Gewinn, Aktive, Ø Marge stats + recent items

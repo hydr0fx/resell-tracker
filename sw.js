@@ -1,4 +1,4 @@
-var CACHE = 'flippybird-v3.1.0';
+var CACHE = 'flippybird-v3.2.0';
 
 self.addEventListener('install', e => {
   e.waitUntil(self.skipWaiting());
