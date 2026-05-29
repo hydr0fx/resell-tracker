@@ -930,6 +930,8 @@ function getDefaults() {
   return { location:'55122 Mainz', footer:'Abholung möglich in 55122 Mainz oder Versand per PayPal FF.\nDa Privatverkauf, keine Rückgabe oder Garantie.', darkMode:false, platform:'kleinanzeigen', titleStyle:'detailed' };
 }
 
+const PHOTO_TYPES={front:'Vorderseite',back:'Rückseite',display:'Display/Funktion',accessories:'Zubehör',defects:'Mängel',serial:'Seriennummer/Modell'};
+
 // ===== NAVIGATION =====
 function navigate(page, param) {
   document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
