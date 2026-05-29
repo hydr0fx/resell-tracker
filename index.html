@@ -187,6 +187,11 @@ input, textarea, button, select { font-family: inherit; font-size: inherit; }
   border-radius: 50%; background: var(--danger); color: white; border: none;
   font-size: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center;
 }
+.image-picker .img-thumb .img-crop {
+  position: absolute; bottom: -2px; right: -2px; width: 20px; height: 20px;
+  border-radius: 50%; background: var(--gold); color: #1F1F1F; border: none;
+  font-size: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
 .image-picker .img-thumb.main { border-color: var(--gold); border-style: solid; }
 .image-picker .img-thumb.main::after {
   content: '★'; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
@@ -1116,12 +1121,10 @@ function processNextPendingFile() {
   var file = pendingFiles.shift();
   var reader = new FileReader();
   reader.onload = function(ev) {
-    openCrop(ev.target.result, function(croppedUrl) {
-      formImages.push({ data: croppedUrl, type: '' });
-      renderImagePreview();
-      renderPhotoChecklist();
-      processNextPendingFile();
-    });
+    formImages.push({ data: ev.target.result, type: '' });
+    renderImagePreview();
+    renderPhotoChecklist();
+    processNextPendingFile();
   };
   reader.readAsDataURL(file);
 }
@@ -1134,11 +1137,23 @@ function renderImagePreview() {
     return '<div class="img-thumb' + (i === 0 ? ' main' : '') + '" onclick="setMainImage(' + i + ')">' +
       '<img src="' + data + '">' +
       (typeLabel ? '<div class="type-badge">' + typeLabel + '</div>' : '') +
+      '<button class="img-crop" onclick="event.stopPropagation();cropFormImage(' + i + ')" title="Zuschneiden">✂️</button>' +
       '<button class="remove-img" onclick="event.stopPropagation();removeImage(' + i + ')">✕</button></div>';
   }).join('');
   html += '<div class="img-thumb" onclick="openPhotoSheet()">📷+</div>';
   var p = document.getElementById('imagePicker');
   if (p) p.innerHTML = html;
+}
+
+function cropFormImage(idx) {
+  var img = formImages[idx];
+  if (!img) return;
+  var data = typeof img === 'string' ? img : img.data;
+  openCrop(data, function(croppedUrl) {
+    formImages[idx] = { data: croppedUrl, type: img.type || '' };
+    renderImagePreview();
+    renderPhotoChecklist();
+  });
 }
 
 function removeImage(idx) {
@@ -1626,6 +1641,7 @@ function usePayPalFee() {
 
 // ===== EXPORT =====
 var _selectedTitleVariant = 0;
+var _exportTitles = [];
 
 function prepareExport(itemId) {
   if (itemId){exportItemId=itemId;navigate('export',itemId);}
@@ -1650,14 +1666,15 @@ function renderExport(id) {
     '<div class="preview-body"><div class="preview-title">'+esc(titles[0])+'</div>'+
     '<div class="preview-price">'+price+'</div>'+
     '<div class="preview-location">'+esc(item.location||'55122 Mainz')+'</div></div></div>';
-  renderTitleVariants(titles, item);
+  _exportTitles = titles;
+  renderTitleVariants(titles);
   _selectedTitleVariant=0;
   item.generatedListingTitle=titles[0];
   item.generatedListingDescription=desc;
   saveData();
 }
 
-function renderTitleVariants(titles, item) {
+function renderTitleVariants(titles) {
   var html='';
   var labels=['Ausführlich','Kurz','Catchy'];
   titles.forEach(function(t,i){
@@ -1671,9 +1688,7 @@ function renderTitleVariants(titles, item) {
 function selectExportTitle(idx) {
   _selectedTitleVariant=idx;
   document.querySelectorAll('.title-variant').forEach(function(b,i){b.classList.toggle('selected',i===idx);});
-  var titles=document.querySelectorAll('.title-variant');
-  if (titles[idx]) document.getElementById('exportTitle').value=titles[idx].textContent.replace(/^Variante \d . \w+ \s*/, '').trim();
-  // Also update preview
+  if (_exportTitles[idx]) document.getElementById('exportTitle').value=_exportTitles[idx];
   var previewTitle=document.querySelector('.preview-card .preview-title');
   if (previewTitle) previewTitle.textContent=document.getElementById('exportTitle').value;
 }
@@ -1745,20 +1760,7 @@ function regenerateDesc() {
   if (exportItemId) renderExport(exportItemId);
 }
 
-function scheduleTitleGen() { clearTimeout(_titleGenTimer); _titleGenTimer = setTimeout(generateTitlePreview, 500); }
-function generateTitlePreview() {
-  var name=document.getElementById('fName').value.trim();
-  if (!name) return;
-  var fakeItem = {
-    name: name,
-    brand: document.getElementById('fBrand').value.trim(),
-    model: document.getElementById('fModel').value.trim(),
-    category: document.getElementById('fCategory').value,
-    condition: document.getElementById('fCondition').value
-  };
-  var titles = generateTitles(fakeItem);
-  showToast('Titel: '+titles[0]);
-}
+function scheduleTitleGen() {}
 
 // ===== SALES =====
 function renderSales() {
