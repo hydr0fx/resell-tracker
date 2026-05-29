@@ -122,6 +122,10 @@ input, textarea, button, select { font-family: inherit; font-size: inherit; }
 
 .status-badge { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.3px; }
 .status-draft { background: #F3F4F6; color: #6B7280; }
+.status-needs_photos { background: #FEF3C7; color: #B45309; }
+.status-needs_description { background: #FEF3C7; color: #B45309; }
+.status-ready_to_list { background: #DCFCE7; color: #15803D; }
+.status-completed { background: #E5E7EB; color: #374151; }
 .status-bought { background: #DBEAFE; color: #2563EB; }
 .status-ready { background: #FEF3C7; color: #D97706; }
 .status-listed { background: #DCFCE7; color: #15803D; }
@@ -402,6 +406,147 @@ input, textarea, button, select { font-family: inherit; font-size: inherit; }
 .detail-row .label { color: var(--text-secondary); }
 .detail-row .value { font-weight: 600; }
 
+/* Crop Modal */
+.crop-overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85);
+  z-index: 250; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 16px;
+}
+.crop-overlay.active { display: flex; }
+.crop-modal {
+  background: var(--card); border-radius: var(--radius); width: 100%; max-width: 500px;
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.crop-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 16px; border-bottom: 1px solid var(--border);
+}
+.crop-header h3 { font-size: 15px; font-weight: 600; }
+.crop-close { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text); padding: 4px; }
+.crop-container {
+  position: relative; width: 100%; background: #000; overflow: hidden;
+  min-height: 280px; max-height: 55vh; touch-action: none;
+}
+.crop-container img { display: block; width: 100%; height: 100%; object-fit: contain; user-select: none; -webkit-user-drag: none; }
+.crop-selection {
+  position: absolute; border: 2px solid white; box-shadow: 0 0 0 9999px rgba(0,0,0,0.5);
+  cursor: move; display: none;
+}
+.crop-selection.active { display: block; }
+.crop-handle {
+  position: absolute; width: 22px; height: 22px; border: 2px solid white;
+  background: rgba(255,255,255,0.25); border-radius: 50%;
+}
+.crop-h-nw { top: -11px; left: -11px; cursor: nw-resize; }
+.crop-h-ne { top: -11px; right: -11px; cursor: ne-resize; }
+.crop-h-sw { bottom: -11px; left: -11px; cursor: sw-resize; }
+.crop-h-se { bottom: -11px; right: -11px; cursor: se-resize; }
+.crop-aspects {
+  display: flex; gap: 6px; padding: 10px 16px; overflow-x: auto;
+  border-top: 1px solid var(--border); justify-content: center;
+}
+.crop-aspect {
+  padding: 5px 14px; border-radius: 16px; border: 1.5px solid var(--border);
+  background: var(--card); font-size: 12px; font-weight: 500; cursor: pointer;
+  white-space: nowrap; color: var(--text-secondary); transition: all 0.15s;
+}
+.crop-aspect.active { background: var(--gold); color: #1F1F1F; border-color: var(--gold); }
+.crop-actions {
+  display: flex; gap: 8px; padding: 12px 16px;
+  border-top: 1px solid var(--border);
+}
+.crop-actions .btn { flex: 1; }
+
+/* Photo Checklist */
+.photo-checklist { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.pc-item {
+  padding: 5px 12px; border-radius: 16px; border: 1.5px solid var(--border);
+  font-size: 11px; font-weight: 500; cursor: pointer; transition: all 0.15s;
+  background: var(--card); color: var(--text-secondary); white-space: nowrap;
+}
+.pc-item.done { background: var(--primary-light); border-color: var(--primary); color: var(--primary-dark); }
+.pc-item .pc-check { margin-right: 3px; }
+
+/* Image type badge */
+.img-thumb .type-badge {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  font-size: 7px; background: rgba(0,0,0,0.6); color: #fff;
+  text-align: center; padding: 1px 2px; line-height: 1.3;
+}
+
+/* Bottom Sheet */
+.sheet-overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4);
+  z-index: 250; display: none; align-items: flex-end; justify-content: center;
+}
+.sheet-overlay.active { display: flex; }
+.sheet {
+  background: var(--card); border-radius: 16px 16px 0 0; width: 100%; max-width: 400px;
+  padding: 8px 0 20px; box-shadow: 0 -8px 30px rgba(0,0,0,0.12);
+}
+.sheet .sheet-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 8px auto 12px; }
+.sheet .sheet-item {
+  display: flex; align-items: center; gap: 12px; padding: 14px 20px;
+  border: none; background: none; width: 100%; text-align: left; cursor: pointer;
+  font-size: 15px; color: var(--text); transition: background 0.1s;
+}
+.sheet .sheet-item:active { background: var(--bg); }
+.sheet .sheet-item .sheet-icon { font-size: 20px; width: 28px; text-align: center; }
+.sheet .sheet-cancel { margin-top: 4px; padding-top: 12px; border-top: 1px solid var(--border); }
+
+/* Status Stepper */
+.status-stepper { display: flex; gap: 0; margin: 12px 0; overflow-x: auto; padding: 4px 0; }
+.ss-step {
+  display: flex; align-items: center; gap: 4px; font-size: 10px; color: var(--text-secondary);
+  white-space: nowrap; flex-shrink: 0;
+}
+.ss-step .ss-dot {
+  width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 8px; font-weight: 700; border: 2px solid var(--border); background: var(--card); color: var(--text-secondary);
+}
+.ss-step.done .ss-dot { background: var(--primary); border-color: var(--primary); color: white; }
+.ss-step.active .ss-dot { background: var(--gold); border-color: var(--gold); color: #1F1F1F; }
+.ss-step .ss-line { width: 16px; height: 2px; background: var(--border); flex-shrink: 0; }
+.ss-step.done .ss-line { background: var(--primary); }
+
+/* Todo cards */
+.todo-card {
+  display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+  background: var(--card); border-radius: var(--radius-sm); margin-bottom: 6px;
+  border-left: 3px solid var(--gold); font-size: 13px;
+}
+.todo-card .todo-icon { font-size: 16px; flex-shrink: 0; }
+.todo-card .todo-text { flex: 1; }
+.todo-card .todo-action { font-size: 11px; color: var(--primary); cursor: pointer; font-weight: 600; background: none; border: none; white-space: nowrap; }
+
+/* Item card quick actions */
+.item-card .item-actions {
+  display: flex; gap: 4px; margin-top: 4px; flex-wrap: wrap;
+}
+.item-card .item-actions button {
+  padding: 2px 8px; border-radius: 10px; border: none; font-size: 10px; font-weight: 600; cursor: pointer;
+}
+.item-card .item-actions .qa-edit { background: var(--bg); color: var(--text); }
+.item-card .item-actions .qa-export { background: var(--gold); color: #1F1F1F; }
+.item-card .item-actions .qa-sold { background: var(--primary); color: white; }
+.item-card .item-photo-count { font-size: 10px; color: var(--text-secondary); margin-left: auto; }
+
+/* Title variant buttons */
+.title-variant {
+  display: block; width: 100%; text-align: left; padding: 10px 12px; margin-bottom: 6px;
+  border: 1.5px solid var(--border); border-radius: var(--radius-sm); background: var(--card);
+  cursor: pointer; font-size: 13px; color: var(--text); transition: all 0.15s;
+}
+.title-variant:active, .title-variant.selected { border-color: var(--gold); background: #FEFCF3; }
+.title-variant .tv-label { font-size: 9px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 2px; }
+
+/* Description editor */
+.desc-editor {
+  width: 100%; min-height: 180px; padding: 12px; border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm); font-size: 13px; line-height: 1.6; resize: vertical;
+  outline: none; background: var(--card); color: var(--text); margin-bottom: 8px;
+}
+.desc-editor:focus { border-color: var(--gold); }
+
 @media (prefers-color-scheme: dark) {
   :root {
     --bg: #0F0F0F;
@@ -416,6 +561,13 @@ input, textarea, button, select { font-family: inherit; font-size: inherit; }
   .profit-card .profit-total { color: var(--gold); }
   .month-tile.selected { background: #1A1A2E; }
   .info-box { background: #2D2D44; border-color: #FACC15; color: #FDE68A; }
+  .title-variant:active, .title-variant.selected { background: #2D2D44; }
+  .desc-editor { background: #1A1A2E; color: #F0F0F0; border-color: #2D2D44; }
+  .sheet { background: #1A1A2E; }
+  .status-needs_photos { background: #78350F; color: #FDE68A; }
+  .status-needs_description { background: #78350F; color: #FDE68A; }
+  .status-ready_to_list { background: #064E3B; color: #A7F3D0; }
+  .status-completed { background: #374151; color: #D1D5DB; }
 }
 </style>
 </head>
@@ -442,6 +594,8 @@ input, textarea, button, select { font-family: inherit; font-size: inherit; }
     <div class="stat-card"><div class="stat-label">Aktive</div><div class="stat-value" id="dashActive">-</div></div>
     <div class="stat-card"><div class="stat-label">Ø Marge</div><div class="stat-value" id="dashMargin">-</div></div>
   </div>
+  <div class="section-header"><h3>To-Do</h3></div>
+  <div id="dashTodos"></div>
   <div class="section-header"><h3>Letzte Artikel</h3><button class="see-all" onclick="navigate('inventory')">Alle</button></div>
   <div id="dashRecent"></div>
 </div>
@@ -459,6 +613,8 @@ input, textarea, button, select { font-family: inherit; font-size: inherit; }
       <option value="profit">Gewinn</option>
       <option value="margin">Marge</option>
       <option value="unlisted">Nicht inseriert</option>
+      <option value="needs_photos">Fotos fehlen</option>
+      <option value="needs_desc">Beschreibung fehlt</option>
     </select>
   </div>
   <div id="inventoryList"></div>
@@ -468,22 +624,31 @@ input, textarea, button, select { font-family: inherit; font-size: inherit; }
 <div class="page" id="page-add">
   <div class="form-section-title">Bilder</div>
   <div class="image-picker" id="imagePicker"></div>
+  <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none" onchange="handleImages(event)">
+  <input type="file" id="galleryInput" accept="image/*" multiple style="display:none" onchange="handleImages(event)">
+
+  <div class="form-section-title">Foto-Checkliste</div>
+  <div class="photo-checklist" id="photoChecklist"></div>
 
   <div class="form-section-title">Grunddaten</div>
-  <div class="form-group"><label class="form-label">Artikelname *</label><input class="form-input" id="fName" placeholder="z.B. Game Boy Advance SP"></div>
+  <div class="form-group"><label class="form-label">Artikelname *</label><input class="form-input" id="fName" placeholder="z.B. Game Boy Advance SP" oninput="scheduleTitleGen()"></div>
   <div class="form-row">
-    <div class="form-group"><label class="form-label">Marke</label><input class="form-input" id="fBrand" placeholder="z.B. Nintendo"></div>
-    <div class="form-group"><label class="form-label">Modell</label><input class="form-input" id="fModel" placeholder="z.B. AGS-001"></div>
+    <div class="form-group"><label class="form-label">Marke</label><input class="form-input" id="fBrand" placeholder="z.B. Nintendo" oninput="scheduleTitleGen()"></div>
+    <div class="form-group"><label class="form-label">Modell</label><input class="form-input" id="fModel" placeholder="z.B. AGS-001" oninput="scheduleTitleGen()"></div>
   </div>
   <div class="form-row">
-    <div class="form-group"><label class="form-label">Kategorie</label><select class="form-select" id="fCategory"><option value="Konsolen">Konsolen</option><option value="Spiele">Spiele</option><option value="PC-Hardware">PC-Hardware</option><option value="Smartphones">Smartphones</option><option value="Kleidung">Kleidung</option><option value="Haushaltsgeräte">Haushaltsgeräte</option><option value="Sonstiges">Sonstiges</option></select></div>
-    <div class="form-group"><label class="form-label">Zustand</label><select class="form-select" id="fCondition"><option value="Neu">Neu</option><option value="Wie neu">Wie neu</option><option value="Sehr gut">Sehr gut</option><option value="Gut">Gut</option><option value="Gebrauchsspuren">Gebrauchsspuren</option><option value="Defekt">Defekt</option></select></div>
+    <div class="form-group"><label class="form-label">Kategorie</label><select class="form-select" id="fCategory" onchange="scheduleTitleGen()"><option value="Konsolen">Konsolen</option><option value="Spiele">Spiele</option><option value="PC-Hardware">PC-Hardware</option><option value="Smartphones">Smartphones</option><option value="Kleidung">Kleidung</option><option value="Haushaltsgeräte">Haushaltsgeräte</option><option value="Sonstiges">Sonstiges</option></select></div>
+    <div class="form-group"><label class="form-label">Zustand</label><select class="form-select" id="fCondition" onchange="scheduleTitleGen()"><option value="Neu">Neu</option><option value="Wie neu">Wie neu</option><option value="Sehr gut">Sehr gut</option><option value="Gut">Gut</option><option value="Gebrauchsspuren">Gebrauchsspuren</option><option value="Defekt">Defekt</option></select></div>
   </div>
 
   <div class="form-section-title">Preise</div>
   <div class="form-row">
     <div class="form-group"><label class="form-label">Einkaufspreis (€)</label><input class="form-input" id="fPurchase" type="number" step="0.01" placeholder="0.00" oninput="calcLiveProfit();autoCalcPayPal()"></div>
+    <div class="form-group"><label class="form-label">Zielpreis (€)</label><input class="form-input" id="fTargetPrice" type="number" step="0.01" placeholder="0.00" oninput="calcLiveProfit()"></div>
+  </div>
+  <div class="form-row">
     <div class="form-group"><label class="form-label">Verkaufspreis (€)</label><input class="form-input" id="fSalePrice" type="number" step="0.01" placeholder="0.00" oninput="calcLiveProfit();autoCalcPayPal()"></div>
+    <div class="form-group"><label class="form-label">tats. Verkaufspreis (€)</label><input class="form-input" id="fListedPrice" type="number" step="0.01" placeholder="0.00" oninput="calcLiveProfit()"></div>
   </div>
   <div class="form-row">
     <div class="form-group"><label class="form-label">PayPal Gebühr (€)</label><input class="form-input" id="fPaypalFee" type="number" step="0.01" placeholder="auto"></div>
@@ -519,6 +684,7 @@ input, textarea, button, select { font-family: inherit; font-size: inherit; }
 
 <!-- DETAIL -->
 <div class="page" id="page-detail">
+  <div id="stepperContainer" class="status-stepper"></div>
   <div id="detailContent"></div>
 </div>
 
@@ -526,17 +692,18 @@ input, textarea, button, select { font-family: inherit; font-size: inherit; }
 <div class="page" id="page-export">
   <div class="info-box"><strong>Flippy Bird</strong> postet nicht automatisch. Kopiere Titel, Preis und Beschreibung und öffne dann Kleinanzeigen.</div>
   <div id="exportPreview"></div>
-  <div class="form-section-title">Titel</div>
-  <div class="copy-row">
-    <input class="copy-input" id="exportTitle" readonly><button class="copy-btn" onclick="copyText('exportTitle','Titel kopiert!')">Kopieren</button>
-  </div>
+  <div class="form-section-title">Titel-Varianten</div>
+  <div id="exportTitleVariants"></div>
   <div class="form-section-title">Preis</div>
   <div class="copy-row">
     <input class="copy-input" id="exportPrice" readonly><button class="copy-btn" onclick="copyText('exportPrice','Preis kopiert!')">Kopieren</button>
   </div>
   <div class="form-section-title">Beschreibung</div>
-  <textarea class="copy-textarea" id="exportDesc" readonly></textarea>
-  <button class="btn btn-sm btn-gold" onclick="copyText('exportDesc','Beschreibung kopiert!')" style="margin-bottom:12px;width:100%;">Beschreibung kopieren</button>
+  <textarea class="desc-editor" id="exportDesc" oninput="onDescEdit()"></textarea>
+  <div style="display:flex;gap:6px;margin-bottom:12px;">
+    <button class="btn btn-sm btn-gold" style="flex:1;" onclick="copyText('exportDesc','Beschreibung kopiert!')">Beschreibung kopieren</button>
+    <button class="btn btn-sm btn-outline" onclick="regenerateDesc()">Neu generieren</button>
+  </div>
   <div class="btn-group">
     <button class="btn btn-gold" style="flex:1;" onclick="copyAllExport()">Alles kopieren</button>
     <button class="btn btn-outline" style="flex:1;" onclick="openKleinanzeigen()">Kleinanzeigen öffnen</button>
@@ -581,7 +748,10 @@ input, textarea, button, select { font-family: inherit; font-size: inherit; }
 <div class="page" id="page-settings">
   <div class="form-section-title">Allgemein</div>
   <div class="form-group"><label class="form-label">Standard-Standort</label><input class="form-input" id="sLocation" placeholder="55122 Mainz"></div>
-  <div class="form-group"><label class="form-label">Standard-Footer (wird an jede Beschreibung angehängt)</label><textarea class="form-textarea" id="sFooter" style="min-height:60px;"></textarea></div>
+  <div class="form-group"><label class="form-label">Standard-Footer (wird an jede Beschreibung angehängt)</label><textarea class="form-textarea" id="sFooter" style="min-height:60px;" placeholder="Abholung möglich in 55122 Mainz oder Versand per PayPal FF. Da Privatverkauf, keine Rückgabe oder Garantie."></textarea></div>
+  <div class="form-section-title">Export</div>
+  <div class="form-group"><label class="form-label">Standard-Plattform</label><select class="form-select" id="sPlatform"><option value="kleinanzeigen">Kleinanzeigen</option><option value="ebay">eBay</option></select></div>
+  <div class="form-group"><label class="form-label">Titel-Stil</label><select class="form-select" id="sTitleStyle"><option value="detailed">Ausführlich</option><option value="short">Kurz</option><option value="catchy">Catchy</option></select></div>
   <button class="btn btn-gold btn-block" onclick="saveSettings()">Einstellungen speichern</button>
   <div style="margin-top:20px;text-align:center;font-size:11px;color:var(--text-secondary);"><p>Flippy Bird v3.1</p><p>Daten werden lokal gespeichert.</p></div>
 </div>
@@ -638,6 +808,16 @@ input, textarea, button, select { font-family: inherit; font-size: inherit; }
   </div>
 </div>
 
+<!-- Photo Source Bottom Sheet -->
+<div class="sheet-overlay" id="photoSheet" onclick="if(event.target===this)closePhotoSheet()">
+  <div class="sheet" onclick="event.stopPropagation()">
+    <div class="sheet-handle"></div>
+    <button class="sheet-item" onclick="pickCamera()"><span class="sheet-icon">📷</span> Foto aufnehmen</button>
+    <button class="sheet-item" onclick="pickGallery()"><span class="sheet-icon">🖼️</span> Aus Galerie wählen</button>
+    <button class="sheet-item sheet-cancel" onclick="closePhotoSheet()">Abbrechen</button>
+  </div>
+</div>
+
 <!-- Photo Viewer -->
 <div class="photo-viewer" id="photoViewer">
   <div class="pv-top">
@@ -660,6 +840,36 @@ input, textarea, button, select { font-family: inherit; font-size: inherit; }
   </div>
 </div>
 
+<!-- Crop Modal -->
+<div class="crop-overlay" id="cropOverlay">
+  <div class="crop-modal">
+    <div class="crop-header">
+      <h3>Bild zuschneiden</h3>
+      <button class="crop-close" onclick="closeCrop()">✕</button>
+    </div>
+    <div class="crop-container" id="cropContainer">
+      <img id="cropImage">
+      <div class="crop-selection" id="cropSelection">
+        <div class="crop-handle crop-h-nw"></div>
+        <div class="crop-handle crop-h-ne"></div>
+        <div class="crop-handle crop-h-sw"></div>
+        <div class="crop-handle crop-h-se"></div>
+      </div>
+    </div>
+    <div class="crop-aspects" id="cropAspects">
+      <button class="crop-aspect active" onclick="setCropAspect('free',this)">Frei</button>
+      <button class="crop-aspect" onclick="setCropAspect('1:1',this)">1:1</button>
+      <button class="crop-aspect" onclick="setCropAspect('4:3',this)">4:3</button>
+      <button class="crop-aspect" onclick="setCropAspect('3:4',this)">3:4</button>
+      <button class="crop-aspect" onclick="setCropAspect('16:9',this)">16:9</button>
+    </div>
+    <div class="crop-actions">
+      <button class="btn btn-outline" onclick="closeCrop()">Abbrechen</button>
+      <button class="btn btn-gold" onclick="confirmCrop()">Übernehmen</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ===== DATA =====
 var items = [];
@@ -673,6 +883,8 @@ let pvRotation = 0;
 let selectMode = false;
 let selectedItems = [];
 let salesYearOffset = 0;
+let _titleGenTimer = null;
+let _descEdited = false;
 
 const SHIPPING_OPTIONS = {
   DHL: [
@@ -700,10 +912,17 @@ const SHIPPING_OPTIONS = {
   ]
 };
 
+const ORDERED_STATUSES = ['draft','needs_photos','needs_description','ready_to_list','listed','reserved','sold','completed'];
+const STATUS_LABELS = {
+  draft:'Entwurf', needs_photos:'Fotos fehlen', needs_description:'Beschreibung fehlt',
+  bought:'Gekauft', ready:'Bereit', ready_to_list:'Bereit zum Einstellen',
+  listed:'Inseriert', reserved:'Reserviert', sold:'Verkauft', archived:'Archiviert', completed:'Abgeschlossen'
+};
+
 function getDefaults() {
   var s = localStorage.getItem('flippybird_settings');
   if (s) { try { return JSON.parse(s); } catch {} }
-  return { location:'55122 Mainz', footer:'Abholung möglich in 55122 Mainz oder Versand per PayPal FF.\nDa Privatverkauf, keine Rückgabe oder Garantie.', darkMode:false };
+  return { location:'55122 Mainz', footer:'Abholung möglich in 55122 Mainz oder Versand per PayPal FF.\nDa Privatverkauf, keine Rückgabe oder Garantie.', darkMode:false, platform:'kleinanzeigen', titleStyle:'detailed' };
 }
 
 // ===== NAVIGATION =====
@@ -736,17 +955,44 @@ function showSearch() { document.getElementById('searchInput').focus(); }
 // ===== DASHBOARD =====
 function renderDashboard() {
   var totalProfit = 0; var soldCount = 0; var margins = [];
-  var activeItems = items.filter(function(i){return i.status!=='sold'&&i.status!=='archived';});
-  var soldItems = items.filter(function(i){return i.status==='sold';});
+  var activeItems = items.filter(function(i){return i.status!=='sold'&&i.status!=='completed'&&i.status!=='archived';});
+  var soldItems = items.filter(function(i){return i.status==='sold'||i.status==='completed';});
   soldItems.forEach(function(i){
-    var p = (i.sellingPrice||0)-(i.purchasePrice||0); totalProfit += p;
-    if (i.sellingPrice) margins.push(p/i.sellingPrice*100);
+    var sp = i.soldPrice || i.listedPrice || i.sellingPrice || 0;
+    var p = sp-(i.purchasePrice||0); totalProfit += p;
+    if (sp) margins.push(p/sp*100);
   });
   var avgMargin = margins.length ? margins.reduce(function(a,b){return a+b;},0)/margins.length : 0;
   document.getElementById('dashProfit').textContent = (totalProfit>=0?'+':'')+totalProfit.toFixed(2).replace('.',',') + ' €';
   document.getElementById('dashProfit').className = 'stat-value ' + (totalProfit>=0?'positive':'negative');
   document.getElementById('dashActive').textContent = activeItems.length;
   document.getElementById('dashMargin').textContent = avgMargin.toFixed(1)+'%';
+
+  // Todos
+  var todos = [];
+  items.forEach(function(i){
+    if (i.status!=='sold'&&i.status!=='completed'&&i.status!=='archived') {
+      if (!i.images||!i.images.length) todos.push({icon:'📷',text:esc(i.name)+' benötigt Fotos',action:'fotos',id:i.id});
+      else if (i.status==='draft') todos.push({icon:'📝',text:esc(i.name)+' benötigt Beschreibung',action:'beschreibung',id:i.id});
+      else if (i.status==='ready_to_list'||i.status==='ready') todos.push({icon:'🚀',text:esc(i.name)+' ist bereit zum Einstellen',action:'export',id:i.id});
+      else if (i.status==='reserved') todos.push({icon:'⏳',text:esc(i.name)+' ist reserviert',action:'detail',id:i.id});
+      else if (i.status==='needs_photos') todos.push({icon:'📷',text:esc(i.name)+' benötigt Fotos',action:'fotos',id:i.id});
+      else if (i.status==='needs_description') todos.push({icon:'📝',text:esc(i.name)+' benötigt Beschreibung',action:'beschreibung',id:i.id});
+    }
+  });
+  var thtml = '';
+  if (todos.length) {
+    todos.forEach(function(t){
+      thtml += '<div class="todo-card"><span class="todo-icon">'+t.icon+'</span><span class="todo-text">'+t.text+'</span>';
+      if (t.action==='fotos') thtml += '<button class="todo-action" onclick="navigate(\'detail\',\''+t.id+'\')">Öffnen</button>';
+      else if (t.action==='beschreibung') thtml += '<button class="todo-action" onclick="navigate(\'export\',\''+t.id+'\')">Export</button>';
+      else if (t.action==='export') thtml += '<button class="todo-action" onclick="navigate(\'export\',\''+t.id+'\')">Export</button>';
+      else thtml += '<button class="todo-action" onclick="navigate(\'detail\',\''+t.id+'\')">Öffnen</button>';
+      thtml += '</div>';
+    });
+  } else thtml = '<div class="todo-card" style="border-left-color:var(--primary);"><span class="todo-icon">✅</span><span class="todo-text">Alles erledigt!</span></div>';
+  document.getElementById('dashTodos').innerHTML = thtml;
+
   var recent = items.slice().sort(function(a,b){return (b.createdAt||0)-(a.createdAt||0);}).slice(0,5);
   var html = '';
   if (!recent.length) html = '<div class="empty-state"><div class="empty-icon">📦</div><p>Noch keine Artikel.</p></div>';
@@ -767,9 +1013,11 @@ function renderInventory() {
     return true;
   });
   switch(sort) {
-    case 'profit': list.sort(function(a,b){return ((b.sellingPrice||0)-(b.purchasePrice||0))-((a.sellingPrice||0)-(a.purchasePrice||0));}); break;
-    case 'margin': list.sort(function(a,b){var ma=a.sellingPrice?((a.sellingPrice-a.purchasePrice)/a.sellingPrice*100):0;var mb=b.sellingPrice?((b.sellingPrice-b.purchasePrice)/b.sellingPrice*100):0;return mb-ma;}); break;
+    case 'profit': list.sort(function(a,b){var sa=b.soldPrice||b.listedPrice||b.sellingPrice||0;var sb=a.soldPrice||a.listedPrice||a.sellingPrice||0;return (sa-(b.purchasePrice||0))-(sb-(a.purchasePrice||0));}); break;
+    case 'margin': list.sort(function(a,b){var sa=a.soldPrice||a.listedPrice||a.sellingPrice||0;var sb=b.soldPrice||b.listedPrice||b.sellingPrice||0;var ma=sa?((sa-a.purchasePrice)/sa*100):0;var mb=sb?((sb-b.purchasePrice)/sb*100):0;return mb-ma;}); break;
     case 'unlisted': list.sort(function(a,b){return (a.status==='listed'?1:0)-(b.status==='listed'?1:0);}); break;
+    case 'needs_photos': list.sort(function(a,b){return ((a.images&&a.images.length)?1:0)-((b.images&&b.images.length)?1:0);}); break;
+    case 'needs_desc': list.sort(function(a,b){return (a.status==='needs_description'||a.status==='draft'?0:1)-(b.status==='needs_description'||b.status==='draft'?0:1);}); break;
     default: list.sort(function(a,b){return (b.createdAt||0)-(a.createdAt||0);});
   }
   var html = '';
@@ -779,8 +1027,8 @@ function renderInventory() {
 }
 
 function renderFilterChips(active) {
-  var filters = ['all','draft','bought','ready','listed','sold'];
-  var labels = ['Alle','Entwurf','Gekauft','Bereit','Inseriert','Verkauft'];
+  var filters = ['all','draft','needs_photos','needs_description','ready_to_list','listed','reserved','sold'];
+  var labels = ['Alle','Entwurf','📷 Fotos','📝 Beschr.','🚀 Bereit','Inseriert','Reserviert','Verkauft'];
   var html = '';
   filters.forEach(function(f,i){html+='<div class="filter-chip'+(f===active?' active':'')+'" data-filter="'+f+'" onclick="setFilter(this,\''+f+'\')">'+labels[i]+'</div>';});
   document.getElementById('filterChips').innerHTML = html;
@@ -788,18 +1036,26 @@ function renderFilterChips(active) {
 function setFilter(el,f) { document.querySelectorAll('#filterChips .filter-chip').forEach(function(c){c.classList.remove('active');});el.classList.add('active');renderInventory(); }
 
 function renderItemCard(item) {
-  var profit = (item.sellingPrice||0)-(item.purchasePrice||0);
-  var margin = item.sellingPrice ? (profit/item.sellingPrice*100) : 0;
-  var img = item.images&&item.images[0] ? '<img src="'+item.images[0]+'">':'<span>📷</span>';
-  var sc = 'status-'+(item.status==='ready_for_listing'?'ready':item.status);
-  var sl = item.status==='ready_for_listing'?'Bereit':(STATUS_LABELS[item.status]||item.status);
+  var sp = item.soldPrice || item.listedPrice || item.sellingPrice || 0;
+  var profit = sp-(item.purchasePrice||0);
+  var margin = sp ? (profit/sp*100) : 0;
+  var img = item.images&&item.images[0] ? '<img src="'+imgData(item.images[0])+'">':'<span>📷</span>';
+  var sc = 'status-' + (ORDERED_STATUSES.indexOf(item.status)===-1?'ready':item.status);
+  var sl = STATUS_LABELS[item.status] || item.status;
+  var photoCount = item.images ? item.images.length : 0;
   return '<div class="item-card" onclick="'+(selectMode?'toggleSelect(\''+item.id+'\')':'navigate(\'detail\',\''+item.id+'\')')+'">'+
     '<input type="checkbox" class="item-select" '+(selectMode?'':'style="display:none"')+' '+(selectedItems.indexOf(item.id)>-1?'checked':'')+' onchange="toggleSelect(\''+item.id+'\')">'+
     '<div class="item-img">'+img+'</div>'+
     '<div class="item-info"><div class="item-name">'+esc(item.name)+'</div>'+
     '<div class="item-meta">'+esc(item.category)+' · <span class="status-badge '+sc+'">'+sl+'</span></div>'+
-    '<div class="item-prices"><span>EK '+fmt(item.purchasePrice)+'</span><span>VK '+fmt(item.sellingPrice)+'</span></div>'+
-    '<div class="item-profit '+(profit>=0?'positive':'negative')+'">'+(profit>=0?'+':'')+profit.toFixed(2).replace('.',',')+' € · '+margin.toFixed(1)+'%</div></div></div>';
+    '<div class="item-prices"><span>EK '+fmt(item.purchasePrice)+'</span><span>VK '+fmt(sp)+'</span></div>'+
+    '<div class="item-profit '+(profit>=0?'positive':'negative')+'">'+(profit>=0?'+':'')+profit.toFixed(2).replace('.',',')+' € · '+margin.toFixed(1)+'%</div>'+
+    '<div class="item-actions">'+
+      '<button class="qa-edit" onclick="event.stopPropagation();editItem(\''+item.id+'\')">Bearbeiten</button>'+
+      '<button class="qa-export" onclick="event.stopPropagation();prepareExportFromDetail(\''+item.id+'\')">Export</button>'+
+      (item.status!=='sold'&&item.status!=='completed'?'<button class="qa-sold" onclick="event.stopPropagation();quickSold(\''+item.id+'\')">Verkauft</button>':'')+
+    '</div>'+
+    '<span class="item-photo-count">📷 '+photoCount+'</span></div></div>';
 }
 
 // ===== FORM =====
@@ -818,7 +1074,8 @@ function resetForm() {
   document.getElementById('fLocation').value=def.location||'55122 Mainz';
   document.getElementById('liveProfit').style.display='none';
   formImages=[];
-  document.getElementById('imagePicker').innerHTML='<div class="img-thumb" onclick="document.getElementById(\'fileInput\').click()">+</div><input type="file" id="fileInput" accept="image/*" multiple style="display:none;" onchange="handleImages(event)">';
+  renderImagePreview();
+  renderPhotoChecklist();
   if (editingId) {
     var item=items.find(function(i){return i.id===editingId;});
     if (item) {
@@ -828,7 +1085,9 @@ function resetForm() {
       document.getElementById('fCategory').value=item.category||'Sonstiges';
       document.getElementById('fCondition').value=item.condition||'Gut';
       document.getElementById('fPurchase').value=item.purchasePrice||'';
+      document.getElementById('fTargetPrice').value=item.targetPrice||'';
       document.getElementById('fSalePrice').value=item.sellingPrice||'';
+      document.getElementById('fListedPrice').value=item.listedPrice||'';
       document.getElementById('fLocation').value=item.location||def.location;
       document.getElementById('fAccessories').value=item.accessories||'';
       document.getElementById('fDefects').value=item.defects||'';
@@ -837,38 +1096,97 @@ function resetForm() {
       document.getElementById('fShipping').checked=item.shipping!==false;
       document.getElementById('fPaypal').checked=item.paypal!==false;
       document.getElementById('fPrivateSale').checked=item.privateSale!==false;
-      if (item.images) { formImages=item.images.slice(); renderImagePreview(); }
+      if (item.images) { formImages=item.images.slice(); renderImagePreview(); renderPhotoChecklist(); }
       calcLiveProfit();
     }
   }
 }
 
+var pendingFiles = [];
+
 function handleImages(e) {
-  var files=e.target.files;
-  for (var i=0;i<files.length;i++){(function(file){var reader=new FileReader();reader.onload=function(ev){formImages.push(ev.target.result);renderImagePreview();};reader.readAsDataURL(file);})(files[i]);}
-  e.target.value='';
+  var files = e.target.files;
+  for (var i = 0; i < files.length; i++) pendingFiles.push(files[i]);
+  e.target.value = '';
+  processNextPendingFile();
+}
+
+function processNextPendingFile() {
+  if (pendingFiles.length === 0) return;
+  var file = pendingFiles.shift();
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    openCrop(ev.target.result, function(croppedUrl) {
+      formImages.push({ data: croppedUrl, type: '' });
+      renderImagePreview();
+      renderPhotoChecklist();
+      processNextPendingFile();
+    });
+  };
+  reader.readAsDataURL(file);
 }
 
 function renderImagePreview() {
-  var html=formImages.map(function(img,i){return '<div class="img-thumb'+(i===0?' main':'')+'"><img src="'+img+'"><button class="remove-img" onclick="removeImage('+i+')">✕</button></div>';}).join('');
-  html+='<div class="img-thumb" onclick="document.getElementById(\'fileInput\').click()">+</div>';
-  var p=document.getElementById('imagePicker');if(p)p.innerHTML=html+'<input type="file" id="fileInput" accept="image/*" multiple style="display:none;" onchange="handleImages(event)">';
+  var html = formImages.map(function(img, i) {
+    var data = typeof img === 'string' ? img : img.data;
+    var type = img.type || '';
+    var typeLabel = PHOTO_TYPES[type] || '';
+    return '<div class="img-thumb' + (i === 0 ? ' main' : '') + '" onclick="setMainImage(' + i + ')">' +
+      '<img src="' + data + '">' +
+      (typeLabel ? '<div class="type-badge">' + typeLabel + '</div>' : '') +
+      '<button class="remove-img" onclick="event.stopPropagation();removeImage(' + i + ')">✕</button></div>';
+  }).join('');
+  html += '<div class="img-thumb" onclick="openPhotoSheet()">📷+</div>';
+  var p = document.getElementById('imagePicker');
+  if (p) p.innerHTML = html;
 }
 
-function removeImage(idx) { formImages.splice(idx,1); renderImagePreview(); }
+function removeImage(idx) {
+  formImages.splice(idx, 1);
+  renderImagePreview();
+  renderPhotoChecklist();
+}
+
+function setMainImage(idx) {
+  if (idx === 0) return;
+  var img = formImages.splice(idx, 1)[0];
+  formImages.unshift(img);
+  renderImagePreview();
+}
+
+// Photo Source Sheet
+function openPhotoSheet() { document.getElementById('photoSheet').classList.add('active'); }
+function closePhotoSheet() { document.getElementById('photoSheet').classList.remove('active'); }
+function pickCamera() { closePhotoSheet(); document.getElementById('cameraInput').click(); }
+function pickGallery() { closePhotoSheet(); document.getElementById('galleryInput').click(); }
 
 function calcLiveProfit() {
   var purchase=parseFloat(document.getElementById('fPurchase').value)||0;
+  var target=parseFloat(document.getElementById('fTargetPrice').value)||0;
   var selling=parseFloat(document.getElementById('fSalePrice').value)||0;
+  var listed=parseFloat(document.getElementById('fListedPrice').value)||0;
   var el=document.getElementById('liveProfit');
-  if (!purchase&&!selling){el.style.display='none';return;}
+  if (!purchase&&!selling&&!target){el.style.display='none';return;}
   var profit=selling-purchase;
   var margin=selling?(profit/selling*100):0;
   var roi=purchase?(profit/purchase*100):0;
-  el.style.display='block';
-  el.innerHTML='<div class="profit-total '+(profit>=0?'positive':'negative')+'">'+(profit>=0?'+':'')+profit.toFixed(2).replace('.',',')+' €</div>'+
-    '<div class="profit-row"><span class="label">Marge</span><span class="value">'+margin.toFixed(1)+'%</span></div>'+
-    '<div class="profit-row"><span class="label">ROI</span><span class="value">'+roi.toFixed(1)+'%</span></div>';
+  var html='';
+  if (target>0){
+    var tProfit=target-purchase;
+    var tMargin=target?(tProfit/target*100):0;
+    html+='<div class="profit-row"><span class="label">Ziel-Gewinn</span><span class="value '+(tProfit>=0?'positive':'negative')+'">'+(tProfit>=0?'+':'')+tProfit.toFixed(2).replace('.',',')+' € ('+tMargin.toFixed(1)+'%)</span></div>';
+  }
+  if (listed>0){
+    var lProfit=listed-purchase;
+    var lMargin=listed?(lProfit/listed*100):0;
+    html+='<div class="profit-row"><span class="label">Tats. Gewinn</span><span class="value '+(lProfit>=0?'positive':'negative')+'">'+(lProfit>=0?'+':'')+lProfit.toFixed(2).replace('.',',')+' € ('+lMargin.toFixed(1)+'%)</span></div>';
+  }
+  if (profit!==0||purchase>0||selling>0){
+    html+='<div class="profit-total '+(profit>=0?'positive':'negative')+'">'+(profit>=0?'+':'')+profit.toFixed(2).replace('.',',')+' €</div>'+
+      '<div class="profit-row"><span class="label">Marge</span><span class="value">'+margin.toFixed(1)+'%</span></div>'+
+      '<div class="profit-row"><span class="label">ROI</span><span class="value">'+roi.toFixed(1)+'%</span></div>';
+  }
+  el.style.display='block'; el.innerHTML=html;
 }
 
 function updateShippingCost() {
@@ -877,6 +1195,11 @@ function updateShippingCost() {
   sel.innerHTML='<option value="">-</option>';
   if (!method||!SHIPPING_OPTIONS[method]) return;
   SHIPPING_OPTIONS[method].forEach(function(o){sel.innerHTML+='<option value="'+o.cost+'">'+o.label+' ('+o.cost.toFixed(2).replace('.',',')+' €)</option>';});
+}
+
+function autoCalcStatus(item) {
+  if (!item.images||!item.images.length) return 'needs_photos';
+  return 'needs_description';
 }
 
 function saveItem() {
@@ -891,7 +1214,9 @@ function saveItem() {
     category:document.getElementById('fCategory').value,
     condition:document.getElementById('fCondition').value,
     purchasePrice:parseFloat(document.getElementById('fPurchase').value)||0,
+    targetPrice:parseFloat(document.getElementById('fTargetPrice').value)||0,
     sellingPrice:parseFloat(document.getElementById('fSalePrice').value)||0,
+    listedPrice:parseFloat(document.getElementById('fListedPrice').value)||0,
     paypalFee:parseFloat(document.getElementById('fPaypalFee').value)||0,
     shippingMethod:document.getElementById('fShippingMethod').value,
     shippingCost:parseFloat(document.getElementById('fShippingCost').value)||0,
@@ -904,12 +1229,18 @@ function saveItem() {
     paypal:document.getElementById('fPaypal').checked,
     privateSale:document.getElementById('fPrivateSale').checked,
     images:formImages.slice(),
-    status:editingId?undefined:'draft',
+    status:editingId?undefined:autoCalcStatus({images:formImages}),
     createdAt:editingId?undefined:now,
     updatedAt:now
   };
-  if (editingId){var idx=items.findIndex(function(i){return i.id===editingId;});if(idx>-1){Object.assign(items[idx],item);items[idx].updatedAt=now;}editingId=null;}
-  else items.push(item);
+  if (editingId){
+    var idx=items.findIndex(function(i){return i.id===editingId;});if(idx>-1){
+      var oldStatus=items[idx].status;
+      Object.assign(items[idx],item);
+      items[idx].updatedAt=now;
+      if (!item.status) items[idx].status=oldStatus;
+    }editingId=null;
+  } else items.push(item);
   saveData();showToast('Artikel gespeichert!');navigate('inventory');
 }
 
@@ -924,7 +1255,9 @@ function saveItemDirect() {
     category:document.getElementById('fCategory').value,
     condition:document.getElementById('fCondition').value,
     purchasePrice:parseFloat(document.getElementById('fPurchase').value)||0,
+    targetPrice:parseFloat(document.getElementById('fTargetPrice').value)||0,
     sellingPrice:parseFloat(document.getElementById('fSalePrice').value)||0,
+    listedPrice:parseFloat(document.getElementById('fListedPrice').value)||0,
     paypalFee:parseFloat(document.getElementById('fPaypalFee').value)||0,
     shippingMethod:document.getElementById('fShippingMethod').value,
     shippingCost:parseFloat(document.getElementById('fShippingCost').value)||0,
@@ -936,7 +1269,7 @@ function saveItemDirect() {
     shipping:document.getElementById('fShipping').checked,
     paypal:document.getElementById('fPaypal').checked,
     privateSale:document.getElementById('fPrivateSale').checked,
-    images:formImages.slice(), status:'draft', createdAt:now, updatedAt:now
+    images:formImages.slice(), status:autoCalcStatus({images:formImages}), createdAt:now, updatedAt:now
   };
   if (editingId){var idx=items.findIndex(function(i){return i.id===editingId;});if(idx>-1){Object.assign(items[idx],item);editingId=null;}}
   else items.push(item);
@@ -947,17 +1280,19 @@ function saveItemDirect() {
 function renderDetail(id) {
   var item=items.find(function(i){return i.id===id;});
   if (!item){document.getElementById('detailContent').innerHTML='<div class="empty-state"><p>Nicht gefunden</p></div>';return;}
-  var profit=(item.sellingPrice||0)-(item.purchasePrice||0);
-  var margin=item.sellingPrice?(profit/item.sellingPrice*100):0;
+  renderStatusStepper(item);
+  var sp = item.soldPrice || item.listedPrice || item.sellingPrice || 0;
+  var profit=sp-(item.purchasePrice||0);
+  var margin=sp?(profit/sp*100):0;
   var roi=item.purchasePrice?(profit/item.purchasePrice*100):0;
-  var sc='status-'+(item.status==='ready_for_listing'?'ready':item.status);
-  var sl=item.status==='ready_for_listing'?'Bereit':(STATUS_LABELS[item.status]||item.status);
+  var sc = 'status-' + (ORDERED_STATUSES.indexOf(item.status)===-1?'ready':item.status);
+  var sl = STATUS_LABELS[item.status] || item.status;
   var html='';
   if (item.images&&item.images.length){
-    html+='<div class="detail-image"><img src="'+item.images[0]+'" onclick="openPhotoViewer(\''+item.id+'\',0)"><div class="img-actions"><button onclick="event.stopPropagation();openPhotoViewer(\''+item.id+'\',0)" title="Vergrößern">🔍</button><button onclick="event.stopPropagation();downloadImage(\''+item.images[0]+'\')" title="Download">⬇</button></div></div>';
+    html+='<div class="detail-image"><img src="'+imgData(item.images[0])+'" onclick="openPhotoViewer(\''+item.id+'\',0)"><div class="img-actions"><button onclick="event.stopPropagation();openPhotoViewer(\''+item.id+'\',0)" title="Vergrößern">🔍</button><button onclick="event.stopPropagation();downloadImage(\''+imgData(item.images[0])+'\')" title="Download">⬇</button></div></div>';
     if (item.images.length>1){
       html+='<div class="detail-images-row">';
-      item.images.forEach(function(img,i){html+='<div class="thumb'+(i===0?' active':'')+'" onclick="switchDetailImage(this,\''+img+'\')"><img src="'+img+'"></div>';});
+      item.images.forEach(function(img,i){html+='<div class="thumb'+(i===0?' active':'')+'" onclick="switchDetailImage(this,\''+imgData(img)+'\')"><img src="'+imgData(img)+'"></div>';});
       html+='</div>';
     }
   } else html+='<div class="detail-image"><span>📷</span></div>';
@@ -967,24 +1302,26 @@ function renderDetail(id) {
     (item.condition?'<span style="font-size:12px;color:var(--text-secondary);">· '+esc(item.condition)+'</span>':'')+'</div></div>';
   html+='<div class="detail-section"><h3>Preise</h3><div class="detail-price-grid">'+
     '<div class="price-item"><div class="p-label">Einkauf</div><div class="p-value">'+fmt(item.purchasePrice)+'</div></div>'+
-    '<div class="price-item"><div class="p-label">Verkauf</div><div class="p-value">'+fmt(item.sellingPrice)+'</div></div>'+
+    (item.targetPrice?'<div class="price-item"><div class="p-label">Zielpreis</div><div class="p-value positive">'+fmt(item.targetPrice)+'</div></div>':'')+
+    (item.sellingPrice?'<div class="price-item"><div class="p-label">VK (geplant)</div><div class="p-value">'+fmt(item.sellingPrice)+'</div></div>':'')+
+    (item.listedPrice?'<div class="price-item"><div class="p-label">VK (tats.)</div><div class="p-value">'+fmt(item.listedPrice)+'</div></div>':'')+
+    (item.soldPrice?'<div class="price-item"><div class="p-label">Verkauft für</div><div class="p-value positive">'+fmt(item.soldPrice)+'</div></div>':'')+
     '<div class="price-item"><div class="p-label">Gewinn</div><div class="p-value '+(profit>=0?'positive':'negative')+'">'+(profit>=0?'+':'')+profit.toFixed(2).replace('.',',')+' €</div></div>'+
     '<div class="price-item"><div class="p-label">Marge</div><div class="p-value">'+margin.toFixed(1)+'%</div></div></div></div>';
   if (item.shippingMethod||item.shippingCost){html+='<div class="detail-section"><h3>Versand</h3><div style="font-size:13px;">'+(item.shippingMethod?esc(item.shippingMethod):'')+(item.shippingCost?' · '+item.shippingCost.toFixed(2).replace('.',',')+' €':'')+'</div></div>';}
-  html+='<div class="btn-group">'+
+  html+='<div class="btn-group" style="margin-top:12px;">'+
     '<button class="btn btn-sm btn-gold" style="flex:1;" onclick="editItem(\''+item.id+'\')">Bearbeiten</button>'+
     '<button class="btn btn-sm btn-outline" style="flex:1;" onclick="prepareExportFromDetail(\''+item.id+'\')">Export</button>'+
     '<button class="btn btn-sm btn-danger" onclick="deleteItem(\''+item.id+'\')">Löschen</button></div>';
   html+='<div class="btn-group">';
-  if (item.status!=='ready_for_listing') html+='<button class="btn btn-sm btn-outline" onclick="setItemStatus(\''+item.id+'\',\'ready_for_listing\')">Bereit</button>';
-  if (item.status!=='listed') html+='<button class="btn btn-sm btn-outline" onclick="setItemStatus(\''+item.id+'\',\'listed\')">Inseriert</button>';
-  if (item.status!=='sold') html+='<button class="btn btn-sm btn-outline" onclick="setItemStatus(\''+item.id+'\',\'sold\')">Verkauft</button>';
+  if (item.status!=='sold'&&item.status!=='completed') html+='<button class="btn btn-sm btn-primary" onclick="quickSold(\''+item.id+'\')">Als verkauft markieren</button>';
   html+='</div>';
   if (item.brand||item.model) html+='<div class="detail-section"><h3>Produkt</h3><div style="font-size:13px;">'+[item.brand,item.model].filter(Boolean).join(' ')+'</div></div>';
   if (item.location) html+='<div class="detail-section"><h3>Standort</h3><div style="font-size:13px;">'+esc(item.location)+'</div></div>';
   if (item.accessories) html+='<div class="detail-section"><h3>Zubehör</h3><div style="font-size:13px;">'+esc(item.accessories)+'</div></div>';
   if (item.defects) html+='<div class="detail-section"><h3>Mängel</h3><div style="font-size:13px;color:var(--danger);">'+esc(item.defects)+'</div></div>';
   if (item.notes) html+='<div class="detail-section"><h3>Notizen</h3><div style="font-size:13px;">'+esc(item.notes)+'</div></div>';
+  if (item.createdAt) html+='<div class="detail-section"><h3>Zeit</h3><div style="font-size:12px;color:var(--text-secondary);">Erstellt: '+new Date(item.createdAt).toLocaleDateString('de-DE')+(item.updatedAt?' · Aktualisiert: '+new Date(item.updatedAt).toLocaleDateString('de-DE'):'')+'</div></div>';
   document.getElementById('detailContent').innerHTML=html;
 }
 
@@ -994,11 +1331,30 @@ function switchDetailImage(el,src) {
   document.querySelector('.detail-image img').src=src;
 }
 
+function renderStatusStepper(item) {
+  var steps = [
+    {key:'draft',label:'Entwurf'},{key:'needs_photos',label:'Fotos'},{key:'needs_description',label:'Beschreibung'},
+    {key:'ready_to_list',label:'Bereit'},{key:'listed',label:'Inseriert'},{key:'sold',label:'Verkauft'}
+  ];
+  var curIdx = ORDERED_STATUSES.indexOf(item.status);
+  if (curIdx === -1) curIdx = 0;
+  var html = '';
+  steps.forEach(function(s, i){
+    var idx = ORDERED_STATUSES.indexOf(s.key);
+    var state = idx <= curIdx ? 'done' : '';
+    if (idx === curIdx) state = 'active';
+    html += '<div class="ss-step '+state+'"><div class="ss-dot">'+(state==='done'?'✓':i+1)+'</div><span>'+s.label+'</span>';
+    if (i < steps.length-1) html += '<div class="ss-line"></div>';
+    html += '</div>';
+  });
+  document.getElementById('stepperContainer').innerHTML = html;
+}
+
 // ===== PHOTO VIEWER =====
 function openPhotoViewer(itemId, idx) {
   var item=items.find(function(i){return i.id===itemId;});
   if (!item||!item.images||!item.images.length) return;
-  pvList=item.images; pvIdx=idx; pvZoom=1; pvRotation=0;
+  pvList=item.images.map(imgData); pvIdx=idx; pvZoom=1; pvRotation=0;
   updatePhotoViewer();
   document.getElementById('photoViewer').classList.add('active');
 }
@@ -1035,6 +1391,207 @@ function downloadImage(src) {
   document.body.appendChild(a);a.click();document.body.removeChild(a);
 }
 
+// ===== CROP =====
+var _crop = {
+  img: null, dataUrl: null, natW: 0, natH: 0,
+  disW: 0, disH: 0, offX: 0, offY: 0, scale: 1,
+  sx: 0, sy: 0, sw: 0, sh: 0,
+  aspect: null, dragging: false,
+  dragMode: '', dragStartX: 0, dragStartY: 0,
+  selOrigX: 0, selOrigY: 0, selOrigW: 0, selOrigH: 0,
+  callback: null, pendingType: ''
+};
+
+function openCrop(dataUrl, callback) {
+  var img = new Image();
+  img.onload = function() {
+    _crop.dataUrl = dataUrl;
+    _crop.natW = img.naturalWidth;
+    _crop.natH = img.naturalHeight;
+    _crop.img = img;
+    _crop.callback = callback;
+    _crop.aspect = null;
+    document.getElementById('cropImage').src = dataUrl;
+    document.getElementById('cropOverlay').classList.add('active');
+    document.querySelectorAll('#cropAspects .crop-aspect').forEach(function(b){b.classList.remove('active');});
+    document.querySelector('#cropAspects .crop-aspect').classList.add('active');
+    setTimeout(calcCropDimensions, 80);
+  };
+  img.src = dataUrl;
+}
+
+function calcCropDimensions() {
+  var cont = document.getElementById('cropContainer');
+  var cw = cont.clientWidth;
+  var ch = cont.clientHeight;
+  var scale = Math.min(cw / _crop.natW, ch / _crop.natH, 1);
+  var dw = _crop.natW * scale;
+  var dh = _crop.natH * scale;
+  var ox = (cw - dw) / 2;
+  var oy = (ch - dh) / 2;
+  _crop.disW = dw; _crop.disH = dh;
+  _crop.offX = ox; _crop.offY = oy;
+  _crop.scale = scale;
+  var m = 0.05;
+  _crop.sx = dw * m; _crop.sy = dh * m;
+  _crop.sw = dw * (1 - 2*m); _crop.sh = dh * (1 - 2*m);
+  updateCropUI();
+}
+
+function updateCropUI() {
+  var sel = document.getElementById('cropSelection');
+  sel.style.left = (_crop.offX + _crop.sx) + 'px';
+  sel.style.top = (_crop.offY + _crop.sy) + 'px';
+  sel.style.width = _crop.sw + 'px';
+  sel.style.height = _crop.sh + 'px';
+  sel.classList.add('active');
+}
+
+function getCropPos(e) {
+  var cont = document.getElementById('cropContainer');
+  var rect = cont.getBoundingClientRect();
+  var cx = e.touches ? e.touches[0].clientX : e.clientX;
+  var cy = e.touches ? e.touches[0].clientY : e.clientY;
+  return { x: cx - rect.left, y: cy - rect.top };
+}
+
+function getCropHandle(pos) {
+  var m = 22, s = _crop;
+  var l = s.offX + s.sx, t = s.offY + s.sy;
+  var r = l + s.sw, b = t + s.sh;
+  if (Math.abs(pos.x - l) < m && Math.abs(pos.y - t) < m) return 'nw';
+  if (Math.abs(pos.x - r) < m && Math.abs(pos.y - t) < m) return 'ne';
+  if (Math.abs(pos.x - l) < m && Math.abs(pos.y - b) < m) return 'sw';
+  if (Math.abs(pos.x - r) < m && Math.abs(pos.y - b) < m) return 'se';
+  return null;
+}
+
+function applyCropRatio(x1, y1, x2, y2, ratio) {
+  if (!ratio) return {x1:x1,y1:y1,x2:x2,y2:y2};
+  var w = x2 - x1, h = y2 - y1;
+  if (w / h > ratio) { var nw = h * ratio; x1 += (w - nw) / 2; x2 = x1 + nw; }
+  else { var nh = w / ratio; y1 += (h - nh) / 2; y2 = y1 + nh; }
+  return {x1:x1,y1:y1,x2:x2,y2:y2};
+}
+
+function onCropStart(e) {
+  e.preventDefault();
+  var pos = getCropPos(e), s = _crop;
+  var handle = getCropHandle(pos);
+  if (handle) {
+    s.dragMode = handle; s.dragging = true;
+    s.dragStartX = pos.x; s.dragStartY = pos.y;
+    s.selOrigX = s.sx; s.selOrigY = s.sy;
+    s.selOrigW = s.sw; s.selOrigH = s.sh;
+    return;
+  }
+  var rx = pos.x - s.offX, ry = pos.y - s.offY;
+  if (rx >= s.sx && rx <= s.sx + s.sw && ry >= s.sy && ry <= s.sy + s.sh) {
+    s.dragMode = 'move'; s.dragging = true;
+    s.dragStartX = pos.x; s.dragStartY = pos.y;
+    s.selOrigX = s.sx; s.selOrigY = s.sy;
+    return;
+  }
+  s.dragMode = 'new'; s.dragging = true;
+  s.dragStartX = pos.x; s.dragStartY = pos.y;
+  s.sx = 0; s.sy = 0; s.sw = 0; s.sh = 0;
+  updateCropUI();
+}
+
+function onCropMove(e) {
+  e.preventDefault();
+  if (!_crop.dragging) return;
+  var pos = getCropPos(e), s = _crop;
+  if (s.dragMode === 'move') {
+    s.sx = Math.max(0, Math.min(s.disW - s.sw, s.selOrigX + pos.x - s.dragStartX));
+    s.sy = Math.max(0, Math.min(s.disH - s.sh, s.selOrigY + pos.y - s.dragStartY));
+    updateCropUI(); return;
+  }
+  var ex = Math.max(0, Math.min(s.disW, pos.x - s.offX));
+  var ey = Math.max(0, Math.min(s.disH, pos.y - s.offY));
+  var x1, y1, x2, y2;
+  if (s.dragMode === 'new') {
+    x1 = s.dragStartX - s.offX; y1 = s.dragStartY - s.offY;
+    x2 = ex; y2 = ey;
+  } else {
+    x1 = s.selOrigX; y1 = s.selOrigY;
+    x2 = s.selOrigX + s.selOrigW; y2 = s.selOrigY + s.selOrigH;
+    if (s.dragMode.indexOf('n') >= 0) y1 = Math.min(ey, y2-20);
+    if (s.dragMode.indexOf('s') >= 0) y2 = Math.max(ey, y1+20);
+    if (s.dragMode.indexOf('w') >= 0) x1 = Math.min(ex, x2-20);
+    if (s.dragMode.indexOf('e') >= 0) x2 = Math.max(ex, x1+20);
+  }
+  if (x1 > x2) { var t=x1; x1=x2; x2=t; }
+  if (y1 > y2) { var t=y1; y1=y2; y2=t; }
+  if (s.aspect) { var adj = applyCropRatio(x1,y1,x2,y2,s.aspect); x1=adj.x1; y1=adj.y1; x2=adj.x2; y2=adj.y2; }
+  s.sx = Math.max(0, x1); s.sy = Math.max(0, y1);
+  s.sw = Math.min(s.disW, x2) - s.sx;
+  s.sh = Math.min(s.disH, y2) - s.sy;
+  updateCropUI();
+}
+
+function onCropEnd(e) { _crop.dragging = false; }
+
+function setCropAspect(ratio, btn) {
+  document.querySelectorAll('#cropAspects .crop-aspect').forEach(function(b){b.classList.remove('active');});
+  if (btn) btn.classList.add('active');
+  _crop.aspect = null;
+  if (ratio === '1:1') _crop.aspect = 1;
+  else if (ratio === '4:3') _crop.aspect = 4/3;
+  else if (ratio === '3:4') _crop.aspect = 3/4;
+  else if (ratio === '16:9') _crop.aspect = 16/9;
+  if (_crop.sw > 0 && _crop.sh > 0 && _crop.aspect) {
+    var adj = applyCropRatio(_crop.sx, _crop.sy, _crop.sx+_crop.sw, _crop.sy+_crop.sh, _crop.aspect);
+    _crop.sx = adj.x1; _crop.sy = adj.y1;
+    _crop.sw = adj.x2 - adj.x1; _crop.sh = adj.y2 - adj.y1;
+    updateCropUI();
+  }
+}
+
+function confirmCrop() {
+  var s = _crop;
+  if (s.sw < 5 || s.sh < 5) { showToast('Bereich zu klein'); return; }
+  var x = Math.round(s.sx / s.scale);
+  var y = Math.round(s.sy / s.scale);
+  var w = Math.round(s.sw / s.scale);
+  var h = Math.round(s.sh / s.scale);
+  var can = document.createElement('canvas');
+  can.width = w; can.height = h;
+  var ctx = can.getContext('2d');
+  ctx.drawImage(s.img, x, y, w, h, 0, 0, w, h);
+  if (s.callback) s.callback(can.toDataURL('image/jpeg', 0.92));
+  closeCrop();
+}
+
+function closeCrop() {
+  document.getElementById('cropOverlay').classList.remove('active');
+  _crop.dragging = false; _crop.callback = null;
+  pendingFiles = [];
+}
+
+// ===== PHOTO CHECKLIST =====
+function renderPhotoChecklist() {
+  var el = document.getElementById('photoChecklist');
+  if (!el) return;
+  var used = {};
+  formImages.forEach(function(img) { if (img.type) used[img.type] = true; });
+  var html = '';
+  for (var key in PHOTO_TYPES) {
+    var done = !!used[key];
+    html += '<div class="pc-item' + (done ? ' done' : '') + '" onclick="assignPhotoType(\'' + key + '\')">' +
+      '<span class="pc-check">' + (done ? '✓' : '○') + '</span> ' + PHOTO_TYPES[key] + '</div>';
+  }
+  el.innerHTML = html;
+}
+
+function assignPhotoType(type) {
+  // Find first image without a type and assign it
+  for (var i = 0; i < formImages.length; i++) {
+    if (!formImages[i].type) { formImages[i].type = type; renderImagePreview(); renderPhotoChecklist(); return; }
+  }
+  showToast('Alle Fotos haben bereits einen Typ');
+}
+
 // ===== PAYPAL =====
 function autoCalcPayPal() {
   var price=parseFloat(document.getElementById('fSalePrice').value)||0;
@@ -1068,6 +1625,8 @@ function usePayPalFee() {
 }
 
 // ===== EXPORT =====
+var _selectedTitleVariant = 0;
+
 function prepareExport(itemId) {
   if (itemId){exportItemId=itemId;navigate('export',itemId);}
   else if (editingId){exportItemId=editingId;saveItemDirect();navigate('export',exportItemId);}
@@ -1079,49 +1638,87 @@ function prepareExportFromDetail(id){exportItemId=id;navigate('export',id);}
 function renderExport(id) {
   var item=items.find(function(i){return i.id===id;});
   if (!item){document.getElementById('exportPreview').innerHTML='<div class="empty-state"><p>Nicht gefunden</p></div>';return;}
-  var title=generateTitle(item);
-  var desc=generateDescription(item);
-  var price=(item.sellingPrice||0).toFixed(2).replace('.',',')+' €';
-  var img=item.images&&item.images[0]?'<img src="'+item.images[0]+'">':'<span>📷</span>';
-  document.getElementById('exportTitle').value=title;
-  document.getElementById('exportPrice').value=price;
+  var titles=generateTitles(item);
+  if (!_descEdited) { var desc=item.generatedListingDescription||generateDescription(item); }
+  else { var desc=document.getElementById('exportDesc').value; }
+  var listedPrice = item.listedPrice || item.sellingPrice || 0;
+  var price=listedPrice.toFixed(2).replace('.',',')+' €';
+  var img=item.images&&item.images[0]?'<img src="'+imgData(item.images[0])+'">':'<span>📷</span>';
   document.getElementById('exportDesc').value=desc;
+  document.getElementById('exportPrice').value=price;
   document.getElementById('exportPreview').innerHTML='<div class="preview-card"><div class="preview-img">'+img+'</div>'+
-    '<div class="preview-body"><div class="preview-title">'+esc(title)+'</div>'+
+    '<div class="preview-body"><div class="preview-title">'+esc(titles[0])+'</div>'+
     '<div class="preview-price">'+price+'</div>'+
-    '<div class="preview-location">'+esc(item.location||'55122 Mainz')+'</div>'+
-    '<div class="preview-desc">'+esc(desc.slice(0,200))+'...</div></div></div>';
+    '<div class="preview-location">'+esc(item.location||'55122 Mainz')+'</div></div></div>';
+  renderTitleVariants(titles, item);
+  _selectedTitleVariant=0;
+  item.generatedListingTitle=titles[0];
+  item.generatedListingDescription=desc;
+  saveData();
 }
 
-function generateTitle(item) {
-  var parts=[];
-  if (item.brand) parts.push(item.brand);
-  if (item.model) parts.push(item.model);
-  if (!item.brand&&!item.model) parts.push(item.name);
-  var extra=item.name.replace(item.brand||'','').replace(item.model||'','').trim();
-  if (extra&&extra.length>3) parts.push(extra);
-  var title=parts.join(' ').trim();
-  if (title.length>65) title=title.slice(0,62)+'...';
-  return title||item.name;
+function renderTitleVariants(titles, item) {
+  var html='';
+  var labels=['Ausführlich','Kurz','Catchy'];
+  titles.forEach(function(t,i){
+    html+='<button class="title-variant'+(i===0?' selected':'')+'" onclick="selectExportTitle('+i+')">'+
+      '<div class="tv-label">Variante '+(i+1)+' · '+labels[i]+'</div>'+esc(t)+'</button>';
+  });
+  html+='<div class="copy-row" style="margin-top:6px;"><input class="copy-input" id="exportTitle" readonly value="'+esc(titles[0])+'"><button class="copy-btn" onclick="copyText(\'exportTitle\',\'Titel kopiert!\')">Kopieren</button></div>';
+  document.getElementById('exportTitleVariants').innerHTML=html;
+}
+
+function selectExportTitle(idx) {
+  _selectedTitleVariant=idx;
+  document.querySelectorAll('.title-variant').forEach(function(b,i){b.classList.toggle('selected',i===idx);});
+  var titles=document.querySelectorAll('.title-variant');
+  if (titles[idx]) document.getElementById('exportTitle').value=titles[idx].textContent.replace(/^Variante \d . \w+ \s*/, '').trim();
+  // Also update preview
+  var previewTitle=document.querySelector('.preview-card .preview-title');
+  if (previewTitle) previewTitle.textContent=document.getElementById('exportTitle').value;
+}
+
+function generateTitles(item) {
+  var def=getDefaults();
+  var base='';
+  var condStr=item.condition && item.condition!=='Gut' ? item.condition+' ' : '';
+  if (item.brand&&item.model) base=item.brand+' '+item.model+(item.name.toLowerCase().indexOf(item.brand.toLowerCase())===-1&&item.name.toLowerCase().indexOf(item.model.toLowerCase())===-1?' '+item.name:'');
+  else base=item.name;
+  base=base.trim().replace(/\s+/g,' ').substring(0,70);
+  var detailed=base;
+  if (item.condition&&item.condition!=='Neu'&&item.condition!=='Wie neu') detailed=base+' ('+item.condition+')';
+  if (detailed.length>70) detailed=detailed.substring(0,67)+'...';
+  var short=base;
+  if (short.length>40) short=short.substring(0,37)+'...';
+  var catchy=base;
+  if (catchy.length>50) catchy=catchy.substring(0,47)+'...';
+  if (item.condition==='Neu'||item.condition==='Wie neu') catchy='(NP) '+catchy;
+  else if (item.category==='Konsolen'||item.category==='Spiele') catchy=catchy+' günstig';
+  return [detailed, short, catchy];
 }
 
 function generateDescription(item) {
   var lines=[];
-  lines.push('Verkaufe '+item.name+'.');
-  if (item.condition==='Defekt'){lines.push('Der Artikel wird ausdrücklich als defekt verkauft.');}
+  var priceDisplay = (item.listedPrice||item.sellingPrice||0).toFixed(2).replace('.',',')+' €';
+  var condText = item.condition ? ' ('+item.condition+')' : '';
+  lines.push('Verkaufe '+item.name+condText+' für '+priceDisplay+'.');
+  if (item.condition==='Defekt'){lines.push('');lines.push('⚠️ Der Artikel wird ausdrücklich als defekt/Teileträger verkauft. Keine Funktionsgarantie.');}
   else {
-    lines.push('Der Artikel funktioniert einwandfrei.');
-    if (item.category==='Konsolen') lines.push('Tasten, Ton, Ladefunktion und Display wurden getestet.');
-    else if (item.category==='Spiele') lines.push('Das Spiel startet normal und wird erkannt.');
-    else if (item.category==='PC-Hardware') lines.push('Die Hardware wurde getestet und funktioniert.');
-    else if (item.category==='Smartphones') lines.push('Display, Akku, Kamera und alle Funktionen wurden getestet.');
+    lines.push('');
+    lines.push('✔️ Funktion & Zustand:');
+    if (item.category==='Konsolen'||item.category==='Spiele'||item.category==='PC-Hardware') lines.push('- Voll funktionsfähig, alle Tasten/Anschlüsse getestet.');
+    else if (item.category==='Smartphones') lines.push('- Display, Akku, Kamera, Anschlüsse – alles getestet und funktionsfähig.');
+    else if (item.category==='Kleidung') lines.push('- Gepflegter Zustand, keine Flecken oder Löcher (siehe Fotos).');
+    else lines.push('- Voll funktionsfähig und geprüft.');
+    if (item.category==='Konsolen') lines.push('- Inklusive aller notwendigen Anschlüsse, Konsole läuft leise.');
+    if (item.category==='Smartphones') lines.push('- Akkuzustand entspricht Alter/Nutzung.');
   }
-  if (item.defects) lines.push('Hinweis: '+item.defects);
+  if (item.defects){lines.push('');lines.push('⚠️ Hinweis:');lines.push('- '+item.defects);}
   if (item.accessories){
     var accs=item.accessories.split(',').map(function(s){return s.trim();}).filter(Boolean);
-    if (accs.length){lines.push('');lines.push('Lieferumfang:');accs.forEach(function(a){lines.push('- '+a);});}
+    if (accs.length){lines.push('');lines.push('📦 Lieferumfang:');accs.forEach(function(a){lines.push('- '+a);});}
   }
-  lines.push('');lines.push('Zustand siehe Bilder.');
+  lines.push('');lines.push('📸 Zustand siehe Fotos – die Bilder sind Teil der Artikelbeschreibung.');
   var def=getDefaults();var footer=def.footer||'Abholung möglich in 55122 Mainz oder Versand per PayPal FF.\nDa Privatverkauf, keine Rückgabe oder Garantie.';
   lines.push('');lines.push(footer);
   return lines.join('\n');
@@ -1141,6 +1738,27 @@ function copyAllExport() {
 
 function openKleinanzeigen(){window.open('https://www.kleinanzeigen.de/p-anzeige-aufgeben.html','_blank');}
 function markAsListed(){if(!exportItemId)return;setItemStatus(exportItemId,'listed');showToast('Als inseriert markiert!');}
+
+function onDescEdit() { _descEdited = true; }
+function regenerateDesc() {
+  _descEdited = false;
+  if (exportItemId) renderExport(exportItemId);
+}
+
+function scheduleTitleGen() { clearTimeout(_titleGenTimer); _titleGenTimer = setTimeout(generateTitlePreview, 500); }
+function generateTitlePreview() {
+  var name=document.getElementById('fName').value.trim();
+  if (!name) return;
+  var fakeItem = {
+    name: name,
+    brand: document.getElementById('fBrand').value.trim(),
+    model: document.getElementById('fModel').value.trim(),
+    category: document.getElementById('fCategory').value,
+    condition: document.getElementById('fCondition').value
+  };
+  var titles = generateTitles(fakeItem);
+  showToast('Titel: '+titles[0]);
+}
 
 // ===== SALES =====
 function renderSales() {
@@ -1166,7 +1784,7 @@ function renderMonthGrid(year) {
       var d=i.sellDate?new Date(i.sellDate):new Date(i.updatedAt||i.createdAt);
       return d.getMonth()===m&&d.getFullYear()===year;
     });
-    var profit=0;sold.forEach(function(i){profit+=(i.sellingPrice||0)-(i.purchasePrice||0);});
+    var profit=0;sold.forEach(function(i){var sp=i.soldPrice||i.listedPrice||i.sellingPrice||0;profit+=sp-(i.purchasePrice||0);});
     tile.innerHTML='<div class="month-name">'+names[m]+'</div>'+
       '<div class="month-profit '+(profit>=0?'positive':'negative')+'">'+(profit>=0?'+':'')+profit.toFixed(0)+' €</div>'+
       '<div class="month-count">'+sold.length+' Verkäufe</div>';
@@ -1182,19 +1800,19 @@ function showMonthPopup(month,year) {
     var d=i.sellDate?new Date(i.sellDate):new Date(i.updatedAt||i.createdAt);
     return d.getMonth()===month&&d.getFullYear()===year;
   });
-  var profit=0;sold.forEach(function(i){profit+=(i.sellingPrice||0)-(i.purchasePrice||0);});
-  var margins=sold.map(function(i){return i.sellingPrice?(((i.sellingPrice||0)-(i.purchasePrice||0))/i.sellingPrice*100):0;});
-  var avgMargin=margins.length?margins.reduce(function(a,b){return a+b;},0)/margins.length:0;
+  var profit=0;sold.forEach(function(i){var sp=i.soldPrice||i.listedPrice||i.sellingPrice||0;profit+=sp-(i.purchasePrice||0);});
+  var margins=sold.map(function(i){var sp=i.soldPrice||i.listedPrice||i.sellingPrice||0;return sp?((sp-(i.purchasePrice||0))/sp*100):0;});
   document.getElementById('popupMonthTitle').textContent=names[month]+' '+year;
   document.getElementById('popupTotalProfit').textContent=(profit>=0?'+':'')+profit.toFixed(2).replace('.',',')+' €';
   document.getElementById('popupTotalProfit').className='big '+(profit>=0?'positive':'negative');
   document.getElementById('popupSub').textContent=sold.length+' Verkäufe · Ø Marge '+avgMargin.toFixed(1)+'%';
   var html='';
   sold.sort(function(a,b){return (b.sellDate||b.updatedAt||0)-(a.sellDate||a.updatedAt||0);}).forEach(function(i){
-    var p=(i.sellingPrice||0)-(i.purchasePrice||0);
+    var sp=i.soldPrice||i.listedPrice||i.sellingPrice||0;
+    var p=sp-(i.purchasePrice||0);
     var d=i.sellDate?new Date(i.sellDate):new Date(i.updatedAt||i.createdAt);
     html+='<div class="item-card" style="cursor:default;margin-bottom:6px;">'+
-      '<div class="item-img">'+(i.images&&i.images[0]?'<img src="'+i.images[0]+'">':'<span>📷</span>')+'</div>'+
+      '<div class="item-img">'+(i.images&&i.images[0]?'<img src="'+imgData(i.images[0])+'">':'<span>📷</span>')+'</div>'+
       '<div class="item-info"><div class="item-name">'+esc(i.name)+'</div>'+
       '<div class="item-meta">'+d.toLocaleDateString('de-DE')+' · '+esc(i.platform||'Kleinanzeigen')+'</div>'+
       '<div class="item-profit '+(p>=0?'positive':'negative')+'">'+(p>=0?'+':'')+p.toFixed(2).replace('.',',')+' €</div></div></div>';
@@ -1220,14 +1838,15 @@ function renderSalesList() {
     if(selectMode){bar.classList.add('active');document.getElementById('selectCount').textContent=selectedItems.length+' ausgewählt';}
     else bar.classList.remove('active');
     sold.sort(function(a,b){return(b.sellDate||b.updatedAt||0)-(a.sellDate||a.updatedAt||0);}).forEach(function(i){
-      var p=(i.sellingPrice||0)-(i.purchasePrice||0);
+      var sp=i.soldPrice||i.listedPrice||i.sellingPrice||0;
+      var p=sp-(i.purchasePrice||0);
       var d=i.sellDate?new Date(i.sellDate):new Date(i.updatedAt||i.createdAt);
       html+='<div class="item-card" onclick="'+(selectMode?'toggleSelect(\''+i.id+'\')':'')+'" style="cursor:'+(selectMode?'pointer':'default')+'">'+
         '<input type="checkbox" class="item-select" '+(selectMode?'':'style="display:none"')+' '+(selectedItems.indexOf(i.id)>-1?'checked':'')+' onchange="toggleSelect(\''+i.id+'\')">'+
-        '<div class="item-img">'+(i.images&&i.images[0]?'<img src="'+i.images[0]+'">':'<span>📷</span>')+'</div>'+
+        '<div class="item-img">'+(i.images&&i.images[0]?'<img src="'+imgData(i.images[0])+'">':'<span>📷</span>')+'</div>'+
         '<div class="item-info"><div class="item-name">'+esc(i.name)+'</div>'+
         '<div class="item-meta">'+d.toLocaleDateString('de-DE')+' · '+esc(i.platform||'Kleinanzeigen')+'</div>'+
-        '<div class="item-prices"><span>EK '+fmt(i.purchasePrice)+'</span><span>VK '+fmt(i.sellingPrice)+'</span></div>'+
+        '<div class="item-prices"><span>EK '+fmt(i.purchasePrice)+'</span><span>VK '+fmt(sp)+'</span></div>'+
         '<div class="item-profit '+(p>=0?'positive':'negative')+'">'+(p>=0?'+':'')+p.toFixed(2).replace('.',',')+' €</div></div></div>';
     });
   }
@@ -1246,7 +1865,11 @@ function markSelectedSold() {
   if(!selectedItems.length){showToast('Keine Artikel ausgewählt');return;}
   selectedItems.forEach(function(id){
     var item=items.find(function(i){return i.id===id;});
-    if(item&&item.status!=='sold'){item.status='sold';item.sellDate=Date.now();item.updatedAt=Date.now();}
+    if(item&&item.status!=='sold'&&item.status!=='completed'){
+      item.status='sold';
+      item.soldPrice=item.soldPrice||item.listedPrice||item.sellingPrice||0;
+      item.sellDate=Date.now();item.updatedAt=Date.now();
+    }
   });
   saveData();showToast(selectedItems.length+' als verkauft markiert!');selectedItems=[];exitSelectMode();renderSales();renderDashboard();
 }
@@ -1260,6 +1883,15 @@ document.addEventListener('DOMContentLoaded',function(){
     salesHeader.addEventListener('touchend',function(){clearTimeout(timer);});
     salesHeader.addEventListener('touchmove',function(){clearTimeout(timer);});
   }
+  var cropCont = document.getElementById('cropContainer');
+  if (cropCont) {
+    cropCont.addEventListener('mousedown', onCropStart);
+    cropCont.addEventListener('touchstart', onCropStart, {passive: false});
+    document.addEventListener('mousemove', onCropMove);
+    document.addEventListener('touchmove', onCropMove, {passive: false});
+    document.addEventListener('mouseup', onCropEnd);
+    document.addEventListener('touchend', onCropEnd);
+  }
 });
 
 // ===== SETTINGS =====
@@ -1267,10 +1899,17 @@ function renderSettings() {
   var def=getDefaults();
   document.getElementById('sLocation').value=def.location||'55122 Mainz';
   document.getElementById('sFooter').value=def.footer||'';
+  document.getElementById('sPlatform').value=def.platform||'kleinanzeigen';
+  document.getElementById('sTitleStyle').value=def.titleStyle||'detailed';
   updateDarkToggleIcon();
 }
 function saveSettings() {
-  var settings={location:document.getElementById('sLocation').value.trim(),footer:document.getElementById('sFooter').value.trim()};
+  var settings={
+    location:document.getElementById('sLocation').value.trim(),
+    footer:document.getElementById('sFooter').value.trim(),
+    platform:document.getElementById('sPlatform').value,
+    titleStyle:document.getElementById('sTitleStyle').value
+  };
   localStorage.setItem('flippybird_settings',JSON.stringify(settings));
   showToast('Einstellungen gespeichert!');
 }
@@ -1287,48 +1926,6 @@ function updateDarkToggleIcon() {
   if(!btn)return;
   var dark=localStorage.getItem('flippybird_darkmode')==='1';
   btn.textContent=dark?'☀️':'🌙';
-}
-
-// ===== HELPERS =====
-const STATUS_LABELS={draft:'Entwurf',bought:'Gekauft',ready:'Bereit',listed:'Inseriert',reserved:'Reserviert',sold:'Verkauft',archived:'Archiviert'};
-
-function esc(s){if(!s)return '';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-function fmt(v){if(v===null||v===undefined||v==='')return '-';return parseFloat(v).toFixed(2).replace('.',',')+' €';}
-function showToast(msg){var el=document.getElementById('toast');if(!el)return;el.textContent=msg;el.classList.add('show');clearTimeout(el._timeout);el._timeout=setTimeout(function(){el.classList.remove('show');},2000);}
-function saveData(){localStorage.setItem('flippybird_items',JSON.stringify(items));}
-function loadData(){try{var raw=localStorage.getItem('flippybird_items');items=raw?JSON.parse(raw):[];}catch{items=[];}}
-
-function setItemStatus(id,status){
-  var item=items.find(function(i){return i.id===id;});if(!item)return;
-  item.status=status;if(status==='sold')item.sellDate=Date.now();item.updatedAt=Date.now();saveData();
-  renderDashboard();if(currentPage==='detail')renderDetail(id);
-}
-
-function editItem(id){editingId=id;navigate('add');}
-
-function deleteItem(id){
-  document.getElementById('modalTitle').textContent='Löschen';
-  document.getElementById('modalText').textContent='Artikel wirklich löschen?';
-  document.getElementById('modalConfirmBtn').onclick=function(){items=items.filter(function(i){return i.id!==id;});saveData();closeModal();showToast('Gelöscht!');navigate('inventory');};
-  document.getElementById('modalOverlay').classList.add('active');
-}
-function closeModal(){document.getElementById('modalOverlay').classList.remove('active');}
-
-function applyDarkMode(enabled){
-  var root=document.documentElement;
-  if(enabled){
-    root.style.setProperty('--bg','#0F0F0F');
-    root.style.setProperty('--card','#1A1A2E');
-    root.style.setProperty('--text','#F0F0F0');
-    root.style.setProperty('--text-secondary','#9CA3AF');
-    root.style.setProperty('--border','#2D2D44');
-  } else {
-    root.style.removeProperty('--bg');
-    root.style.removeProperty('--card');
-    root.style.removeProperty('--text');
-    root.style.removeProperty('--text-secondary');
-    root.style.removeProperty('--border');
-  }
 }
 
 // ===== INIT =====
